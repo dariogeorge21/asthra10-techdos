@@ -99,7 +99,7 @@ Open [http://localhost:3000](http://localhost:3000) to view the application.
 
 ### For Administrators
 1. **Access Admin Panel:** Navigate to `/admin`
-2. **Login:** Use credentials (default: admin/admin123)
+2. **Login:** Use credentials provided by organizers
 3. **Manage Teams:** Create teams and monitor their progress
 4. **View Statistics:** Real-time dashboard with game analytics
 
