@@ -1,7 +1,6 @@
+# 🚀 The Chronos Cypher – A Supabase-Powered Quiz Game
 
-# 🚀 The Chronos Cypher – A Treasure Hunt Game
-
-Welcome to the official repository for **The Chronos Cypher**, a **40-level technical treasure hunt game** designed to challenge participants’ **problem-solving skills, technical knowledge, and teamwork**.
+Welcome to the official repository for **The Chronos Cypher**, a **40-level technical quiz game** with real-time scoring, team management, and comprehensive admin controls.
 
 ---
 
@@ -9,159 +8,303 @@ Welcome to the official repository for **The Chronos Cypher**, a **40-level tech
 
 This project is built using a modern web stack for speed, scalability, and developer experience:
 
-- **Framework:** [Next.js](https://nextjs.org/)  
+- **Framework:** [Next.js 15](https://nextjs.org/) with App Router
+- **Database:** [Supabase](https://supabase.com/) (PostgreSQL)
 - **Styling:** [Tailwind CSS](https://tailwindcss.com/)  
 - **UI Components:** [shadcn/ui](https://ui.shadcn.com/)
+- **Authentication:** Custom admin auth with bcrypt
+- **Real-time Features:** Supabase real-time subscriptions
 
 ---
 
-## 📝 Project Notes
+## 🎮 Game Features
 
-For extended planning and baseline documentation, refer to our Notion workspace:
+### Core Gameplay
+- **40 Progressive Levels:** Each level unlocks after completing the previous one
+- **5-Hour Time Limit:** Global countdown timer across all levels
+- **Real-time Scoring:** Dynamic score calculation with multiple factors
+- **Checkpoint System:** Automatic saves at levels 1, 5, 10, 15, 20, 25, 30, 35
+- **Team-based Competition:** Multiple teams can compete simultaneously
 
-🔗 [Project Baseline Notes](https://www.notion.so/Base-Line-262f4a15404980709305c7fbac09f94a)
+### Scoring System
+- **Correct Answer (No hint):** +1500 points
+- **Correct Answer (With hint):** +1000 points
+- **Incorrect Answer:** -400 points
+- **Question Skipped:** -750 points
+- **Consecutive Correct Bonus:** +200 points for every 3 consecutive correct answers
+- **Checkpoint Usage:** -200 points per checkpoint revert
+- **Time Bonus:** Up to +250 points based on level completion time
 
----
-
-## ⚡ Getting Started
-
-Follow these steps to set up the project locally:
-
-1. **Fork the Repository**  
-   [Main Repository](https://github.com/dariogeorge21/asthra10-techdos.git)
-
-2. **Clone Your Fork**  
-   ```bash
-   git clone https://github.com/YOUR_USERNAME/asthra10-techdos.git
-
-
-3. **Navigate to Project Directory**
-
-   ```bash
-   cd asthra10-techdos
-   ```
-
-4. **Install Dependencies**
-
-   ```bash
-   npm install
-   ```
-
-5. **Run the Development Server**
-
-   ```bash
-   npm run dev
-   ```
-
-   Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Admin Features
+- **Team Management:** Create, delete, and monitor teams
+- **Real-time Dashboard:** Live statistics and progress tracking
+- **Secure Authentication:** Bcrypt-hashed passwords
+- **Game Monitoring:** View detailed team statistics and performance
 
 ---
 
-## 📂 Directory Structure
+## ⚡ Quick Start
 
-Each level is structured as its own page. Follow this convention when creating levels:
+### Prerequisites
+- Node.js 18+ 
+- npm or yarn
+- Supabase account
+
+### 1. Clone and Install
+```bash
+git clone https://github.com/dariogeorge21/asthra10-techdos.git
+cd asthra10-techdos
+npm install
+```
+
+### 2. Supabase Setup
+1. Create a new Supabase project at [supabase.com](https://supabase.com)
+2. Copy your project URL and anon key
+3. Run the database migrations:
+   ```bash
+   # In your Supabase SQL editor, run:
+   # 1. supabase/migrations/001_create_teams_table.sql
+   # 2. supabase/migrations/002_create_admin_users_table.sql
+   ```
+
+### 3. Environment Configuration
+```bash
+cp .env.example .env.local
+```
+
+Edit `.env.local` with your Supabase credentials:
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+ADMIN_JWT_SECRET=your_jwt_secret_for_admin_auth
+GAME_DURATION_HOURS=5
+```
+
+### 4. Run Development Server
+```bash
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) to view the application.
+
+---
+
+## 🎯 Usage Guide
+
+### For Participants
+1. **Get Team Code:** Obtain your unique team code from organizers
+2. **Start Game:** Enter team code on the landing page
+3. **Navigate Levels:** Complete levels sequentially from the levels overview
+4. **Monitor Progress:** Track your score and time remaining in real-time
+
+### For Administrators
+1. **Access Admin Panel:** Navigate to `/admin`
+2. **Login:** Use credentials (default: admin/admin123)
+3. **Manage Teams:** Create teams and monitor their progress
+4. **View Statistics:** Real-time dashboard with game analytics
+
+---
+
+## 📂 Project Structure
 
 ```
 app/
-└── levels/
-    ├── level-1/
-    │   ├── page.tsx
-    │   └── components/   // Optional: for level-specific components
-    │
-    ├── level-2/
-    │   ├── page.tsx
-    │   └── components/
-    │
-    └── ...
-    └── level-40/
-        └── page.tsx
-```
+├── admin/                 # Admin panel
+│   └── page.tsx          # Admin dashboard
+├── api/                  # API routes
+│   ├── admin/           # Admin-only endpoints
+│   └── teams/           # Team management endpoints
+├── levels/              # Game levels
+│   ├── page.tsx        # Levels overview
+│   └── level-1/        # Individual level pages
+│       └── page.tsx
+├── globals.css         # Global styles
+├── layout.tsx         # Root layout
+└── page.tsx           # Landing page
 
-**Rules:**
+lib/
+├── supabase.ts        # Database client and utilities
+└── auth.ts           # Authentication helpers
 
-* Create levels inside `app/levels/`
-* Folder name format: `level-%` (e.g., `level-5`)
-* Main UI and logic file: `page.tsx`
-* Use a `components` folder inside the level folder for reusable elements
+supabase/
+└── migrations/       # Database schema migrations
+    ├── 001_create_teams_table.sql
+    └── 002_create_admin_users_table.sql
 
----
-
-## 🤝 Contribution Workflow
-
-1. **Make Your Changes**
-   Implement a new level or feature in your local fork.
-
-2. **Verify Your Build**
-
-   ```bash
-   npm run build
-   ```
-
-3. **Commit Your Changes**
-   Follow [Conventional Commits](https://www.conventionalcommits.org/).
-   Example:
-
-   ```
-   feat: add level 15 with a binary puzzle
-   ```
-
-4. **Push to Your Fork**
-
-   ```bash
-   git push origin main
-   ```
-
-5. **Create a Pull Request**
-
-   * Open a PR from your fork’s `main` branch to the original repo’s `main` branch
-   * Provide a **clear description** of your changes
-   * The project owner will review and merge
-
----
-
-## 🤖 AI-Assisted Development Workflow
-
-We encourage contributors to use AI tools for **rapid prototyping** and **consistent design**.
-
-### 🔑 Prompt Key
-
-Always include the following instruction in AI prompts:
-
-```
-Maintain the same UI/UX design using the existing components across this page while ensuring design consistency and seamless user interaction. Design the page with the components and maintain an overall bright and vibrant theme of shadcn ui.
-```
-
-### ⚙️ Recommended Tools & Process
-
-1. **Prototyping (Augment Code)**
-
-   * Use **Augment Code** in *Agent Mode* for generating initial structures
-   * Enhance prompts with **Augment Code Prompt Enhancer**
-
-2. **Refinement (GitHub Copilot)**
-
-   * Use **GitHub Copilot** in *Edit Mode* to refine, debug, and optimize code
-
----
-
-## 🧑‍💻 Example AI Prompt Workflow
-
-**Prompt for Augment Code:**
-
-```
-Maintain the same UI/UX design using the existing components across this page while ensuring design consistency and seamless user interaction. Design the page with the components and maintain an overall bright and vibrant theme of shadcn ui.
-
-Task: Create a level page where the user must solve a CSS Flexbox challenge. The page should have:
-- A title "Level 5: The Flexbox Froggy"
-- An instruction card explaining the goal
-- A container with three colored boxes (red, green, blue)
-- A text input field for the user to enter a single flexbox property
-- A "Submit" button that validates the answer
+components/ui/        # Reusable UI components
 ```
 
 ---
 
+## 🔧 API Reference
+
+### Team Endpoints
+- `POST /api/teams/start-game` - Initialize game for team
+- `GET /api/teams/[team_code]` - Get team data
+- `PUT /api/teams/[team_code]/stats` - Update question statistics
+- `PUT /api/teams/[team_code]/score` - Update score and level
+- `PUT /api/teams/[team_code]/checkpoint` - Save checkpoint
+- `PUT /api/teams/[team_code]/revert` - Revert to checkpoint
+
+### Admin Endpoints
+- `POST /api/admin/auth/login` - Admin login
+- `POST /api/admin/auth/logout` - Admin logout
+- `GET /api/admin/teams` - List all teams
+- `POST /api/admin/teams` - Create new team
+- `DELETE /api/admin/teams/[team_code]` - Delete team
+
 ---
 
-Do you want me to also **add shields/badges (build, license, contributors, stars, etc.)** at the top of this README to make it look more professional on GitHub?
+## 🎨 Creating New Levels
+
+### Level Structure
+Each level should be created as a separate page in `app/levels/level-X/page.tsx`:
+
+```typescript
+// app/levels/level-2/page.tsx
+"use client";
+
+import { useState, useEffect } from "react";
+// ... other imports
+
+const questions = [
+  {
+    id: 1,
+    question: "Your question here?",
+    options: ["Option A", "Option B", "Option C", "Option D"],
+    correct: "Option A",
+    hint: "Your hint here"
+  }
+  // ... more questions
+];
+
+export default function Level2Page() {
+  // Copy the structure from level-1/page.tsx
+  // Update level number and questions
+}
 ```
+
+### Level Guidelines
+1. **Question Format:** Use multiple choice questions (MCQ)
+2. **Difficulty Progression:** Increase complexity with each level
+3. **Hints:** Provide helpful but not obvious hints
+4. **Checkpoint Levels:** Levels 1, 5, 10, 15, 20, 25, 30, 35 auto-save progress
+5. **Navigation Protection:** Prevent accidental page reloads during gameplay
+
+---
+
+## 🤝 Contributing
+
+### Development Workflow
+1. **Fork the Repository**
+2. **Create Feature Branch:** `git checkout -b feature/level-X`
+3. **Implement Changes:** Follow existing patterns and conventions
+4. **Test Thoroughly:** Ensure scoring and navigation work correctly
+5. **Submit Pull Request:** Include description of changes
+
+### Code Standards
+- Use TypeScript for type safety
+- Follow existing component patterns
+- Implement proper error handling
+- Add loading states for async operations
+- Maintain responsive design principles
+
+### Adding Levels
+1. Create new level directory: `app/levels/level-X/`
+2. Copy structure from existing level
+3. Update questions and level-specific logic
+4. Test scoring calculations
+5. Verify checkpoint functionality (if applicable)
+
+---
+
+## 🚀 Deployment
+
+### Vercel (Recommended)
+1. Connect your GitHub repository to Vercel
+2. Add environment variables in Vercel dashboard
+3. Deploy automatically on push to main branch
+
+### Manual Deployment
+```bash
+npm run build
+npm start
+```
+
+---
+
+## 🔒 Security Considerations
+
+- **Admin Authentication:** Uses bcrypt for password hashing
+- **Environment Variables:** Keep Supabase keys secure
+- **Row Level Security:** Enabled on database tables
+- **Session Management:** HTTP-only cookies for admin sessions
+
+---
+
+## 📊 Database Schema
+
+### Teams Table
+```sql
+teams (
+  team_name TEXT NOT NULL,
+  team_code TEXT PRIMARY KEY,
+  score INTEGER DEFAULT 0,
+  game_loaded BOOLEAN DEFAULT FALSE,
+  checkpoint_score INTEGER DEFAULT 0,
+  checkpoint_level INTEGER DEFAULT 1,
+  current_level INTEGER DEFAULT 1,
+  correct_questions INTEGER DEFAULT 0,
+  incorrect_questions INTEGER DEFAULT 0,
+  skipped_questions INTEGER DEFAULT 0,
+  hint_count INTEGER DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+)
+```
+
+### Admin Users Table
+```sql
+admin_users (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  username TEXT UNIQUE NOT NULL,
+  password_hash TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+)
+```
+
+---
+
+## 🐛 Troubleshooting
+
+### Common Issues
+1. **Supabase Connection:** Verify URL and API keys in environment variables
+2. **Admin Login:** Default credentials are admin/admin123
+3. **Team Code Issues:** Ensure team exists in database
+4. **Timer Problems:** Check browser timezone settings
+5. **Score Calculation:** Verify all API endpoints are responding
+
+### Development Tips
+- Use browser dev tools to monitor API calls
+- Check Supabase logs for database errors
+- Test with multiple teams for concurrent gameplay
+- Verify checkpoint system with intentional failures
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🙏 Acknowledgments
+
+- Built with [Next.js](https://nextjs.org/)
+- UI components from [shadcn/ui](https://ui.shadcn.com/)
+- Database powered by [Supabase](https://supabase.com/)
+- Icons from [Lucide React](https://lucide.dev/)
+
+---
+
+**Ready to challenge your teams? Let the games begin! 🎮**

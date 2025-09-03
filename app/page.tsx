@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Clock, Users, Trophy, Zap, Timer, Shield, Star, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,15 +9,62 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { toast } from "sonner";
 
 export default function Home() {
-  const [teamName, setTeamName] = useState("");
+  const [teamCode, setTeamCode] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
-  const handleStartChallenge = () => {
-    if (teamName.trim()) {
-      // Navigate to the challenge or handle team registration
-      console.log("Starting challenge with team:", teamName);
-      // You can add navigation logic here
+  const handleStartChallenge = async () => {
+    if (!teamCode.trim()) {
+      toast.error("Please enter your team code");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      // First, verify the team exists
+      const teamResponse = await fetch(`/api/teams/${teamCode.toUpperCase()}`);
+
+      if (!teamResponse.ok) {
+        if (teamResponse.status === 404) {
+          toast.error("Team code not found. Please check with the organizers.");
+        } else {
+          toast.error("Failed to verify team code. Please try again.");
+        }
+        return;
+      }
+
+      const team = await teamResponse.json();
+
+      // Start the game for this team
+      const startResponse = await fetch('/api/teams/start-game', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ team_code: teamCode.toUpperCase() }),
+      });
+
+      if (!startResponse.ok) {
+        toast.error("Failed to start the game. Please try again.");
+        return;
+      }
+
+      // Store team code in localStorage for the session
+      localStorage.setItem('team_code', teamCode.toUpperCase());
+
+      toast.success(`Welcome ${team.team_name}! Starting your challenge...`);
+
+      // Navigate to levels page
+      router.push('/levels');
+    } catch (error) {
+      console.error('Error starting challenge:', error);
+      toast.error("An unexpected error occurred. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -200,20 +248,21 @@ export default function Home() {
               Begin the Challenge
             </CardTitle>
             <CardDescription className="text-center text-lg text-gray-600">
-              Enter your team name below to start.
+              Enter your team code below to start.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-4">
               <Input
-                placeholder="Enter your team name..."
-                value={teamName}
-                onChange={(e) => setTeamName(e.target.value)}
+                placeholder="Enter your team code (e.g., ABC123)..."
+                value={teamCode}
+                onChange={(e) => setTeamCode(e.target.value.toUpperCase())}
                 className="text-lg py-6 border-2 border-purple-200 focus:border-purple-400 bg-white"
+                maxLength={6}
               />
               <Button
                 onClick={handleStartChallenge}
-                disabled={!teamName.trim()}
+                disabled={!teamCode.trim() || isLoading}
                 className="w-full py-6 text-lg font-semibold bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 disabled:from-gray-300 disabled:to-gray-400"
               >
                 Start Challenge
