@@ -11,6 +11,7 @@ export interface Team {
   team_code: string
   score: number
   game_loaded: boolean
+  game_start_time: string | null
   checkpoint_score: number
   checkpoint_level: number
   current_level: number
@@ -194,6 +195,7 @@ export const teamService = {
       team_name?: string
       score?: number
       game_loaded?: boolean
+      game_start_time?: string | null
       checkpoint_score?: number
       checkpoint_level?: number
       current_level?: number
@@ -284,4 +286,41 @@ export const generateTeamCode = (): string => {
 
 export const isCheckpointLevel = (level: number): boolean => {
   return [1, 5, 10, 15, 20, 25, 30, 35].includes(level)
+}
+
+// Timer utility functions
+export const getGameTimeRemaining = (team: Team): number => {
+  if (!team.game_loaded || !team.game_start_time) {
+    return 0
+  }
+
+  const gameStartTime = new Date(team.game_start_time).getTime()
+  const now = new Date().getTime()
+  const elapsed = now - gameStartTime
+  const fiveHoursInMs = 5 * 60 * 60 * 1000 // 5 hours in milliseconds
+
+  return Math.max(0, fiveHoursInMs - elapsed)
+}
+
+export const isGameTimeExpired = (team: Team): boolean => {
+  return getGameTimeRemaining(team) === 0 && team.game_loaded
+}
+
+export const formatTimeRemaining = (ms: number): string => {
+  const hours = Math.floor(ms / (1000 * 60 * 60))
+  const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60))
+  const seconds = Math.floor((ms % (1000 * 60)) / 1000)
+  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+}
+
+export const getGameTimerStatus = (team: Team): 'not_started' | 'active' | 'expired' => {
+  if (!team.game_loaded || !team.game_start_time) {
+    return 'not_started'
+  }
+
+  if (isGameTimeExpired(team)) {
+    return 'expired'
+  }
+
+  return 'active'
 }

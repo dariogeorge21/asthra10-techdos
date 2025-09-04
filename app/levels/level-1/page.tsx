@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
-import { Team, isCheckpointLevel } from "@/lib/supabase";
+import { Team, isCheckpointLevel, getGameTimeRemaining, formatTimeRemaining, getGameTimerStatus } from "@/lib/supabase";
 
 interface Question {
   id: number;
@@ -48,9 +48,9 @@ export default function Level1Page() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string>("");
   const [showHint, setShowHint] = useState(false);
-  const [gameStartTime, setGameStartTime] = useState<Date | null>(null);
   const [levelStartTime] = useState<Date>(new Date());
   const [timeRemaining, setTimeRemaining] = useState<number>(0);
+  const [timerStatus, setTimerStatus] = useState<'not_started' | 'active' | 'expired'>('not_started');
   const [loading, setLoading] = useState(true);
   const [isCompleted, setIsCompleted] = useState(false);
   const [levelStats, setLevelStats] = useState({
@@ -76,9 +76,10 @@ export default function Level1Page() {
         return;
       }
 
-      if (teamData.game_loaded) {
-        setGameStartTime(new Date(teamData.created_at));
-      }
+      // Initialize timer status
+      const status = getGameTimerStatus(teamData);
+      setTimerStatus(status);
+      setTimeRemaining(getGameTimeRemaining(teamData));
     } catch (error) {
       console.error('Error fetching team data:', error);
       toast.error("Failed to load team data. Please try again.");
@@ -111,30 +112,36 @@ export default function Level1Page() {
   }, [router, fetchTeamData]);
 
   useEffect(() => {
-    if (gameStartTime) {
+    if (team) {
       const timer = setInterval(() => {
-        const now = new Date();
-        const elapsed = now.getTime() - gameStartTime.getTime();
-        const remaining = Math.max(0, (5 * 60 * 60 * 1000) - elapsed);
-        setTimeRemaining(remaining);
+        const remaining = getGameTimeRemaining(team);
+        const status = getGameTimerStatus(team);
 
-        if (remaining === 0) {
+        setTimeRemaining(remaining);
+        setTimerStatus(status);
+
+        if (status === 'expired' && timerStatus !== 'expired') {
           toast.error("Time's up! The game has ended.");
-          clearInterval(timer);
         }
       }, 1000);
 
       return () => clearInterval(timer);
     }
-  }, [gameStartTime]);
+  }, [team, timerStatus]);
 
 
 
-  const formatTime = (ms: number): string => {
-    const hours = Math.floor(ms / (1000 * 60 * 60));
-    const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((ms % (1000 * 60)) / 1000);
-    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  const getTimerDisplay = (): { text: string; className: string } => {
+    switch (timerStatus) {
+      case 'not_started':
+        return { text: 'Game Not Started', className: 'text-gray-500' };
+      case 'expired':
+        return { text: '00:00:00', className: 'text-red-600' };
+      case 'active':
+        return { text: formatTimeRemaining(timeRemaining), className: 'text-red-600' };
+      default:
+        return { text: 'Game Not Started', className: 'text-gray-500' };
+    }
   };
 
   const updateTeamStats = async (stats: Record<string, number>) => {
@@ -384,9 +391,9 @@ export default function Level1Page() {
               </div>
               
               <div className="flex items-center space-x-2">
-                <Timer className="h-5 w-5 text-red-600" />
-                <span className="text-lg font-mono font-semibold text-red-600">
-                  {formatTime(timeRemaining)}
+                <Timer className={`h-5 w-5 ${timerStatus === 'not_started' ? 'text-gray-500' : 'text-red-600'}`} />
+                <span className={`text-lg font-mono font-semibold ${getTimerDisplay().className}`}>
+                  {getTimerDisplay().text}
                 </span>
               </div>
             </div>

@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Team } from "@/lib/supabase";
+import { Team, getGameTimerStatus, formatTimeRemaining, getGameTimeRemaining } from "@/lib/supabase";
 
 interface TeamEditModalProps {
   team: Team | null;
@@ -49,6 +49,7 @@ export function TeamEditModal({ team, isOpen, onClose, onTeamUpdated }: TeamEdit
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [originalGameLoaded, setOriginalGameLoaded] = useState(false);
 
   // Initialize form data when team changes
   useEffect(() => {
@@ -65,6 +66,7 @@ export function TeamEditModal({ team, isOpen, onClose, onTeamUpdated }: TeamEdit
         skipped_questions: team.skipped_questions,
         hint_count: team.hint_count,
       });
+      setOriginalGameLoaded(team.game_loaded);
       setErrors({});
     }
   }, [team]);
@@ -168,6 +170,47 @@ export function TeamEditModal({ team, isOpen, onClose, onTeamUpdated }: TeamEdit
     }
   };
 
+  const getTimerStatusDisplay = () => {
+    if (!team) return null;
+
+    const status = getGameTimerStatus(team);
+    const remaining = getGameTimeRemaining(team);
+
+    switch (status) {
+      case 'not_started':
+        return (
+          <div className="text-sm text-gray-600 bg-gray-50 p-2 rounded">
+            ⏸️ Timer Status: Not Started
+          </div>
+        );
+      case 'active':
+        return (
+          <div className="text-sm text-green-700 bg-green-50 p-2 rounded">
+            ⏱️ Timer Status: Active - {formatTimeRemaining(remaining)} remaining
+          </div>
+        );
+      case 'expired':
+        return (
+          <div className="text-sm text-red-700 bg-red-50 p-2 rounded">
+            ⏰ Timer Status: Expired
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
+  const getGameLoadedChangeWarning = () => {
+    if (formData.game_loaded && !originalGameLoaded) {
+      return (
+        <div className="text-sm text-blue-700 bg-blue-50 p-2 rounded border border-blue-200">
+          🔄 <strong>Timer Reset:</strong> Enabling game will start a fresh 5-hour countdown timer.
+        </div>
+      );
+    }
+    return null;
+  };
+
   if (!team) return null;
 
   return (
@@ -179,6 +222,12 @@ export function TeamEditModal({ team, isOpen, onClose, onTeamUpdated }: TeamEdit
             Update team information. Team code ({team.team_code}) cannot be changed.
           </DialogDescription>
         </DialogHeader>
+
+        {/* Timer Status Display */}
+        <div className="space-y-2">
+          {getTimerStatusDisplay()}
+          {getGameLoadedChangeWarning()}
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -333,7 +382,7 @@ export function TeamEditModal({ team, isOpen, onClose, onTeamUpdated }: TeamEdit
                 onCheckedChange={(checked) => handleInputChange('game_loaded', checked as boolean)}
                 disabled={isSubmitting}
               />
-              <Label htmlFor="game_loaded">Game Loaded (Team has started the game)</Label>
+              <Label htmlFor="game_loaded">Game Loaded (Team has started the game.) Global Timer start</Label>
             </div>
           </div>
 

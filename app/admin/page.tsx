@@ -12,7 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { Team } from "@/lib/supabase";
+import { Team, getGameTimerStatus, formatTimeRemaining, getGameTimeRemaining } from "@/lib/supabase";
 import { TeamEditModal } from "@/components/admin/TeamEditModal";
 
 export default function AdminPage() {
@@ -177,6 +177,26 @@ export default function AdminPage() {
       return <Badge className="bg-green-500 hover:bg-green-600">Completed</Badge>;
     } else {
       return <Badge className="bg-blue-500 hover:bg-blue-600">In Progress</Badge>;
+    }
+  };
+
+  const getTimerStatusBadge = (team: Team) => {
+    const status = getGameTimerStatus(team);
+    const remaining = getGameTimeRemaining(team);
+
+    switch (status) {
+      case 'not_started':
+        return <Badge variant="outline" className="text-gray-600">Timer: Not Started</Badge>;
+      case 'active':
+        return (
+          <Badge className="bg-green-100 text-green-800 hover:bg-green-200">
+            Timer: {formatTimeRemaining(remaining)}
+          </Badge>
+        );
+      case 'expired':
+        return <Badge className="bg-red-100 text-red-800 hover:bg-red-200">Timer: Expired</Badge>;
+      default:
+        return null;
     }
   };
 
@@ -358,6 +378,7 @@ export default function AdminPage() {
                     <TableHead>Team Name</TableHead>
                     <TableHead>Team Code</TableHead>
                     <TableHead>Status</TableHead>
+                    <TableHead>Timer</TableHead>
                     <TableHead>Level</TableHead>
                     <TableHead>Score</TableHead>
                     <TableHead>Created</TableHead>
@@ -374,6 +395,7 @@ export default function AdminPage() {
                         </Badge>
                       </TableCell>
                       <TableCell>{getStatusBadge(team)}</TableCell>
+                      <TableCell>{getTimerStatusBadge(team)}</TableCell>
                       <TableCell>{team.current_level}/40</TableCell>
                       <TableCell>{team.score.toLocaleString()}</TableCell>
                       <TableCell>{formatDate(team.created_at)}</TableCell>

@@ -5,6 +5,7 @@ interface TeamUpdateData {
   team_name?: string
   score?: number
   game_loaded?: boolean
+  game_start_time?: string | null
   checkpoint_score?: number
   checkpoint_level?: number
   current_level?: number
@@ -125,11 +126,20 @@ export async function PUT(
       )
     }
 
+    // Handle game_start_time logic when game_loaded changes
+    const finalUpdateData = { ...updateData }
+
+    // If game_loaded is being changed to true, set game_start_time to current timestamp
+    if (updateData.game_loaded === true && existingTeam.game_loaded === false) {
+      finalUpdateData.game_start_time = new Date().toISOString()
+    }
+
     // Prepare update data (exclude team_code and timestamps)
     const allowedFields: (keyof TeamUpdateData)[] = [
       'team_name',
       'score',
       'game_loaded',
+      'game_start_time',
       'checkpoint_score',
       'checkpoint_level',
       'current_level',
@@ -141,8 +151,8 @@ export async function PUT(
 
     const filteredUpdateData: Partial<TeamUpdateData> = {}
     for (const field of allowedFields) {
-      if (updateData[field] !== undefined) {
-        filteredUpdateData[field] = updateData[field]
+      if (finalUpdateData[field] !== undefined) {
+        filteredUpdateData[field] = finalUpdateData[field]
       }
     }
 
