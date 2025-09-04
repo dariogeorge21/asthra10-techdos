@@ -188,6 +188,37 @@ export const teamService = {
     return data || []
   },
 
+  async updateTeam(
+    teamCode: string,
+    updateData: {
+      team_name?: string
+      score?: number
+      game_loaded?: boolean
+      checkpoint_score?: number
+      checkpoint_level?: number
+      current_level?: number
+      correct_questions?: number
+      incorrect_questions?: number
+      skipped_questions?: number
+      hint_count?: number
+    }
+  ): Promise<boolean> {
+    const { error } = await supabase
+      .from('teams')
+      .update({
+        ...updateData,
+        updated_at: new Date().toISOString()
+      })
+      .eq('team_code', teamCode)
+
+    if (error) {
+      console.error('Error updating team:', error)
+      return false
+    }
+
+    return true
+  },
+
   async deleteTeam(teamCode: string): Promise<boolean> {
     const { error } = await supabase
       .from('teams')

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 
-import { Shield, Users, Trash2, Plus, Eye, LogOut } from "lucide-react";
+import { Shield, Users, Trash2, Plus, Eye, LogOut, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { Team } from "@/lib/supabase";
+import { TeamEditModal } from "@/components/admin/TeamEditModal";
 
 export default function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -21,6 +22,8 @@ export default function AdminPage() {
   const [loginForm, setLoginForm] = useState({ username: "", password: "" });
   const [newTeamName, setNewTeamName] = useState("");
   const [isCreatingTeam, setIsCreatingTeam] = useState(false);
+  const [editingTeam, setEditingTeam] = useState<Team | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   useEffect(() => {
     checkAuthStatus();
@@ -145,6 +148,22 @@ export default function AdminPage() {
       console.error('Error deleting team:', error);
       toast.error("Error deleting team");
     }
+  };
+
+  const handleEditTeam = (team: Team) => {
+    setEditingTeam(team);
+    setIsEditModalOpen(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setIsEditModalOpen(false);
+    setEditingTeam(null);
+  };
+
+  const handleTeamUpdated = (updatedTeam: Team) => {
+    setTeams(teams.map(team =>
+      team.team_code === updatedTeam.team_code ? updatedTeam : team
+    ));
   };
 
   const formatDate = (dateString: string) => {
@@ -370,6 +389,14 @@ export default function AdminPage() {
                           >
                             <Eye className="h-4 w-4" />
                           </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleEditTeam(team)}
+                            className="text-blue-600 hover:bg-blue-50"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
                               <Button variant="outline" size="sm" className="text-red-600 hover:bg-red-50">
@@ -410,6 +437,14 @@ export default function AdminPage() {
           </Card>
         </div>
       </main>
+
+      {/* Team Edit Modal */}
+      <TeamEditModal
+        team={editingTeam}
+        isOpen={isEditModalOpen}
+        onClose={handleCloseEditModal}
+        onTeamUpdated={handleTeamUpdated}
+      />
     </div>
   );
 }
