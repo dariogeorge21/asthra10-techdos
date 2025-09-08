@@ -259,6 +259,12 @@ const questions: Question[] = [
 
 export default function Level1Page() {
   const [team, setTeam] = useState<Team | null>(null);
+  const [initialTeamStats, setInitialTeamStats] = useState<{
+    correct_questions: number;
+    incorrect_questions: number;
+    skipped_questions: number;
+    hint_count: number;
+  } | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string>("");
   const [showHint, setShowHint] = useState(false);
@@ -284,6 +290,14 @@ export default function Level1Page() {
       }
       const teamData = await response.json();
       setTeam(teamData);
+
+      // Store initial team statistics to track level-specific changes
+      setInitialTeamStats({
+        correct_questions: teamData.correct_questions,
+        incorrect_questions: teamData.incorrect_questions,
+        skipped_questions: teamData.skipped_questions,
+        hint_count: teamData.hint_count
+      });
 
       if (teamData.current_level > 1) {
         toast.info("You've already completed this level!");
@@ -532,12 +546,45 @@ export default function Level1Page() {
     // Calculate exact time taken to complete the level at this moment
     const timeTaken = (new Date().getTime() - levelStartTime.getTime()) / 1000 / 60; // minutes
     setCompletionTimeMinutes(timeTaken);
-    
+
     const scoreData = calculateScore(timeTaken);
     const newTotalScore = team.score + scoreData.totalScore;
     const newLevel = 2;
 
     try {
+      // CRITICAL FIX: Ensure final level statistics are accurately saved to database
+      //
+      // Problem: The incremental updates during gameplay might miss some statistics,
+      // especially hint counts that are shown but not immediately saved to database.
+      //
+      // Solution: At level completion, calculate the final statistics based on:
+      // - Initial team stats (captured when level started)
+      // - Local level stats (accurate count for this level)
+      // This ensures the database reflects the exact performance shown to the user.
+
+      if (initialTeamStats) {
+        // Calculate the final absolute values that should be in the database
+        const finalStats = {
+          correct_questions: initialTeamStats.correct_questions + levelStats.correct,
+          incorrect_questions: initialTeamStats.incorrect_questions + levelStats.incorrect,
+          skipped_questions: initialTeamStats.skipped_questions + levelStats.skipped,
+          hint_count: initialTeamStats.hint_count + levelStats.hintsUsed
+        };
+
+        console.log('Level completion - Final stats update:', {
+          initialStats: initialTeamStats,
+          levelStats: levelStats,
+          finalStats: finalStats
+        });
+
+        // Update final statistics to ensure database accuracy
+        await fetch(`/api/teams/${teamCode}/stats`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(finalStats)
+        });
+      }
+
       // Update score and level
       await fetch(`/api/teams/${teamCode}/score`, {
         method: 'PUT',
