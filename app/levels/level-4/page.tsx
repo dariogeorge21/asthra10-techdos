@@ -195,6 +195,8 @@ export default function Level2Page() {
   const [timeRemaining, setTimeRemaining] = useState<number>(0);
   const [timerStatus, setTimerStatus] = useState<'not_started' | 'active' | 'expired'>('not_started');
   const [loading, setLoading] = useState(true);
+  const [skipLoading,setskipLoading]=useState(false);
+  const [submitLoading,setSubmitLoading]=useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
   const [completionTimeMinutes, setCompletionTimeMinutes] = useState<number>(0);
   const [levelStats, setLevelStats] = useState({
@@ -312,10 +314,20 @@ export default function Level2Page() {
   };
 
   const handleAnswer = async (answer: string) => {
+
+   
     const currentQuestion = questions[currentQuestionIndex];
     const isCorrect = answer === currentQuestion.correct;
+
+     if(submitLoading){
+      return;
+    }
+
+    setSubmitLoading(true);
     
     // Update local stats
+
+    try{
     const newStats = { ...levelStats };
     if (isCorrect) {
       newStats.correct++;
@@ -343,9 +355,25 @@ export default function Level2Page() {
     } else {
       completeLevel();
     }
+  }
+
+  catch(err){
+     console.error(" API request for submit answer failed", err);
+  }
+
+  finally{
+    setSubmitLoading(false);
+  }
   };
 
   const handleSkip = async () => {
+    if(skipLoading){
+      return;
+    }
+
+    setskipLoading(true)
+
+    try{
     const newStats = { ...levelStats };
     newStats.skipped++;
     setLevelStats(newStats);
@@ -366,6 +394,15 @@ export default function Level2Page() {
     } else {
       completeLevel();
     }
+  }
+
+    catch (err) {
+      console.error(" API request for skip question failed", err);
+  }
+
+  finally{
+    setskipLoading(false);
+  }
   };
 
   const handleHint = () => {
@@ -472,7 +509,7 @@ export default function Level2Page() {
 
     const scoreData = calculateScore(timeTaken);
     const newTotalScore = team.score + scoreData.totalScore;
-    const newLevel = 2;
+    const newLevel = 5;
 
     try {
       // CRITICAL FIX: Ensure final level statistics are accurately saved to database
@@ -542,7 +579,7 @@ export default function Level2Page() {
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-600 mx-auto mb-4"></div>
-          <p className="text-lg text-gray-600">Loading Level 1...</p>
+          <p className="text-lg text-gray-600">Loading Level 4...</p>
         </div>
       </div>
     );
@@ -701,7 +738,7 @@ export default function Level2Page() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
-                Level 1
+                Level 4
               </Badge>
               <span className="text-lg font-semibold text-gray-800">{team.team_name}</span>
             </div>
@@ -789,6 +826,7 @@ export default function Level2Page() {
                 <Button
                   variant="outline"
                   onClick={handleSkip}
+                  disabled={skipLoading}
                   className="flex-1 text-yellow-600 border-yellow-200 hover:bg-yellow-50"
                 >
                   <SkipForward className="mr-2 h-4 w-4" />
@@ -797,7 +835,7 @@ export default function Level2Page() {
                 
                 <Button
                   onClick={() => handleAnswer(selectedAnswer)}
-                  disabled={!selectedAnswer}
+                  disabled={!selectedAnswer || submitLoading}
                   className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
                 >
                   Submit Answer
