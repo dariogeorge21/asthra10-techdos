@@ -20,7 +20,7 @@ interface Question {
 }
 
 /**
- * LEVEL-1 QUESTION BANK
+ * LEVEL-4 QUESTION BANK
  *
  * A diverse collection of 20 multiple-choice questions covering:
  * - Astronomy & Science (planets, natural phenomena)
@@ -180,7 +180,7 @@ const questions: Question[] = [
 
 ];
 
-export default function Level2Page() {
+export default function Level4Page() {
   const [team, setTeam] = useState<Team | null>(null);
   const [initialTeamStats, setInitialTeamStats] = useState<{
     correct_questions: number;
