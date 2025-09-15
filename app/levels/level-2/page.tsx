@@ -266,6 +266,8 @@ export default function Level2Page() {
   const [timeRemaining, setTimeRemaining] = useState<number>(0);
   const [timerStatus, setTimerStatus] = useState<'not_started' | 'active' | 'expired'>('not_started');
   const [loading, setLoading] = useState(true);
+  const [skipLoading, setSkipLoading] = useState(false);
+  const [submitLoading, setSubmitLoading] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
   const [completionTimeMinutes, setCompletionTimeMinutes] = useState<number>(0);
   const [levelStats, setLevelStats] = useState({
@@ -383,59 +385,83 @@ export default function Level2Page() {
   };
 
   const handleAnswer = async (answer: string) => {
-    const currentQuestion = questions[currentQuestionIndex];
-    const isCorrect = answer === currentQuestion.correct;
-    
-    // Update local stats
-    const newStats = { ...levelStats };
-    if (isCorrect) {
-      newStats.correct++;
-    } else {
-      newStats.incorrect++;
+    if (submitLoading) {
+      return;
     }
-    setLevelStats(newStats);
 
-    // Update team stats in database
-    if (!team) return;
-    
-    const updatedStats = {
-      correct_questions: team.correct_questions + (isCorrect ? 1 : 0),
-      incorrect_questions: team.incorrect_questions + (isCorrect ? 0 : 1),
-      hint_count: team.hint_count + (showHint ? 1 : 0)
-    };
+    setSubmitLoading(true);
 
-    await updateTeamStats(updatedStats);
+    try {
+      const currentQuestion = questions[currentQuestionIndex];
+      const isCorrect = answer === currentQuestion.correct;
+      
+      // Update local stats
+      const newStats = { ...levelStats };
+      if (isCorrect) {
+        newStats.correct++;
+      } else {
+        newStats.incorrect++;
+      }
+      setLevelStats(newStats);
 
-    // Move to next question or complete level
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
-      setSelectedAnswer("");
-      setShowHint(false);
-    } else {
-      completeLevel();
+      // Update team stats in database
+      if (!team) return;
+      
+      const updatedStats = {
+        correct_questions: team.correct_questions + (isCorrect ? 1 : 0),
+        incorrect_questions: team.incorrect_questions + (isCorrect ? 0 : 1),
+        hint_count: team.hint_count + (showHint ? 1 : 0)
+      };
+
+      await updateTeamStats(updatedStats);
+
+      // Move to next question or complete level
+      if (currentQuestionIndex < questions.length - 1) {
+        setCurrentQuestionIndex(currentQuestionIndex + 1);
+        setSelectedAnswer("");
+        setShowHint(false);
+      } else {
+        completeLevel();
+      }
+    } catch (err) {
+      console.error("API request for submit answer failed", err);
+    } finally {
+      setSubmitLoading(false);
     }
   };
 
   const handleSkip = async () => {
-    const newStats = { ...levelStats };
-    newStats.skipped++;
-    setLevelStats(newStats);
+    if (skipLoading) {
+      return;
+    }
 
-    if (!team) return;
+    setSkipLoading(true);
 
-    const updatedStats = {
-      skipped_questions: team.skipped_questions + 1,
-      hint_count: team.hint_count + (showHint ? 1 : 0)
-    };
+    try {
+      const newStats = { ...levelStats };
+      newStats.skipped++;
+      setLevelStats(newStats);
 
-    await updateTeamStats(updatedStats);
+      if (!team) return;
 
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
-      setSelectedAnswer("");
-      setShowHint(false);
-    } else {
-      completeLevel();
+      const updatedStats = {
+        skipped_questions: team.skipped_questions + 1,
+        hint_count: team.hint_count + (showHint ? 1 : 0)
+      };
+
+      await updateTeamStats(updatedStats);
+
+      if (currentQuestionIndex < questions.length - 1) {
+        setCurrentQuestionIndex(currentQuestionIndex + 1);
+        setSelectedAnswer("");
+        setShowHint(false);
+      } else {
+        completeLevel();
+      }
+    } catch (err) {
+      console.error("API request for skip question failed", err);
+    } finally {
+      setSkipLoading(false);
     }
   };
 
@@ -849,6 +875,7 @@ export default function Level2Page() {
                 <Button
                   variant="outline"
                   onClick={handleSkip}
+                  disabled={skipLoading}
                   className="flex-1 text-yellow-600 border-yellow-200 hover:bg-yellow-50"
                 >
                   <SkipForward className="mr-2 h-4 w-4" />
@@ -857,7 +884,7 @@ export default function Level2Page() {
                 
                 <Button
                   onClick={() => handleAnswer(selectedAnswer)}
-                  disabled={!selectedAnswer}
+                  disabled={!selectedAnswer || submitLoading}
                   className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
                 >
                   Submit Answer
