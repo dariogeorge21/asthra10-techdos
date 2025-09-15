@@ -251,7 +251,7 @@ const questions: Question[] = [
   }
 ];
 
-export default function Level2Page() {
+export default function Level23Page() {
   const [team, setTeam] = useState<Team | null>(null);
   const [initialTeamStats, setInitialTeamStats] = useState<{
     correct_questions: number;
