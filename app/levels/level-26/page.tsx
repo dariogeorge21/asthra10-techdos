@@ -229,7 +229,7 @@ export default function Level26Page() {
         hint_count: teamData.hint_count
       });
 
-      if (teamData.current_level > 4) {
+      if (teamData.current_level > 26) {
         toast.info("You've already completed this level!");
         router.push('/levels');
         return;
@@ -514,7 +514,7 @@ export default function Level26Page() {
 
     const scoreData = calculateScore(timeTaken);
     const newTotalScore = team.score + scoreData.totalScore;
-    const newLevel = 5;
+    const newLevel = 27;
 
     try {
       // CRITICAL FIX: Ensure final level statistics are accurately saved to database

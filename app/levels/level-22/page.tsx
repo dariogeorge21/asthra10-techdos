@@ -222,7 +222,7 @@ export default function Level22Page() {
         hint_count: teamData.hint_count
       });
 
-      if (teamData.current_level > 3) {
+      if (teamData.current_level > 22) {
         toast.info("You've already completed this level!");
         router.push('/levels');
         return;
@@ -507,7 +507,7 @@ export default function Level22Page() {
 
     const scoreData = calculateScore(timeTaken);
     const newTotalScore = team.score + scoreData.totalScore;
-    const newLevel = 4;
+    const newLevel = 23;
 
     try {
       // CRITICAL FIX: Ensure final level statistics are accurately saved to database
@@ -577,7 +577,7 @@ export default function Level22Page() {
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-600 mx-auto mb-4"></div>
-          <p className="text-lg text-gray-600">Loading Level 3...</p>
+          <p className="text-lg text-gray-600">Loading Level 22...</p>
         </div>
       </div>
     );
@@ -606,7 +606,7 @@ export default function Level22Page() {
             <div className="mx-auto mb-4 w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
               <CheckCircle className="h-8 w-8 text-green-600" />
             </div>
-            <CardTitle className="text-3xl font-bold text-green-700">Level 3 Complete!</CardTitle>
+            <CardTitle className="text-3xl font-bold text-green-700">Level 22 Complete!</CardTitle>
             <div className="mt-2">
               <Badge variant="outline" className={`text-lg px-4 py-2 ${
                 scoreData.performanceRating === 'Excellent' ? 'bg-green-50 text-green-700 border-green-200' :
@@ -716,7 +716,7 @@ export default function Level22Page() {
               onClick={() => router.push('/levels')}
               className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-lg py-3"
             >
-              Continue to Level 4
+              Continue to Level 23
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </CardContent>
@@ -736,7 +736,7 @@ export default function Level22Page() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
-                Level 3
+                Level 22
               </Badge>
               <span className="text-lg font-semibold text-gray-800">{team.team_name}</span>
             </div>
