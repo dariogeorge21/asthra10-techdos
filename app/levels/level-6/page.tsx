@@ -2,25 +2,25 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Trophy, Timer, SkipForward, ArrowRight, CheckCircle, Target } from "lucide-react";
+import { Trophy, Timer, HelpCircle, SkipForward, ArrowRight, CheckCircle, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-// import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
-import { Team, getGameTimeRemaining, formatTimeRemaining, getGameTimerStatus } from "@/lib/supabase";
+import { Team, isCheckpointLevel, getGameTimeRemaining, formatTimeRemaining, getGameTimerStatus } from "@/lib/supabase";
 
 interface Question {
   id: number;
   question: string;
   options: string[];
   correct: string;
-//   hint: string;
+  hint: string;
 }
 
 /**
- * LEVEL-1 QUESTION BANK
+ * LEVEL-4 QUESTION BANK
  *
  * A diverse collection of 20 multiple-choice questions covering:
  * - Astronomy & Science (planets, natural phenomena)
@@ -35,43 +35,151 @@ interface Question {
  * - One correct answer
  * - A helpful hint that provides context without giving away the answer
  */
-const questions: Question[] =
-[
+const questions: Question[] =[
   {
     "id": 1,
-    "question": "Country with largest proven lithium reserves (2025)?",
-    "options": ["Australia", "Chile", "Bolivia", "China"],
-    "correct": "Bolivia"
+    "question": "Which Indian city is home to the headquarters of ISRO?",
+    "options": ["Hyderabad", "Bengaluru", "Pune", "Chennai"],
+    "correct": "Bengaluru",
+    "hint": "This city is also known as India’s Silicon Valley."
   },
   {
     "id": 2,
-    "question": "Only metal liquid at room temperature?",
-    "options": ["Mercury", "Gallium", "Bromine", "Francium"],
-    "correct": "Mercury"
+    "question": "In football, who is the only player to score in five different World Cups?",
+    "options": ["Lionel Messi", "Cristiano Ronaldo", "Miroslav Klose", "Pele"],
+    "correct": "Cristiano Ronaldo",
+    "hint": "He is Portugal’s all-time leading goal scorer."
   },
   {
     "id": 3,
-    "question": "Year India adopted the ₹ symbol officially?",
-    "options": ["2008", "2010", "2012", "2014"],
-    "correct": "2010"
+    "question": "The oldest university in Kerala, founded in 1937, is?",
+    "options": ["University of Kerala", "Mahatma Gandhi University", "Calicut University", "Kannur University"],
+    "correct": "University of Travancore (now University of Kerala)",
+    "hint": "It was originally known by a different name before being renamed."
   },
   {
     "id": 4,
-    "question": "Fastest-growing programming language (2025 surveys)?",
-    "options": ["Python", "Rust", "Java", "PHP"],
-    "correct": "Rust"
+    "question": "Which Shakespeare play inspired the Bollywood film *Maqbool*?",
+    "options": ["Hamlet", "Macbeth", "Othello", "King Lear"],
+    "correct": "Macbeth",
+    "hint": "The original play deals with ambition and power."
   },
   {
     "id": 5,
-    "question": "Planet with a day longer than its year?",
-    "options": ["Mercury", "Venus", "Mars", "Neptune"],
-    "correct": "Venus"
+    "question": "The first Indian woman Grandmaster in chess was?",
+    "options": ["Dronavalli Harika", "Koneru Humpy", "Tania Sachdev", "Vidit Gujrathi"],
+    "correct": "Koneru Humpy",
+    "hint": "She achieved this title at a very young age."
+  },
+  {
+    "id": 6,
+    "question": "If planets had 'ice caps' made of dry ice instead of water, which planet would that be?",
+    "options": ["Mars", "Venus", "Jupiter", "Saturn"],
+    "correct": "Mars",
+    "hint": "This planet is known as the Red Planet."
+  },
+  {
+    "id": 7,
+    "question": "Who was India’s first Vice President?",
+    "options": ["Dr. Rajendra Prasad", "Dr. Sarvepalli Radhakrishnan", "Dr. A. P. J. Abdul Kalam", "Lal Bahadur Shastri"],
+    "correct": "Dr. Sarvepalli Radhakrishnan",
+    "hint": "He later became the second President of India."
+  },
+  {
+    "id": 8,
+    "question": "Apple’s Lisa computer (1983) was named after whom?",
+    "options": ["Steve Jobs’ daughter", "Steve Wozniak’s wife", "Bill Gates’ sister", "Tim Cook’s mother"],
+    "correct": "Steve Jobs’ daughter",
+    "hint": "She is the daughter of one of Apple’s co-founders."
+  },
+  {
+    "id": 9,
+    "question": "In Kerala, the Nehru Trophy Boat Race is held on which lake?",
+    "options": ["Ashtamudi Lake", "Vembanad Lake", "Punnamada Lake", "Sasthamkotta Lake"],
+    "correct": "Punnamada Lake",
+    "hint": "This lake is famous for its snake boat races."
+  },
+  {
+    "id": 10,
+    "question": "Who became the first Indian woman boxer to win an Olympic medal?",
+    "options": ["Mary Kom", "Laxmi Rani", "Pooja Rani", "Sarita Devi"],
+    "correct": "Mary Kom",
+    "hint": "She won a bronze medal in the 2012 London Olympics."
+  },
+  {
+    "id": 11,
+    "question": "The first practical magnetic resonance imaging (MRI) machine was invented by whom?",
+    "options": ["Raymond Damadian", "Albert Einstein", "Niels Bohr", "Werner Heisenberg"],
+    "correct": "Raymond Damadian",
+    "hint": "He developed the MRI in 1977."
+  },
+  {
+    "id": 12,
+    "question": "Which Indian state is known as the 'Land of the Gods'?",
+    "options": ["Himachal Pradesh", "Uttarakhand", "Sikkim", "Arunachal Pradesh"],
+    "correct": "Uttarakhand",
+    "hint": "This state is famous for its temples and Himalayan peaks."
+  },
+  {
+    "id": 13,
+    "question": "The 2019 film *Parasite* became the first non-English film to win Best Picture at the Oscars. Which country produced it?",
+    "options": ["Japan", "China", "South Korea", "Thailand"],
+    "correct": "South Korea",
+    "hint": "The film director is Bong Joon-ho."
+  },
+  {
+    "id": 14,
+    "question": "Kerala’s Periyar Wildlife Sanctuary is most famous for which animal?",
+    "options": ["Tigers", "Elephants", "Lions", "Leopards"],
+    "correct": "Elephants",
+    "hint": "This sanctuary is a key habitat for Asian elephants."
+  },
+  {
+    "id": 15,
+    "question": "Who was the first Indian to win the Man Booker International Prize?",
+    "options": ["Arundhati Roy", "Geetanjali Shree", "Jhumpa Lahiri", "Kiran Desai"],
+    "correct": "Geetanjali Shree",
+    "hint": "Her work *Tomb of Sand* won in 2022."
+  },
+  {
+    "id": 16,
+    "question": "The FIFA World Cup trophy is made mostly of which metal?",
+    "options": ["Silver", "Platinum", "18-carat gold", "Copper"],
+    "correct": "18-carat gold",
+    "hint": "It is one of the most prestigious sports trophies."
+  },
+  {
+    "id": 17,
+    "question": "Who was the first cricketer to score 10,000 runs in Test cricket?",
+    "options": ["Sachin Tendulkar", "Rahul Dravid", "Sunil Gavaskar", "Virat Kohli"],
+    "correct": "Sunil Gavaskar",
+    "hint": "He achieved this milestone in 1987."
+  },
+  {
+    "id": 18,
+    "question": "Which country has won the most FIFA World Cup titles as of 2023?",
+    "options": ["Germany", "Italy", "Brazil", "Argentina"],
+    "correct": "Brazil",
+    "hint": "They have lifted the trophy 5 times."
+  },
+  {
+    "id": 19,
+    "question": "In tennis, which player holds the record for most Grand Slam singles titles in the Open Era (as of 2023)?",
+    "options": ["Roger Federer", "Rafael Nadal", "Novak Djokovic", "Pete Sampras"],
+    "correct": "Novak Djokovic",
+    "hint": "He has won 24 Grand Slam titles."
+  },
+  {
+    "id": 20,
+    "question": "Which AI company created the art model *DALL·E*?",
+    "options": ["DeepMind", "OpenAI", "IBM Watson", "NVIDIA"],
+    "correct": "OpenAI",
+    "hint": "This is the same organization behind ChatGPT."
   }
 ]
 
 
-
-export default function Level2Page() {
+export default function Level6Page() {
   const [team, setTeam] = useState<Team | null>(null);
   const [initialTeamStats, setInitialTeamStats] = useState<{
     correct_questions: number;
@@ -115,7 +223,7 @@ export default function Level2Page() {
         hint_count: teamData.hint_count
       });
 
-      if (teamData.current_level > 2) {
+      if (teamData.current_level > 6) {
         toast.info("You've already completed this level!");
         router.push('/levels');
         return;
@@ -296,12 +404,12 @@ export default function Level2Page() {
   }
   };
 
-//   const handleHint = () => {
-//     setShowHint(true);
-//     const newStats = { ...levelStats };
-//     newStats.hintsUsed++;
-//     setLevelStats(newStats);
-//   };
+  const handleHint = () => {
+    setShowHint(true);
+    const newStats = { ...levelStats };
+    newStats.hintsUsed++;
+    setLevelStats(newStats);
+  };
 
   /**
    * ENHANCED SCORING ALGORITHM
@@ -400,7 +508,7 @@ export default function Level2Page() {
 
     const scoreData = calculateScore(timeTaken);
     const newTotalScore = team.score + scoreData.totalScore;
-    const newLevel = 3;
+    const newLevel = 7;
 
     try {
       // CRITICAL FIX: Ensure final level statistics are accurately saved to database
@@ -447,16 +555,16 @@ export default function Level2Page() {
       });
 
       // Save checkpoint if this is a checkpoint level
-      // if (isCheckpointLevel(1)) {
-      //   await fetch(`/api/teams/${teamCode}/checkpoint`, {
-      //     method: 'PUT',
-      //     headers: { 'Content-Type': 'application/json' },
-      //     body: JSON.stringify({
-      //       checkpoint_score: newTotalScore,
-      //       checkpoint_level: 1
-      //     })
-      //   });
-      // }
+      if (isCheckpointLevel(1)) {
+        await fetch(`/api/teams/${teamCode}/checkpoint`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            checkpoint_score: newTotalScore,
+            checkpoint_level: 1
+          })
+        });
+      }
 
       setIsCompleted(true);
     } catch (error) {
@@ -470,7 +578,7 @@ export default function Level2Page() {
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-600 mx-auto mb-4"></div>
-          <p className="text-lg text-gray-600">Loading Level 2...</p>
+          <p className="text-lg text-gray-600">Loading Level 6...</p>
         </div>
       </div>
     );
@@ -499,7 +607,7 @@ export default function Level2Page() {
             <div className="mx-auto mb-4 w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
               <CheckCircle className="h-8 w-8 text-green-600" />
             </div>
-            <CardTitle className="text-3xl font-bold text-green-700">Level 2 Complete!</CardTitle>
+            <CardTitle className="text-3xl font-bold text-green-700">Level 6 Complete!</CardTitle>
             <div className="mt-2">
               <Badge variant="outline" className={`text-lg px-4 py-2 ${
                 scoreData.performanceRating === 'Excellent' ? 'bg-green-50 text-green-700 border-green-200' :
@@ -609,7 +717,7 @@ export default function Level2Page() {
               onClick={() => router.push('/levels')}
               className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-lg py-3"
             >
-              Continue to Level 3
+              Continue to Level 7
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </CardContent>
@@ -629,7 +737,7 @@ export default function Level2Page() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
-                Level 2
+                Level 6
               </Badge>
               <span className="text-lg font-semibold text-gray-800">{team.team_name}</span>
             </div>
@@ -693,18 +801,18 @@ export default function Level2Page() {
               </div>
 
               {/* Hint */}
-              {/* {showHint && (
+              {showHint && (
                 <Alert className="bg-blue-50 border-blue-200">
                   <HelpCircle className="h-4 w-4 text-blue-600" />
                   <AlertDescription className="text-blue-700">
                     <strong>Hint:</strong> {currentQuestion.hint}
                   </AlertDescription>
                 </Alert>
-              )} */}
+              )}
 
               {/* Action Buttons */}
               <div className="flex gap-3 pt-4">
-                {/* <Button
+                <Button
                   variant="outline"
                   onClick={handleHint}
                   disabled={showHint}
@@ -712,7 +820,7 @@ export default function Level2Page() {
                 >
                   <HelpCircle className="mr-2 h-4 w-4" />
                   {showHint ? "Hint Shown" : "Show Hint"}
-                </Button> */}
+                </Button>
                 
                 <Button
                   variant="outline"
