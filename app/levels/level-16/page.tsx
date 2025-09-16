@@ -1,24 +1,31 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback,useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Trophy, Timer, HelpCircle, SkipForward, ArrowRight, CheckCircle, Target } from "lucide-react";
+import { Trophy, Timer, SkipForward, ArrowRight, CheckCircle, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 // import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
-import { Team, isCheckpointLevel, getGameTimeRemaining, formatTimeRemaining, getGameTimerStatus } from "@/lib/supabase";
+import { Team, getGameTimeRemaining, formatTimeRemaining, getGameTimerStatus } from "@/lib/supabase";
 import { Input } from "@/components/ui/input";
 import { Keyboard } from "./keyboard";
+
+
 
 interface Question {
   id: number;
   question: string;
 
   correct: string;
-  format: string;
+  FormatAnswer: string;
+}
+
+interface KeyboardKey {
+  key: string;
+  isSpecial?: boolean;
 }
 
 /**
@@ -43,55 +50,61 @@ const questions: Question[] =[
     "question": "What comes once in a minute, twice in a moment, but never in a thousand years?",
    
     "correct": "M",
-    "format": "It may be a number or alphabet"
+    "FormatAnswer": "It may be a number or alphabet"
   },
   {
     "id": 2,
     "question": "I go up but never come down. What am I?",
     "correct": "Age",
-    "format": "It is a word"
+    "FormatAnswer": "It is a word"
   },
   {
     "id": 3,
     "question": "What kind of room has no doors or windows?",
     "correct": "Mushroom",
-    "format": "It is a word"
+    "FormatAnswer": "It is a word"
   },
   {
     "id": 4,
     "question": "I only understand 0s and 1s. What am I?",
     "correct": "Binary",
-    "format": "It is a word"
+    "FormatAnswer": "It is a word"
   },
   {
     "id": 5,
     "question": "I can be hard or soft, but I’m not a pillow. What am I?",
-    "correct": "Hardware or Software",
-    "format": "It may be a word or phrase"
+    "correct": "Hardware or software",
+    "FormatAnswer": "Two words separated by a Or"
   },
   {
     "id": 6,
     "question": "I can branch, merge, and commit — but I’m not a tree. What am I?",
-    "correct": "git/github",
-    "format": "It may be a name"
+    "correct": "Git",
+    "FormatAnswer": "It is a word"
   },
   {
     "id": 7,
     "question": "What belongs to you but is used more by others?",
-    "correct": "your name",
-    "format": "It may be a phrase"
+    "correct": "Name",
+    "FormatAnswer": "It is a word"
   },
-  {
+    {
     "id": 8,
-    "question": "The person who makes me doesn’t use me, the person who buys me doesn’t need me, the person who uses me doesn’t know it.",
-    "correct": "Coffin",
-    "format": "It may be a word"
+    "question": "I’m made of letters but I’m not a word. I can carry secrets across the world.",
+    "correct": "Envelope",
+    "FormatAnswer": "It is a word"
   },
   {
     "id": 9,
+    "question": "The person who makes me doesn’t use me, the person who buys me doesn’t need me, the person who uses me doesn’t know it.",
+    "correct": "Coffin",
+    "FormatAnswer": "It is a word"
+  },
+  {
+    "id": 10,
     "question": "The beginning of eternity, the end of time and space, the beginning of every end, and the end of every place.",
-    "correct": "Letter E",
-    "format": "It may be a letter"
+    "correct": "E",
+    "FormatAnswer": "It may be a number or alphabet"
   }
 ]
 
@@ -105,7 +118,9 @@ export default function Level16Page() {
     // hint_count: number;
   } | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const inputRef = useRef<HTMLInputElement>(null);
   const [selectedAnswer, setSelectedAnswer] = useState<string>("");
+  // const inputRef = useRef(null);
   // const [showHint, setShowHint] = useState(false);
   const [levelStartTime] = useState<Date>(new Date());
   const [timeRemaining, setTimeRemaining] = useState<number>(0);
@@ -182,6 +197,12 @@ export default function Level16Page() {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
   }, [router, fetchTeamData]);
+
+  //input become clear after every question
+  useEffect(() => {
+    setAnswer("");
+    inputRef.current?.focus(); // Optional: focus the input on question change
+  }, [currentQuestionIndex]);
 
   useEffect(() => {
     if (team) {
@@ -269,7 +290,8 @@ export default function Level16Page() {
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
       setSelectedAnswer("");
-      setShowHint(false);
+      console.log(selectedAnswer); 
+      // setShowHint(false);
     } else {
       completeLevel();
     }
@@ -330,13 +352,29 @@ export default function Level16Page() {
   //   setLevelStats(newStats);
   // };
 
-  const handleKeyPress = (key: KeyboardKey) => {
-    if (key.key === "Backspace") {
-      setAnswer(prev => prev.slice(0, -1));
-    }  else {
-      setAnswer(prev => prev + key.key);
-    }
-  };
+  // const handleKeyPress = (key: KeyboardKey) => {
+  //   if (key.key === "Backspace") {
+  //     setAnswer(prev => prev.slice(0, -1));
+  //   }  else {
+  //     setAnswer(prev => 
+  //       if(prev.length===FormData,)
+  //       prev + key.key);
+  //   }
+  // };
+const handleKeyPress = (key: KeyboardKey) => {
+  if (key.key === "Backspace") {
+    setAnswer(prev => prev.slice(0, -1));
+  } else {
+    setAnswer(prev => {
+      if (prev.length < questions[currentQuestionIndex].correct.length) {
+   const newChar = prev.length === 0 ? key.key.toUpperCase() : key.key.toLowerCase();
+        return prev + newChar;
+      }
+      return prev;
+    });
+  }
+  inputRef.current?.focus(); // Ensure input stays focused
+};
 
   /**
    * ENHANCED SCORING ALGORITHM
@@ -380,8 +418,8 @@ export default function Level16Page() {
     const correctWithoutHints = Math.max(0, levelStats.correct);
     // const correctWithHints = Math.min(levelStats.correct, levelStats.hintsUsed);
 
-    // let baseScore = 0;
-    // baseScore += correctWithoutHints * 1500; // Full points for unassisted correct answers
+    let baseScore = 0;
+    baseScore += correctWithoutHints * 1500; // Full points for unassisted correct answers
     // baseScore += correctWithHints * 1000;    // Reduced points for hint-assisted answers
 
     // Penalties
@@ -482,16 +520,16 @@ export default function Level16Page() {
       });
 
       // Save checkpoint if this is a checkpoint level
-      if (isCheckpointLevel(1)) {
-        await fetch(`/api/teams/${teamCode}/checkpoint`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            checkpoint_score: newTotalScore,
-            checkpoint_level: 1
-          })
-        });
-      }
+      // if (isCheckpointLevel(1)) {
+      //   await fetch(`/api/teams/${teamCode}/checkpoint`, {
+      //     method: 'PUT',
+      //     headers: { 'Content-Type': 'application/json' },
+      //     body: JSON.stringify({
+      //       checkpoint_score: newTotalScore,
+      //       checkpoint_level: 1
+      //     })
+      //   });
+      // }
 
       setIsCompleted(true);
     } catch (error) {
@@ -534,7 +572,7 @@ export default function Level16Page() {
             <div className="mx-auto mb-4 w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
               <CheckCircle className="h-8 w-8 text-green-600" />
             </div>
-            <CardTitle className="text-3xl font-bold text-green-700">Level 6 Complete!</CardTitle>
+            <CardTitle className="text-3xl font-bold text-green-700">Level 16 Complete!</CardTitle>
             <div className="mt-2">
               <Badge variant="outline" className={`text-lg px-4 py-2 ${
                 scoreData.performanceRating === 'Excellent' ? 'bg-green-50 text-green-700 border-green-200' :
@@ -664,7 +702,7 @@ export default function Level16Page() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
-                Level 6
+                Level 16
               </Badge>
               <span className="text-lg font-semibold text-gray-800">{team.team_name}</span>
             </div>
@@ -701,92 +739,78 @@ export default function Level16Page() {
           </div>
 
           {/* Question Card */}
-          <Card className="mb-8">
+            <Card className="mb-8">
             <CardHeader>
               <CardTitle className="text-2xl text-center text-gray-800">
-                {currentQuestion.question}
+              {currentQuestion.question}
               </CardTitle>
+              <div className="space-y-2 mt-4">
+              <p className="text-sm font-medium text-gray-500">Your Answer:</p>
+              <p className="text-sm text-gray-600">Format: {currentQuestion.FormatAnswer}</p>
+              </div>
             </CardHeader>
             <CardContent className="space-y-4">
               {/* Text Input */}
               <div className="space-y-4">
-                <Input
-                  type="text"
-                  value={answer}
-                  onChange={(e) => setAnswer(e.target.value)}
-                  placeholder="Type your answer here..."
-                  className="text-lg p-6 rounded-lg border-2 border-purple-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-500"
+              <Input
+                type="text"
+                value={answer}
+                ref={inputRef}
+                onChange={(e) => setAnswer(e.target.value)}
+                placeholder="Type your answer here..."
+                className="text-lg pt-4 p-6 rounded-lg border-2 border-purple-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-500"
+              />
+              
+              {/* Virtual Keyboard */}
+              {showKeyboard && (
+                <div className="mt-4 bg-white/80 backdrop-blur-sm rounded-lg p-4 shadow-sm border border-purple-100">
+                <Keyboard
+                  layout={[
+                  ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
+                  ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
+                  ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
+                  ['Z', 'X', 'C', 'V', 'B', 'N', 'M'],
+                  ['Space', 'Backspace']
+                  ]}
+                  onKeyPress={handleKeyPress}
+                  className="gap-1.5"
                 />
-                
-                {/* Virtual Keyboard */}
-                {showKeyboard && (
-                  <div className="mt-4 bg-white/80 backdrop-blur-sm rounded-lg p-4 shadow-sm border border-purple-100">
-                    <Keyboard
-                      layout={[
-                        ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
-                        ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
-                        ['Z', 'X', 'C', 'V', 'B', 'N', 'M'],
-                        ['Space', 'Backspace', 'Enter']
-                      ]}
-                      onKeyPress={handleKeyPress}
-                      className="gap-1.5"
-                    />
-                  </div>
-                )}
+                </div>
+              )}
 
-                {/* Toggle Keyboard Button */}
-                <Button
-                  variant="outline"
-                  onClick={() => setShowKeyboard(!showKeyboard)}
-                  className="w-full text-purple-600 border-purple-200 hover:bg-purple-50"
-                >
-                  {showKeyboard ? "Hide Keyboard" : "Show Keyboard"}
-                </Button>
+              {/* Toggle Keyboard Button */}
+              <Button
+                variant="outline"
+                onClick={() => setShowKeyboard(!showKeyboard)}
+                className="w-full text-purple-600 border-purple-200 hover:bg-purple-50"
+              >
+                {showKeyboard ? "Hide Keyboard" : "Show Keyboard"}
+              </Button>
               </div>
-
-              {/* Hint */}
-              {/* {showHint && (
-                <Alert className="bg-blue-50 border-blue-200">
-                  <HelpCircle className="h-4 w-4 text-blue-600" />
-                  <AlertDescription className="text-blue-700">
-                    <strong>Hint:</strong> {currentQuestion.hint}
-                  </AlertDescription>
-                </Alert>
-              )} */}
 
               {/* Action Buttons */}
               <div className="flex gap-3 pt-4">
-                {/* <Button
-                  variant="outline"
-                  onClick={handleHint}
-                  disabled={showHint}
-                  className="flex-1"
-                >
-                  <HelpCircle className="mr-2 h-4 w-4" />
-                  {showHint ? "Hint Shown" : "Show Hint"}
-                </Button> */}
-                
-                <Button
-                  variant="outline"
-                  onClick={handleSkip}
-                  disabled={skipLoading}
-                  className="flex-1 text-yellow-600 border-yellow-200 hover:bg-yellow-50"
-                >
-                  <SkipForward className="mr-2 h-4 w-4" />
-                  Skip Question
-                </Button>
-                
-                <Button
-                  onClick={() => handleAnswer(answer)}
-                  disabled={!answer || submitLoading}
-                  className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
-                >
-                  Submit Answer
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
+              <Button
+                variant="outline"
+                onClick={handleSkip}
+                disabled={skipLoading}
+                className="flex-1 text-yellow-600 border-yellow-200 hover:bg-yellow-50"
+              >
+                <SkipForward className="mr-2 h-4 w-4" />
+                Skip Question
+              </Button>
+              
+              <Button
+                onClick={() => handleAnswer(answer)}
+                disabled={!answer || submitLoading}
+                className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+              >
+                Submit Answer
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
               </div>
             </CardContent>
-          </Card>
+            </Card>
         </div>
       </main>
     </div>
