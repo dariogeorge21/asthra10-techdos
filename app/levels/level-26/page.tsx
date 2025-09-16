@@ -20,7 +20,7 @@ interface Question {
 }
 
 /**
- * LEVEL-1 QUESTION BANK
+ * LEVEL-4 QUESTION BANK
  *
  * A diverse collection of 20 multiple-choice questions covering:
  * - Astronomy & Science (planets, natural phenomena)
@@ -36,149 +36,156 @@ interface Question {
  * - A helpful hint that provides context without giving away the answer
  */
 const questions: Question[] = [
-  {
-  id: 1,
-  question: "In 2016, which AI program by DeepMind stunned the world by defeating Lee Sedol in Go?",
-  options: ["AlphaGo", "Deep Blue", "Watson", "ChatGPT"],
-  correct: "AlphaGo",
-  hint: "This was a major breakthrough in artificial intelligence for mastering complex board games."
-},
-{
-  id: 2,
-  question: "Who was the first Indian woman to win the Jnanpith Award?",
-  options: ["Ashapoorna Devi", "Mahadevi Verma", "Amrita Pritam", "Subhadra Kumari Chauhan"],
-  correct: "Ashapoorna Devi",
-  hint: "She won the award in 1976 for her contribution to Bengali literature."
-},
-{
-  id: 3,
-  question: "Which player has scored in a World Cup Final, Champions League Final, and European Championship Final?",
-  options: ["Cristiano Ronaldo", "Zinedine Zidane", "Lionel Messi", "Kylian Mbappé"],
-  correct: "Cristiano Ronaldo",
-  hint: "This Portuguese forward is one of the most decorated players in football history."
-},
-{
-  id: 4,
-  question: "Which blood group is known as the universal donor?",
-  options: ["O negative", "O positive", "AB positive", "B negative"],
-  correct: "O negative",
-  hint: "This blood group can be given to patients of any type in emergencies."
-},
-{
-  id: 5,
-  question: "The famous Indian epic Mahabharata was written by?",
-  options: ["Ved Vyasa", "Valmiki", "Kalidasa", "Tulsidas"],
-  correct: "Ved Vyasa",
-  hint: "This sage is also credited with compiling the Vedas and writing the Puranas."
-},
-{
-  id: 6,
-  question: "Which country has more volcanoes than any other in the world?",
-  options: ["Indonesia", "Japan", "Iceland", "Philippines"],
-  correct: "Indonesia",
-  hint: "Located on the Pacific Ring of Fire, this country has over 130 active volcanoes."
-},
-{
-  id: 7,
-  question: "Who was the first Indian woman to climb Mount Everest?",
-  options: ["Bachendri Pal", "Santosh Yadav", "Premlata Agarwal", "Anshu Jamsenpa"],
-  correct: "Bachendri Pal",
-  hint: "She achieved this feat in 1984."
-},
-{
-  id: 8,
-  question: "The sci-fi series 'Stranger Things' is set in which fictional town?",
-  options: ["Hawkins, Indiana", "Springfield", "Riverdale", "Mayfield"],
-  correct: "Hawkins, Indiana",
-  hint: "This small Midwestern town hides a portal to the Upside Down."
-},
-{
-  id: 9,
-  question: "If planets had favorite rings, which planet is famous for its stunning rings?",
-  options: ["Saturn", "Jupiter", "Uranus", "Neptune"],
-  correct: "Saturn",
-  hint: "This planet’s rings are made up of ice, rock, and dust."
-},
-{
-  id: 10,
-  question: "Which Indian city is home to the Sun Temple, a UNESCO World Heritage Site?",
-  options: ["Konark, Odisha", "Khajuraho, Madhya Pradesh", "Thanjavur, Tamil Nadu", "Bhubaneswar, Odisha"],
-  correct: "Konark, Odisha",
-  hint: "This 13th-century temple is shaped like a giant chariot."
-},
-{
-  id: 11,
-  question: "The FIFA Golden Ball in 2014 went to which player, even though his team lost the final?",
-  options: ["Lionel Messi", "Cristiano Ronaldo", "Thomas Müller", "Neymar"],
-  correct: "Lionel Messi",
-  hint: "He received the award despite Argentina’s loss to Germany in the final."
-},
-{
-  id: 12,
-  question: "The Indian classical dance form Mohiniyattam belongs to which state?",
-  options: ["Kerala", "Tamil Nadu", "Odisha", "Andhra Pradesh"],
-  correct: "Kerala",
-  hint: "This graceful dance form is traditionally performed by women."
-},
-{
-  id: 13,
-  question: "The dance style 'Moonwalk' was made popular by?",
-  options: ["Michael Jackson", "James Brown", "Elvis Presley", "Prince"],
-  correct: "Michael Jackson",
-  hint: "He first performed it publicly during 'Billie Jean' in 1983."
-},
-{
-  id: 14,
-  question: "Which Indian city is called the 'Pink City'?",
-  options: ["Jaipur", "Jodhpur", "Udaipur", "Bikaner"],
-  correct: "Jaipur",
-  hint: "This city was painted pink in 1876 to welcome the Prince of Wales."
-},
-{
-  id: 15,
-  question: "Which Mughal emperor built the Peacock Throne?",
-  options: ["Shah Jahan", "Akbar", "Aurangzeb", "Humayun"],
-  correct: "Shah Jahan",
-  hint: "The throne was a symbol of imperial splendor encrusted with precious jewels."
-},
-{
-  id: 16,
-  question: "What is the currency of South Korea?",
-  options: ["Won", "Yen", "Yuan", "Ringgit"],
-  correct: "Won",
-  hint: "Its symbol is ₩ and it is issued by the Bank of Korea."
-},
-{
-  id: 17,
-  question: "Who was India’s first Test cricket captain?",
-  options: ["C. K. Nayudu", "Vijay Hazare", "Lala Amarnath", "Polly Umrigar"],
-  correct: "C. K. Nayudu",
-  hint: "He led the Indian team in their debut Test match in 1932."
-},
-{
-  id: 18,
-  question: "The film 'RRR' won an Oscar in 2023 for which category?",
-  options: ["Best Original Song (Naatu Naatu)", "Best Sound", "Best Visual Effects", "Best International Feature Film"],
-  correct: "Best Original Song (Naatu Naatu)",
-  hint: "This was the first Indian song to win an Academy Award."
-},
-{
-  id: 19,
-  question: "Which Indian state is called the 'Land of Rising Sun'?",
-  options: ["Arunachal Pradesh", "Assam", "Nagaland", "Manipur"],
-  correct: "Arunachal Pradesh",
-  hint: "It is the easternmost state of India where the Sun rises first."
-},
-{
-  id: 20,
-  question: "Which footballer was nicknamed 'The Pharaoh' for his performance with Liverpool?",
-  options: ["Mohamed Salah", "Didier Drogba", "Sadio Mané", "Riyad Mahrez"],
-  correct: "Mohamed Salah",
-  hint: "This Egyptian forward became a legend at Liverpool with his scoring feats."
-}
+    {
+        id: 1,
+        question: "Who is known as the 'Missile Man of India'?",
+        options: ["Dr. A. P. J. Abdul Kalam", "Dr. Vikram Sarabhai", "Dr. Homi Bhabha", "Dr. C. V. Raman"],
+        correct: "Dr. A. P. J. Abdul Kalam",
+        hint: "He served as the 11th President of India and was a pioneer in ballistic missile development"
+    },
+    {
+        id: 2,
+        question: "The Netflix series 'Money Heist' is originally from which country?",
+        options: ["Spain", "USA", "France", "Italy"],
+        correct: "Spain",
+        hint: "The original title is 'La Casa de Papel'"
+    },
+    {
+        id: 3,
+        question: "In cricket, who was the first bowler to take 10 wickets in a single Test innings?",
+        options: ["Jim Laker", "Anil Kumble", "Shane Warne", "Muttiah Muralitharan"],
+        correct: "Jim Laker",
+        hint: "This English bowler achieved this feat in 1956 against Australia"
+    },
+    {
+        id: 4,
+        question: "Kerala's state bird, known for its striking blue and orange plumage, is?",
+        options: ["Great Hornbill", "Indian Roller", "Paradise Flycatcher", "Malabar Trogon"],
+        correct: "Great Hornbill",
+        hint: "This large bird is also known as 'Malamuzhakki' in Malayalam"
+    },
+    {
+        id: 5,
+        question: "Which is the only country that has won the FIFA World Cup on four different continents?",
+        options: ["Brazil", "Germany", "None", "France"],
+        correct: "None",
+        hint: "This is a trick question - no country has achieved this feat yet"
+    },
+    {
+        id: 6,
+        question: "Who was the last Governor-General of independent India?",
+        options: ["Lord Mountbatten", "C. Rajagopalachari", "Dr. Rajendra Prasad", "Jawaharlal Nehru"],
+        correct: "C. Rajagopalachari",
+        hint: "He served from June 1948 to January 1950, before India became a Republic"
+    },
+    {
+        id: 7,
+        question: "Microsoft's first-ever hardware product wasn't a console or a PC. What was it?",
+        options: ["Mouse", "Keyboard", "Joystick", "Printer"],
+        correct: "Mouse",
+        hint: "Released in 1983, it was called the Microsoft Mouse"
+    },
+    {
+        id: 8,
+        question: "If planets had 'reverse gears,' which one rotates backward compared to most others?",
+        options: ["Mars", "Venus", "Uranus", "Mercury"],
+        correct: "Venus",
+        hint: "This planet rotates clockwise, opposite to Earth's counterclockwise rotation"
+    },
+    {
+        id: 9,
+        question: "Which Indian city is famous for its Chand Baori stepwell?",
+        options: ["Jaipur", "Abhaneri", "Udaipur", "Jodhpur"],
+        correct: "Abhaneri",
+        hint: "Located in Rajasthan, this stepwell is one of the largest and deepest in India"
+    },
+    {
+        id: 10,
+        question: "The Golden Boot winner of FIFA 2022, scoring 8 goals, was?",
+        options: ["Lionel Messi", "Kylian Mbappé", "Olivier Giroud", "Julian Alvarez"],
+        correct: "Kylian Mbappé",
+        hint: "This French footballer scored a hat-trick in the final against Argentina"
+    },
+    {
+        id: 11,
+        question: "In Kerala, the famous hill station Munnar is located in which district?",
+        options: ["Wayanad", "Idukki", "Palakkad", "Kannur"],
+        correct: "Idukki",
+        hint: "This district is known for its tea plantations and hydroelectric projects"
+    },
+    {
+        id: 12,
+        question: "Which countries are hosting FIFA 2026?",
+        options: ["US and Mexico", "US, Mexico and Canada", "Brazil and Argentina", "Spain and Portugal"],
+        correct: "US, Mexico and Canada",
+        hint: "This will be the first World Cup hosted by three nations"
+    },
+    {
+        id: 13,
+        question: "Who wrote the Indian national anthem 'Jana Gana Mana'?",
+        options: ["Bankim Chandra Chattopadhyay", "Rabindranath Tagore", "Sarojini Naidu", "Mahatma Gandhi"],
+        correct: "Rabindranath Tagore",
+        hint: "He was the first non-European to win the Nobel Prize in Literature"
+    },
+    {
+        id: 14,
+        question: "The internet's first viral dance challenge, the 'Harlem Shake,' exploded in which year?",
+        options: ["2011", "2012", "2013", "2014"],
+        correct: "2013",
+        hint: "This meme featured people dancing to a song by Baauer"
+    },
+    {
+        id: 15,
+        question: "Which Mughal ruler is often called the 'Engineer King' for his architectural projects?",
+        options: ["Akbar", "Shah Jahan", "Jahangir", "Aurangzeb"],
+        correct: "Shah Jahan",
+        hint: "He commissioned the Taj Mahal"
+    },
+    {
+        id: 16,
+        question: "If the Sun disappeared, how many minutes would Earth still see sunlight?",
+        options: ["4 minutes", "6 minutes", "8 minutes", "10 minutes"],
+        correct: "8 minutes",
+        hint: "This is the time light takes to travel from the Sun to Earth"
+    },
+    {
+        id: 17,
+        question: "Who was the first Indian to win the World Chess Championship?",
+        options: ["Viswanathan Anand", "P. Harikrishna", "Pentala Harikrishna", "Koneru Humpy"],
+        correct: "Viswanathan Anand",
+        hint: "He won this title five times between 2000 and 2013"
+    },
+    {
+        id: 18,
+        question: "The Malayalam film 'Drishyam' was remade into how many languages officially?",
+        options: ["3", "4", "5", "6"],
+        correct: "4",
+        hint: "It was remade in Hindi, Tamil, Telugu, and Kannada"
+    },
+    {
+        id: 19,
+        question: "Which Greek goddess was believed to have sprung fully grown from the head of Zeus?",
+        options: ["Hera", "Aphrodite", "Athena", "Artemis"],
+        correct: "Athena",
+        hint: "She is the goddess of wisdom and strategic warfare"
+    },
+    {
+        id: 20,
+        question: "Which Indian athlete is nicknamed the 'Flying Sikh'?",
+        options: ["P.T. Usha", "Milkha Singh", "Gurbachan Singh Randhawa", "Sriram Singh"],
+        correct: "Milkha Singh",
+        hint: "He narrowly missed a medal in the 400m at the 1960 Rome Olympics"
+    },
+    {
+        id: 21,
+        question: "Which Kerala river is known as the Periyar of the South?",
+        options: ["Bharathapuzha", "Chaliyar", "Pamba", "Neyyar"],
+        correct: "Chaliyar",
+        hint: "This river flows through Nilambur teak forests"
+    }
 ];
 
-export default function Level3Page() {
+export default function Level26Page() {
   const [team, setTeam] = useState<Team | null>(null);
   const [initialTeamStats, setInitialTeamStats] = useState<{
     correct_questions: number;
@@ -222,7 +229,7 @@ export default function Level3Page() {
         hint_count: teamData.hint_count
       });
 
-      if (teamData.current_level > 3) {
+      if (teamData.current_level > 26) {
         toast.info("You've already completed this level!");
         router.push('/levels');
         return;
@@ -507,7 +514,7 @@ export default function Level3Page() {
 
     const scoreData = calculateScore(timeTaken);
     const newTotalScore = team.score + scoreData.totalScore;
-    const newLevel = 4;
+    const newLevel = 27;
 
     try {
       // CRITICAL FIX: Ensure final level statistics are accurately saved to database
@@ -577,7 +584,7 @@ export default function Level3Page() {
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-600 mx-auto mb-4"></div>
-          <p className="text-lg text-gray-600">Loading Level 3...</p>
+          <p className="text-lg text-gray-600">Loading Level 26...</p>
         </div>
       </div>
     );
@@ -606,7 +613,7 @@ export default function Level3Page() {
             <div className="mx-auto mb-4 w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
               <CheckCircle className="h-8 w-8 text-green-600" />
             </div>
-            <CardTitle className="text-3xl font-bold text-green-700">Level 3 Complete!</CardTitle>
+            <CardTitle className="text-3xl font-bold text-green-700">Level 26 Complete!</CardTitle>
             <div className="mt-2">
               <Badge variant="outline" className={`text-lg px-4 py-2 ${
                 scoreData.performanceRating === 'Excellent' ? 'bg-green-50 text-green-700 border-green-200' :
@@ -716,7 +723,7 @@ export default function Level3Page() {
               onClick={() => router.push('/levels')}
               className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-lg py-3"
             >
-              Continue to Level 4
+              Continue to Level 27
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </CardContent>
@@ -736,7 +743,7 @@ export default function Level3Page() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
-                Level 3
+                Level 4
               </Badge>
               <span className="text-lg font-semibold text-gray-800">{team.team_name}</span>
             </div>

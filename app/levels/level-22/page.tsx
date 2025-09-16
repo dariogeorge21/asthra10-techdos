@@ -1,82 +1,3 @@
-/**
- * LEVEL-1 QUIZ IMPLEMENTATION - TECHDOS GAME
- *
- * OVERVIEW:
- * Level-1 represents the entry point of the TechDOS quiz game, featuring a comprehensive
- * multiple-choice question (MCQ) format designed to test general knowledge across various
- * domains including geography, history, literature, sports, science, and entertainment.
- *
- * QUIZ MECHANICS:
- * - Format: Multiple Choice Questions (MCQ) with 4 options each
- * - Total Questions: 20 diverse questions covering different knowledge areas
- * - Hint System: Each question includes a helpful hint that can be revealed
- * - Timer Integration: Real-time countdown with global game timer
- * - Navigation Protection: Prevents accidental page refresh/navigation during quiz
- *
- * GAME FLOW:
- * 1. Question Selection: Questions are presented sequentially (no random order)
- * 2. Answer Selection: Players choose from 4 multiple-choice options (A, B, C, D)
- * 3. Hint Usage: Optional hints available for each question (affects scoring)
- * 4. Answer Submission: Submit selected answer or skip to next question
- * 5. Progress Tracking: Visual progress bar and question counter
- * 6. Level Completion: Automatic progression after all questions answered/skipped
- *
- * STATISTICS TRACKING:
- * - Correct Answers: Number of questions answered correctly
- * - Incorrect Answers: Number of questions answered incorrectly
- * - Skipped Questions: Number of questions skipped without answering
- * - Hints Used: Total number of hints revealed during the level
- * - Time Taken: Duration from level start to completion
- * - Consecutive Correct: Tracks streaks for bonus calculations
- *
- * SCORING ALGORITHM:
- * Base Points:
- * - Correct Answer (no hint): 1500 points
- * - Correct Answer (with hint): 1000 points
- * - Incorrect Answer: -400 points penalty
- * - Skipped Question: -750 points penalty
- *
- * Bonus Systems:
- * - Consecutive Correct Bonus: +200 points for every 3 consecutive correct answers
- * - Time Bonus (based on completion speed):
- *   * Under 1 min: +250 points
- *   * 1-1.5 min: +225 points
- *   * 1.5-2 min: +200 points
- *   * 2-2.5 min: +175 points
- *   * 2.5-3 min: +150 points
- *   * 3-3.5 min: +125 points
- *   * 3.5-4 min: +100 points
- *   * 4-4.5 min: +75 points
- *   * 4.5-5 min: +50 points
- *   * 5-5.5 min: +25 points
- *   * Over 5.5 min: No time bonus
- *
- * FINAL SCORE CALCULATION:
- * Total Score = (Base Points) + (Consecutive Bonus) + (Time Bonus)
- * Minimum Score: 0 (negative scores are clamped to zero)
- *
- * CHECKPOINT SYSTEM:
- * - Level-1 serves as a checkpoint level for game progression
- * - Completion unlocks access to Level-2
- * - Score and progress are automatically saved to team's total
- * - Checkpoint data stored for potential game restoration
- *
- * INTEGRATION FEATURES:
- * - Global Timer: Respects game-wide time limits and displays remaining time
- * - Team Management: Updates team statistics and progression status
- * - API Integration: Real-time updates to database for scores and statistics
- * - Navigation Control: Prevents data loss through page navigation protection
- * - Toast Notifications: User feedback for actions and errors
- *
- * LEVEL COMPLETION SUMMARY:
- * Upon completion, players receive detailed feedback including:
- * - Performance breakdown (correct/incorrect/skipped/hints)
- * - Time taken to complete the level
- * - Detailed scoring breakdown showing base points, bonuses, and penalties
- * - Performance rating based on accuracy and speed
- * - Clear navigation to proceed to the next level
- */
-
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -257,7 +178,7 @@ const questions: Question[] = [
   }
 ];
 
-export default function Level1Page() {
+export default function Level22Page() {
   const [team, setTeam] = useState<Team | null>(null);
   const [initialTeamStats, setInitialTeamStats] = useState<{
     correct_questions: number;
@@ -272,6 +193,8 @@ export default function Level1Page() {
   const [timeRemaining, setTimeRemaining] = useState<number>(0);
   const [timerStatus, setTimerStatus] = useState<'not_started' | 'active' | 'expired'>('not_started');
   const [loading, setLoading] = useState(true);
+  const [skipLoading,setskipLoading]=useState(false);
+  const [submitLoading,setSubmitLoading]=useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
   const [completionTimeMinutes, setCompletionTimeMinutes] = useState<number>(0);
   const [levelStats, setLevelStats] = useState({
@@ -299,7 +222,7 @@ export default function Level1Page() {
         hint_count: teamData.hint_count
       });
 
-      if (teamData.current_level > 1) {
+      if (teamData.current_level > 22) {
         toast.info("You've already completed this level!");
         router.push('/levels');
         return;
@@ -389,10 +312,20 @@ export default function Level1Page() {
   };
 
   const handleAnswer = async (answer: string) => {
+
+   
     const currentQuestion = questions[currentQuestionIndex];
     const isCorrect = answer === currentQuestion.correct;
+
+     if(submitLoading){
+      return;
+    }
+
+    setSubmitLoading(true);
     
     // Update local stats
+
+    try{
     const newStats = { ...levelStats };
     if (isCorrect) {
       newStats.correct++;
@@ -420,9 +353,25 @@ export default function Level1Page() {
     } else {
       completeLevel();
     }
+  }
+
+  catch(err){
+     console.error(" API request for submit answer failed", err);
+  }
+
+  finally{
+    setSubmitLoading(false);
+  }
   };
 
   const handleSkip = async () => {
+    if(skipLoading){
+      return;
+    }
+
+    setskipLoading(true)
+
+    try{
     const newStats = { ...levelStats };
     newStats.skipped++;
     setLevelStats(newStats);
@@ -443,6 +392,15 @@ export default function Level1Page() {
     } else {
       completeLevel();
     }
+  }
+
+    catch (err) {
+      console.error(" API request for skip question failed", err);
+  }
+
+  finally{
+    setskipLoading(false);
+  }
   };
 
   const handleHint = () => {
@@ -549,7 +507,7 @@ export default function Level1Page() {
 
     const scoreData = calculateScore(timeTaken);
     const newTotalScore = team.score + scoreData.totalScore;
-    const newLevel = 2;
+    const newLevel = 23;
 
     try {
       // CRITICAL FIX: Ensure final level statistics are accurately saved to database
@@ -596,16 +554,16 @@ export default function Level1Page() {
       });
 
       // Save checkpoint if this is a checkpoint level
-      if (isCheckpointLevel(1)) {
-        await fetch(`/api/teams/${teamCode}/checkpoint`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            checkpoint_score: newTotalScore,
-            checkpoint_level: 1
-          })
-        });
-      }
+      // if (isCheckpointLevel(1)) {
+      //   await fetch(`/api/teams/${teamCode}/checkpoint`, {
+      //     method: 'PUT',
+      //     headers: { 'Content-Type': 'application/json' },
+      //     body: JSON.stringify({
+      //       checkpoint_score: newTotalScore,
+      //       checkpoint_level: 1
+      //     })
+      //   });
+      // }
 
       setIsCompleted(true);
     } catch (error) {
@@ -619,7 +577,7 @@ export default function Level1Page() {
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-600 mx-auto mb-4"></div>
-          <p className="text-lg text-gray-600">Loading Level 1...</p>
+          <p className="text-lg text-gray-600">Loading Level 22...</p>
         </div>
       </div>
     );
@@ -648,7 +606,7 @@ export default function Level1Page() {
             <div className="mx-auto mb-4 w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
               <CheckCircle className="h-8 w-8 text-green-600" />
             </div>
-            <CardTitle className="text-3xl font-bold text-green-700">Level 1 Complete!</CardTitle>
+            <CardTitle className="text-3xl font-bold text-green-700">Level 22 Complete!</CardTitle>
             <div className="mt-2">
               <Badge variant="outline" className={`text-lg px-4 py-2 ${
                 scoreData.performanceRating === 'Excellent' ? 'bg-green-50 text-green-700 border-green-200' :
@@ -758,7 +716,7 @@ export default function Level1Page() {
               onClick={() => router.push('/levels')}
               className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-lg py-3"
             >
-              Continue to Level 2
+              Continue to Level 23
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </CardContent>
@@ -778,7 +736,7 @@ export default function Level1Page() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
-                Level 1
+                Level 22
               </Badge>
               <span className="text-lg font-semibold text-gray-800">{team.team_name}</span>
             </div>
@@ -866,6 +824,7 @@ export default function Level1Page() {
                 <Button
                   variant="outline"
                   onClick={handleSkip}
+                  disabled={skipLoading}
                   className="flex-1 text-yellow-600 border-yellow-200 hover:bg-yellow-50"
                 >
                   <SkipForward className="mr-2 h-4 w-4" />
@@ -874,7 +833,7 @@ export default function Level1Page() {
                 
                 <Button
                   onClick={() => handleAnswer(selectedAnswer)}
-                  disabled={!selectedAnswer}
+                  disabled={!selectedAnswer || submitLoading}
                   className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
                 >
                   Submit Answer

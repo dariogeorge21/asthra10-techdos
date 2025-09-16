@@ -38,149 +38,147 @@ interface Question {
 const questions: Question[] = [
   {
   id: 1,
-  question: "Who painted the famous portrait Mona Lisa?",
-  options: ["Leonardo da Vinci", "Michelangelo", "Raphael", "Pablo Picasso"],
-  correct: "Leonardo da Vinci",
-  hint: "This Italian Renaissance polymath was also an inventor and scientist."
+  question: "In 2016, which AI program by DeepMind stunned the world by defeating Lee Sedol in Go?",
+  options: ["AlphaGo", "Deep Blue", "Watson", "ChatGPT"],
+  correct: "AlphaGo",
+  hint: "This was a major breakthrough in artificial intelligence for mastering complex board games."
 },
 {
   id: 2,
-  question: "Who was the first Indian astronaut to travel into space?",
-  options: ["Rakesh Sharma", "Kalpana Chawla", "Sunita Williams", "Ravish Malhotra"],
-  correct: "Rakesh Sharma",
-  hint: "He flew aboard the Soviet Soyuz T-11 in 1984."
+  question: "Who was the first Indian woman to win the Jnanpith Award?",
+  options: ["Ashapoorna Devi", "Mahadevi Verma", "Amrita Pritam", "Subhadra Kumari Chauhan"],
+  correct: "Ashapoorna Devi",
+  hint: "She won the award in 1976 for her contribution to Bengali literature."
 },
 {
   id: 3,
-  question: "Who was India’s first female finance minister?",
-  options: ["Indira Gandhi", "Nirmala Sitharaman", "Sushma Swaraj", "Sarojini Naidu"],
-  correct: "Indira Gandhi",
-  hint: "She held the finance portfolio as additional charge in 1969."
+  question: "Which player has scored in a World Cup Final, Champions League Final, and European Championship Final?",
+  options: ["Cristiano Ronaldo", "Zinedine Zidane", "Lionel Messi", "Kylian Mbappé"],
+  correct: "Cristiano Ronaldo",
+  hint: "This Portuguese forward is one of the most decorated players in football history."
 },
 {
   id: 4,
-  question: "Which Indian state is known as the 'Land of Five Rivers'?",
-  options: ["Punjab", "Haryana", "Rajasthan", "Gujarat"],
-  correct: "Punjab",
-  hint: "The name of this state itself comes from the Persian words for 'five waters'."
+  question: "Which blood group is known as the universal donor?",
+  options: ["O negative", "O positive", "AB positive", "B negative"],
+  correct: "O negative",
+  hint: "This blood group can be given to patients of any type in emergencies."
 },
 {
   id: 5,
-  question: "Which Malayalam film was India’s official entry to the Oscars in 2023?",
-  options: ["2018: Everyone is a Hero", "Jallikattu", "Kumbalangi Nights", "The Great Indian Kitchen"],
-  correct: "2018: Everyone is a Hero",
-  hint: "This film depicted Kerala's devastating floods and the resilience of its people."
+  question: "The famous Indian epic Mahabharata was written by?",
+  options: ["Ved Vyasa", "Valmiki", "Kalidasa", "Tulsidas"],
+  correct: "Ved Vyasa",
+  hint: "This sage is also credited with compiling the Vedas and writing the Puranas."
 },
 {
   id: 6,
-  question: "Before becoming Google, Larry Page and Sergey Brin’s search engine project was originally called what?",
-  options: ["Backrub", "Googol", "PageRank", "SearchIt"],
-  correct: "Backrub",
-  hint: "This quirky name referred to the system’s analysis of backlinks."
+  question: "Which country has more volcanoes than any other in the world?",
+  options: ["Indonesia", "Japan", "Iceland", "Philippines"],
+  correct: "Indonesia",
+  hint: "Located on the Pacific Ring of Fire, this country has over 130 active volcanoes."
 },
 {
   id: 7,
-  question: "Which planet’s 98-degree tilt would make the weirdest seasons if planets had them?",
-  options: ["Uranus", "Neptune", "Saturn", "Venus"],
-  correct: "Uranus",
-  hint: "This ice giant essentially rolls around the Sun on its side."
+  question: "Who was the first Indian woman to climb Mount Everest?",
+  options: ["Bachendri Pal", "Santosh Yadav", "Premlata Agarwal", "Anshu Jamsenpa"],
+  correct: "Bachendri Pal",
+  hint: "She achieved this feat in 1984."
 },
 {
   id: 8,
-  question: "Who wrote the novel 'The Godfather'?",
-  options: ["Mario Puzo", "Francis Ford Coppola", "John Grisham", "Dan Brown"],
-  correct: "Mario Puzo",
-  hint: "This author collaborated with Coppola on the screenplay for the film adaptation."
+  question: "The sci-fi series 'Stranger Things' is set in which fictional town?",
+  options: ["Hawkins, Indiana", "Springfield", "Riverdale", "Mayfield"],
+  correct: "Hawkins, Indiana",
+  hint: "This small Midwestern town hides a portal to the Upside Down."
 },
 {
   id: 9,
-  question: "The first ever tweet on Twitter was 'just setting up my twttr'. Who posted it?",
-  options: ["Jack Dorsey", "Biz Stone", "Evan Williams", "Elon Musk"],
-  correct: "Jack Dorsey",
-  hint: "He co-founded Twitter and posted this in March 2006."
+  question: "If planets had favorite rings, which planet is famous for its stunning rings?",
+  options: ["Saturn", "Jupiter", "Uranus", "Neptune"],
+  correct: "Saturn",
+  hint: "This planet’s rings are made up of ice, rock, and dust."
 },
 {
   id: 10,
-  question: "Who wrote the science bestseller 'A Brief History of Time'?",
-  options: ["Stephen Hawking", "Carl Sagan", "Richard Feynman", "Neil deGrasse Tyson"],
-  correct: "Stephen Hawking",
-  hint: "This physicist explored black holes and the origins of the universe."
+  question: "Which Indian city is home to the Sun Temple, a UNESCO World Heritage Site?",
+  options: ["Konark, Odisha", "Khajuraho, Madhya Pradesh", "Thanjavur, Tamil Nadu", "Bhubaneswar, Odisha"],
+  correct: "Konark, Odisha",
+  hint: "This 13th-century temple is shaped like a giant chariot."
 },
 {
   id: 11,
-  question: "What is the currency of Japan?",
-  options: ["Yen", "Won", "Yuan", "Ringgit"],
-  correct: "Yen",
-  hint: "Its symbol is ¥ and it’s among the most traded currencies worldwide."
+  question: "The FIFA Golden Ball in 2014 went to which player, even though his team lost the final?",
+  options: ["Lionel Messi", "Cristiano Ronaldo", "Thomas Müller", "Neymar"],
+  correct: "Lionel Messi",
+  hint: "He received the award despite Argentina’s loss to Germany in the final."
 },
 {
   id: 12,
-  question: "Which Indian musician composed the soundtrack for 'Roja' and gained global fame?",
-  options: ["A. R. Rahman", "Ilaiyaraaja", "M. S. Viswanathan", "Shankar–Ehsaan–Loy"],
-  correct: "A. R. Rahman",
-  hint: "This 'Mozart of Madras' went on to win Oscars and Grammys."
+  question: "The Indian classical dance form Mohiniyattam belongs to which state?",
+  options: ["Kerala", "Tamil Nadu", "Odisha", "Andhra Pradesh"],
+  correct: "Kerala",
+  hint: "This graceful dance form is traditionally performed by women."
 },
 {
   id: 13,
-  question: "Which is the largest desert in the world?",
-  options: ["Sahara", "Gobi", "Kalahari", "Arabian"],
-  correct: "Sahara",
-  hint: "Covering much of North Africa, it is roughly the size of the US."
+  question: "The dance style 'Moonwalk' was made popular by?",
+  options: ["Michael Jackson", "James Brown", "Elvis Presley", "Prince"],
+  correct: "Michael Jackson",
+  hint: "He first performed it publicly during 'Billie Jean' in 1983."
 },
 {
   id: 14,
-  question: "Who discovered penicillin?",
-  options: ["Alexander Fleming", "Louis Pasteur", "Joseph Lister", "Robert Koch"],
-  correct: "Alexander Fleming",
-  hint: "This Scottish scientist made the discovery in 1928 by accident."
+  question: "Which Indian city is called the 'Pink City'?",
+  options: ["Jaipur", "Jodhpur", "Udaipur", "Bikaner"],
+  correct: "Jaipur",
+  hint: "This city was painted pink in 1876 to welcome the Prince of Wales."
 },
 {
   id: 15,
-  question: "Which Indian hockey player was called the 'Wizard of Hockey'?",
-  options: ["Dhyan Chand", "Balbir Singh Sr.", "Leslie Claudius", "Dhanraj Pillay"],
-  correct: "Dhyan Chand",
-  hint: "He was known for his incredible ball control and goal-scoring skills."
+  question: "Which Mughal emperor built the Peacock Throne?",
+  options: ["Shah Jahan", "Akbar", "Aurangzeb", "Humayun"],
+  correct: "Shah Jahan",
+  hint: "The throne was a symbol of imperial splendor encrusted with precious jewels."
 },
 {
   id: 16,
-  question: "Who was the first Indian to win an Oscar?",
-  options: ["Bhanu Athaiya", "A. R. Rahman", "Gulzar", "Resul Pookutty"],
-  correct: "Bhanu Athaiya",
-  hint: "Won for the film 'Gandhi'"
+  question: "What is the currency of South Korea?",
+  options: ["Won", "Yen", "Yuan", "Ringgit"],
+  correct: "Won",
+  hint: "Its symbol is ₩ and it is issued by the Bank of Korea."
 },
-
 {
   id: 17,
-  question: "Which Indian city is known as the 'Steel City'?",
-  options: ["Jamshedpur", "Bhilai", "Rourkela", "Durgapur"],
-  correct: "Jamshedpur",
-  hint: "It houses Tata Steel, one of Asia’s oldest steel plants."
+  question: "Who was India’s first Test cricket captain?",
+  options: ["C. K. Nayudu", "Vijay Hazare", "Lala Amarnath", "Polly Umrigar"],
+  correct: "C. K. Nayudu",
+  hint: "He led the Indian team in their debut Test match in 1932."
 },
 {
   id: 18,
-  question: "Which singer holds the record for the most Grammy Awards won?",
-  options: ["Beyoncé", "Stevie Wonder", "Quincy Jones", "Taylor Swift"],
-  correct: "Beyoncé",
-  hint: "As of 2023, she has won 32 Grammys, the most in history."
+  question: "The film 'RRR' won an Oscar in 2023 for which category?",
+  options: ["Best Original Song (Naatu Naatu)", "Best Sound", "Best Visual Effects", "Best International Feature Film"],
+  correct: "Best Original Song (Naatu Naatu)",
+  hint: "This was the first Indian song to win an Academy Award."
 },
 {
   id: 19,
-  question: "Which was the first Indian university established in 1857?",
-  options: ["University of Calcutta", "University of Madras", "University of Bombay", "Aligarh Muslim University"],
-  correct: "University of Calcutta",
-  hint: "It was founded along with Bombay and Madras universities in the same year."
+  question: "Which Indian state is called the 'Land of Rising Sun'?",
+  options: ["Arunachal Pradesh", "Assam", "Nagaland", "Manipur"],
+  correct: "Arunachal Pradesh",
+  hint: "It is the easternmost state of India where the Sun rises first."
 },
 {
   id: 20,
-  question: "In which sport would you perform a slam dunk?",
-  options: ["Basketball", "Volleyball", "Handball", "Tennis"],
-  correct: "Basketball",
-  hint: "This high-flying move involves forcefully scoring by putting the ball directly through the hoop."
+  question: "Which footballer was nicknamed 'The Pharaoh' for his performance with Liverpool?",
+  options: ["Mohamed Salah", "Didier Drogba", "Sadio Mané", "Riyad Mahrez"],
+  correct: "Mohamed Salah",
+  hint: "This Egyptian forward became a legend at Liverpool with his scoring feats."
 }
-
 ];
 
-export default function Level2Page() {
+export default function Level24Page() {
   const [team, setTeam] = useState<Team | null>(null);
   const [initialTeamStats, setInitialTeamStats] = useState<{
     correct_questions: number;
@@ -224,7 +222,7 @@ export default function Level2Page() {
         hint_count: teamData.hint_count
       });
 
-      if (teamData.current_level > 4) {
+      if (teamData.current_level > 24) {
         toast.info("You've already completed this level!");
         router.push('/levels');
         return;
@@ -509,7 +507,7 @@ export default function Level2Page() {
 
     const scoreData = calculateScore(timeTaken);
     const newTotalScore = team.score + scoreData.totalScore;
-    const newLevel = 5;
+    const newLevel = 25;
 
     try {
       // CRITICAL FIX: Ensure final level statistics are accurately saved to database
@@ -579,7 +577,7 @@ export default function Level2Page() {
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-600 mx-auto mb-4"></div>
-          <p className="text-lg text-gray-600">Loading Level 4...</p>
+          <p className="text-lg text-gray-600">Loading Level 24...</p>
         </div>
       </div>
     );
@@ -608,7 +606,7 @@ export default function Level2Page() {
             <div className="mx-auto mb-4 w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
               <CheckCircle className="h-8 w-8 text-green-600" />
             </div>
-            <CardTitle className="text-3xl font-bold text-green-700">Level 4 Complete!</CardTitle>
+            <CardTitle className="text-3xl font-bold text-green-700">Level 24 Complete!</CardTitle>
             <div className="mt-2">
               <Badge variant="outline" className={`text-lg px-4 py-2 ${
                 scoreData.performanceRating === 'Excellent' ? 'bg-green-50 text-green-700 border-green-200' :
@@ -718,7 +716,7 @@ export default function Level2Page() {
               onClick={() => router.push('/levels')}
               className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-lg py-3"
             >
-              Continue to Level 5
+              Continue to Level 25
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </CardContent>
@@ -738,7 +736,7 @@ export default function Level2Page() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
-                Level 4
+                Level 24
               </Badge>
               <span className="text-lg font-semibold text-gray-800">{team.team_name}</span>
             </div>
