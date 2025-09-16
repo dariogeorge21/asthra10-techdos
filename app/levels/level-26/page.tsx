@@ -36,153 +36,76 @@ interface Question {
  * - A helpful hint that provides context without giving away the answer
  */
 const questions: Question[] = [
-    {
-        id: 1,
-        question: "Who is known as the 'Missile Man of India'?",
-        options: ["Dr. A. P. J. Abdul Kalam", "Dr. Vikram Sarabhai", "Dr. Homi Bhabha", "Dr. C. V. Raman"],
-        correct: "Dr. A. P. J. Abdul Kalam",
-        hint: "He served as the 11th President of India and was a pioneer in ballistic missile development"
-    },
-    {
-        id: 2,
-        question: "The Netflix series 'Money Heist' is originally from which country?",
-        options: ["Spain", "USA", "France", "Italy"],
-        correct: "Spain",
-        hint: "The original title is 'La Casa de Papel'"
-    },
-    {
-        id: 3,
-        question: "In cricket, who was the first bowler to take 10 wickets in a single Test innings?",
-        options: ["Jim Laker", "Anil Kumble", "Shane Warne", "Muttiah Muralitharan"],
-        correct: "Jim Laker",
-        hint: "This English bowler achieved this feat in 1956 against Australia"
-    },
-    {
-        id: 4,
-        question: "Kerala's state bird, known for its striking blue and orange plumage, is?",
-        options: ["Great Hornbill", "Indian Roller", "Paradise Flycatcher", "Malabar Trogon"],
-        correct: "Great Hornbill",
-        hint: "This large bird is also known as 'Malamuzhakki' in Malayalam"
-    },
-    {
-        id: 5,
-        question: "Which is the only country that has won the FIFA World Cup on four different continents?",
-        options: ["Brazil", "Germany", "None", "France"],
-        correct: "None",
-        hint: "This is a trick question - no country has achieved this feat yet"
-    },
-    {
-        id: 6,
-        question: "Who was the last Governor-General of independent India?",
-        options: ["Lord Mountbatten", "C. Rajagopalachari", "Dr. Rajendra Prasad", "Jawaharlal Nehru"],
-        correct: "C. Rajagopalachari",
-        hint: "He served from June 1948 to January 1950, before India became a Republic"
-    },
-    {
-        id: 7,
-        question: "Microsoft's first-ever hardware product wasn't a console or a PC. What was it?",
-        options: ["Mouse", "Keyboard", "Joystick", "Printer"],
-        correct: "Mouse",
-        hint: "Released in 1983, it was called the Microsoft Mouse"
-    },
-    {
-        id: 8,
-        question: "If planets had 'reverse gears,' which one rotates backward compared to most others?",
-        options: ["Mars", "Venus", "Uranus", "Mercury"],
-        correct: "Venus",
-        hint: "This planet rotates clockwise, opposite to Earth's counterclockwise rotation"
-    },
-    {
-        id: 9,
-        question: "Which Indian city is famous for its Chand Baori stepwell?",
-        options: ["Jaipur", "Abhaneri", "Udaipur", "Jodhpur"],
-        correct: "Abhaneri",
-        hint: "Located in Rajasthan, this stepwell is one of the largest and deepest in India"
-    },
-    {
-        id: 10,
-        question: "The Golden Boot winner of FIFA 2022, scoring 8 goals, was?",
-        options: ["Lionel Messi", "Kylian Mbappé", "Olivier Giroud", "Julian Alvarez"],
-        correct: "Kylian Mbappé",
-        hint: "This French footballer scored a hat-trick in the final against Argentina"
-    },
-    {
-        id: 11,
-        question: "In Kerala, the famous hill station Munnar is located in which district?",
-        options: ["Wayanad", "Idukki", "Palakkad", "Kannur"],
-        correct: "Idukki",
-        hint: "This district is known for its tea plantations and hydroelectric projects"
-    },
-    {
-        id: 12,
-        question: "Which countries are hosting FIFA 2026?",
-        options: ["US and Mexico", "US, Mexico and Canada", "Brazil and Argentina", "Spain and Portugal"],
-        correct: "US, Mexico and Canada",
-        hint: "This will be the first World Cup hosted by three nations"
-    },
-    {
-        id: 13,
-        question: "Who wrote the Indian national anthem 'Jana Gana Mana'?",
-        options: ["Bankim Chandra Chattopadhyay", "Rabindranath Tagore", "Sarojini Naidu", "Mahatma Gandhi"],
-        correct: "Rabindranath Tagore",
-        hint: "He was the first non-European to win the Nobel Prize in Literature"
-    },
-    {
-        id: 14,
-        question: "The internet's first viral dance challenge, the 'Harlem Shake,' exploded in which year?",
-        options: ["2011", "2012", "2013", "2014"],
-        correct: "2013",
-        hint: "This meme featured people dancing to a song by Baauer"
-    },
-    {
-        id: 15,
-        question: "Which Mughal ruler is often called the 'Engineer King' for his architectural projects?",
-        options: ["Akbar", "Shah Jahan", "Jahangir", "Aurangzeb"],
-        correct: "Shah Jahan",
-        hint: "He commissioned the Taj Mahal"
-    },
-    {
-        id: 16,
-        question: "If the Sun disappeared, how many minutes would Earth still see sunlight?",
-        options: ["4 minutes", "6 minutes", "8 minutes", "10 minutes"],
-        correct: "8 minutes",
-        hint: "This is the time light takes to travel from the Sun to Earth"
-    },
-    {
-        id: 17,
-        question: "Who was the first Indian to win the World Chess Championship?",
-        options: ["Viswanathan Anand", "P. Harikrishna", "Pentala Harikrishna", "Koneru Humpy"],
-        correct: "Viswanathan Anand",
-        hint: "He won this title five times between 2000 and 2013"
-    },
-    {
-        id: 18,
-        question: "The Malayalam film 'Drishyam' was remade into how many languages officially?",
-        options: ["3", "4", "5", "6"],
-        correct: "4",
-        hint: "It was remade in Hindi, Tamil, Telugu, and Kannada"
-    },
-    {
-        id: 19,
-        question: "Which Greek goddess was believed to have sprung fully grown from the head of Zeus?",
-        options: ["Hera", "Aphrodite", "Athena", "Artemis"],
-        correct: "Athena",
-        hint: "She is the goddess of wisdom and strategic warfare"
-    },
-    {
-        id: 20,
-        question: "Which Indian athlete is nicknamed the 'Flying Sikh'?",
-        options: ["P.T. Usha", "Milkha Singh", "Gurbachan Singh Randhawa", "Sriram Singh"],
-        correct: "Milkha Singh",
-        hint: "He narrowly missed a medal in the 400m at the 1960 Rome Olympics"
-    },
-    {
-        id: 21,
-        question: "Which Kerala river is known as the Periyar of the South?",
-        options: ["Bharathapuzha", "Chaliyar", "Pamba", "Neyyar"],
-        correct: "Chaliyar",
-        hint: "This river flows through Nilambur teak forests"
-    }
+  {
+    id: 1,
+    question: "Who is known as the 'Missile Man of India'?",
+    options: ["Dr. A. P. J. Abdul Kalam", "Dr. Vikram Sarabhai", "Dr. Homi Bhabha", "Dr. C. V. Raman"],
+    correct: "Dr. A. P. J. Abdul Kalam",
+    hint: "He served as the 11th President of India and was a pioneer in ballistic missile development"
+  },
+  {
+    id: 2,
+    question: "In cricket, who was the first bowler to take 10 wickets in a single Test innings?",
+    options: ["Jim Laker", "Anil Kumble", "Shane Warne", "Muttiah Muralitharan"],
+    correct: "Jim Laker",
+    hint: "This English bowler achieved this feat in 1956 against Australia"
+  },
+  {
+    id: 3,
+    question: "Kerala's state bird, known for its striking blue and orange plumage, is?",
+    options: ["Great Hornbill", "Indian Roller", "Paradise Flycatcher", "Malabar Trogon"],
+    correct: "Great Hornbill",
+    hint: "This large bird is also known as 'Malamuzhakki' in Malayalam"
+  },
+  {
+    id: 4,
+    question: "If planets had 'reverse gears,' which one rotates backward compared to most others?",
+    options: ["Mars", "Venus", "Uranus", "Mercury"],
+    correct: "Venus",
+    hint: "This planet rotates clockwise, opposite to Earth's counterclockwise rotation"
+  },
+  {
+    id: 5,
+    question: "The Golden Boot winner of FIFA 2022, scoring 8 goals, was?",
+    options: ["Lionel Messi", "Kylian Mbappé", "Olivier Giroud", "Julian Alvarez"],
+    correct: "Kylian Mbappé",
+    hint: "This French footballer scored a hat-trick in the final against Argentina"
+  },
+  {
+    id: 6,
+    question: "In Kerala, the famous hill station Munnar is located in which district?",
+    options: ["Wayanad", "Idukki", "Palakkad", "Kannur"],
+    correct: "Idukki",
+    hint: "This district is known for its tea plantations and hydroelectric projects"
+  },
+  {
+    id: 7,
+    question: "Which countries are hosting FIFA 2026?",
+    options: ["US and Mexico", "US, Mexico and Canada", "Brazil and Argentina", "Spain and Portugal"],
+    correct: "US, Mexico and Canada",
+    hint: "This will be the first World Cup hosted by three nations"
+  },
+  {
+    id: 8,
+    question: "Which Mughal ruler is often called the 'Engineer King' for his architectural projects?",
+    options: ["Akbar", "Shah Jahan", "Jahangir", "Aurangzeb"],
+    correct: "Shah Jahan",
+    hint: "He commissioned the Taj Mahal"
+  },
+  {
+    id: 9,
+    question: "The Malayalam film 'Drishyam' was remade into how many languages officially?",
+    options: ["3", "4", "5", "6"],
+    correct: "4",
+    hint: "It was remade in Hindi, Tamil, Telugu, and Kannada"
+  },
+  {
+    id: 10,
+    question: "Which Greek goddess was believed to have sprung fully grown from the head of Zeus?",
+    options: ["Hera", "Aphrodite", "Athena", "Artemis"],
+    correct: "Athena",
+    hint: "She is the goddess of wisdom and strategic warfare"
+  }
 ];
 
 export default function Level26Page() {
@@ -743,7 +666,7 @@ export default function Level26Page() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
-                Level 4
+                Level 26
               </Badge>
               <span className="text-lg font-semibold text-gray-800">{team.team_name}</span>
             </div>

@@ -37,147 +37,75 @@ interface Question {
  */
 const questions: Question[] = [
   {
-  id: 1,
-  question: "Who painted the famous portrait Mona Lisa?",
-  options: ["Leonardo da Vinci", "Michelangelo", "Raphael", "Pablo Picasso"],
-  correct: "Leonardo da Vinci",
-  hint: "This Italian Renaissance polymath was also an inventor and scientist."
-},
-{
-  id: 2,
-  question: "Who was the first Indian astronaut to travel into space?",
-  options: ["Rakesh Sharma", "Kalpana Chawla", "Sunita Williams", "Ravish Malhotra"],
-  correct: "Rakesh Sharma",
-  hint: "He flew aboard the Soviet Soyuz T-11 in 1984."
-},
-{
-  id: 3,
-  question: "Who was India’s first female finance minister?",
-  options: ["Indira Gandhi", "Nirmala Sitharaman", "Sushma Swaraj", "Sarojini Naidu"],
-  correct: "Indira Gandhi",
-  hint: "She held the finance portfolio as additional charge in 1969."
-},
-{
-  id: 4,
-  question: "Which Indian state is known as the 'Land of Five Rivers'?",
-  options: ["Punjab", "Haryana", "Rajasthan", "Gujarat"],
-  correct: "Punjab",
-  hint: "The name of this state itself comes from the Persian words for 'five waters'."
-},
-{
-  id: 5,
-  question: "Which Malayalam film was India’s official entry to the Oscars in 2023?",
-  options: ["2018: Everyone is a Hero", "Jallikattu", "Kumbalangi Nights", "The Great Indian Kitchen"],
-  correct: "2018: Everyone is a Hero",
-  hint: "This film depicted Kerala's devastating floods and the resilience of its people."
-},
-{
-  id: 6,
-  question: "Before becoming Google, Larry Page and Sergey Brin’s search engine project was originally called what?",
-  options: ["Backrub", "Googol", "PageRank", "SearchIt"],
-  correct: "Backrub",
-  hint: "This quirky name referred to the system’s analysis of backlinks."
-},
-{
-  id: 7,
-  question: "Which planet’s 98-degree tilt would make the weirdest seasons if planets had them?",
-  options: ["Uranus", "Neptune", "Saturn", "Venus"],
-  correct: "Uranus",
-  hint: "This ice giant essentially rolls around the Sun on its side."
-},
-{
-  id: 8,
-  question: "Who wrote the novel 'The Godfather'?",
-  options: ["Mario Puzo", "Francis Ford Coppola", "John Grisham", "Dan Brown"],
-  correct: "Mario Puzo",
-  hint: "This author collaborated with Coppola on the screenplay for the film adaptation."
-},
-{
-  id: 9,
-  question: "The first ever tweet on Twitter was 'just setting up my twttr'. Who posted it?",
-  options: ["Jack Dorsey", "Biz Stone", "Evan Williams", "Elon Musk"],
-  correct: "Jack Dorsey",
-  hint: "He co-founded Twitter and posted this in March 2006."
-},
-{
-  id: 10,
-  question: "Who wrote the science bestseller 'A Brief History of Time'?",
-  options: ["Stephen Hawking", "Carl Sagan", "Richard Feynman", "Neil deGrasse Tyson"],
-  correct: "Stephen Hawking",
-  hint: "This physicist explored black holes and the origins of the universe."
-},
-{
-  id: 11,
-  question: "What is the currency of Japan?",
-  options: ["Yen", "Won", "Yuan", "Ringgit"],
-  correct: "Yen",
-  hint: "Its symbol is ¥ and it’s among the most traded currencies worldwide."
-},
-{
-  id: 12,
-  question: "Which Indian musician composed the soundtrack for 'Roja' and gained global fame?",
-  options: ["A. R. Rahman", "Ilaiyaraaja", "M. S. Viswanathan", "Shankar–Ehsaan–Loy"],
-  correct: "A. R. Rahman",
-  hint: "This 'Mozart of Madras' went on to win Oscars and Grammys."
-},
-{
-  id: 13,
-  question: "Which is the largest desert in the world?",
-  options: ["Sahara", "Gobi", "Kalahari", "Arabian"],
-  correct: "Sahara",
-  hint: "Covering much of North Africa, it is roughly the size of the US."
-},
-{
-  id: 14,
-  question: "Who discovered penicillin?",
-  options: ["Alexander Fleming", "Louis Pasteur", "Joseph Lister", "Robert Koch"],
-  correct: "Alexander Fleming",
-  hint: "This Scottish scientist made the discovery in 1928 by accident."
-},
-{
-  id: 15,
-  question: "Which Indian hockey player was called the 'Wizard of Hockey'?",
-  options: ["Dhyan Chand", "Balbir Singh Sr.", "Leslie Claudius", "Dhanraj Pillay"],
-  correct: "Dhyan Chand",
-  hint: "He was known for his incredible ball control and goal-scoring skills."
-},
-{
-  id: 16,
-  question: "Who was the first Indian to win an Oscar?",
-  options: ["Bhanu Athaiya", "A. R. Rahman", "Gulzar", "Resul Pookutty"],
-  correct: "Bhanu Athaiya",
-  hint: "Won for the film 'Gandhi'"
-},
-
-{
-  id: 17,
-  question: "Which Indian city is known as the 'Steel City'?",
-  options: ["Jamshedpur", "Bhilai", "Rourkela", "Durgapur"],
-  correct: "Jamshedpur",
-  hint: "It houses Tata Steel, one of Asia’s oldest steel plants."
-},
-{
-  id: 18,
-  question: "Which singer holds the record for the most Grammy Awards won?",
-  options: ["Beyoncé", "Stevie Wonder", "Quincy Jones", "Taylor Swift"],
-  correct: "Beyoncé",
-  hint: "As of 2023, she has won 32 Grammys, the most in history."
-},
-{
-  id: 19,
-  question: "Which was the first Indian university established in 1857?",
-  options: ["University of Calcutta", "University of Madras", "University of Bombay", "Aligarh Muslim University"],
-  correct: "University of Calcutta",
-  hint: "It was founded along with Bombay and Madras universities in the same year."
-},
-{
-  id: 20,
-  question: "In which sport would you perform a slam dunk?",
-  options: ["Basketball", "Volleyball", "Handball", "Tennis"],
-  correct: "Basketball",
-  hint: "This high-flying move involves forcefully scoring by putting the ball directly through the hoop."
-}
-
+    id: 1,
+    question: "Who painted the famous portrait Mona Lisa?",
+    options: ["Leonardo da Vinci", "Michelangelo", "Raphael", "Pablo Picasso"],
+    correct: "Leonardo da Vinci",
+    hint: "This Italian Renaissance polymath was also an inventor and scientist."
+  },
+  {
+    id: 2,
+    question: "Who was the first Indian astronaut to travel into space?",
+    options: ["Rakesh Sharma", "Kalpana Chawla", "Sunita Williams", "Ravish Malhotra"],
+    correct: "Rakesh Sharma",
+    hint: "He flew aboard the Soviet Soyuz T-11 in 1984."
+  },
+  {
+    id: 3,
+    question: "Who was India’s first female finance minister?",
+    options: ["Indira Gandhi", "Nirmala Sitharaman", "Sushma Swaraj", "Sarojini Naidu"],
+    correct: "Indira Gandhi",
+    hint: "She held the finance portfolio as additional charge in 1969."
+  },
+  {
+    id: 4,
+    question: "Which Indian state is known as the 'Land of Five Rivers'?",
+    options: ["Punjab", "Haryana", "Rajasthan", "Gujarat"],
+    correct: "Punjab",
+    hint: "The name of this state itself comes from the Persian words for 'five waters'."
+  },
+  {
+    id: 5,
+    question: "Which Malayalam film was India’s official entry to the Oscars in 2023?",
+    options: ["2018: Everyone is a Hero", "Jallikattu", "Kumbalangi Nights", "The Great Indian Kitchen"],
+    correct: "2018: Everyone is a Hero",
+    hint: "This film depicted Kerala's devastating floods and the resilience of its people."
+  },
+  {
+    id: 6,
+    question: "Before becoming Google, Larry Page and Sergey Brin’s search engine project was originally called what?",
+    options: ["Backrub", "Googol", "PageRank", "SearchIt"],
+    correct: "Backrub",
+    hint: "This quirky name referred to the system’s analysis of backlinks."
+  },
+  {
+    id: 7,
+    question: "Which planet’s 98-degree tilt would make the weirdest seasons if planets had them?",
+    options: ["Uranus", "Neptune", "Saturn", "Venus"],
+    correct: "Uranus",
+    hint: "This ice giant essentially rolls around the Sun on its side."
+  },
+  {
+    id: 8,
+    question: "Who wrote the science bestseller 'A Brief History of Time'?",
+    options: ["Stephen Hawking", "Carl Sagan", "Richard Feynman", "Neil deGrasse Tyson"],
+    correct: "Stephen Hawking",
+    hint: "This physicist explored black holes and the origins of the universe."
+  },
+  {
+    id: 9,
+    question: "What is the currency of Japan?",
+    options: ["Yen", "Won", "Yuan", "Ringgit"],
+    correct: "Yen",
+    hint: "Its symbol is ¥ and it’s among the most traded currencies worldwide."
+  },
+  {
+    id: 10,
+    question: "Which Indian musician composed the soundtrack for 'Roja' and gained global fame?",
+    options: ["A. R. Rahman", "Ilaiyaraaja", "M. S. Viswanathan", "Shankar–Ehsaan–Loy"],
+    correct: "A. R. Rahman",
+    hint: "This 'Mozart of Madras' went on to win Oscars and Grammys."
+  }
 ];
 
 export default function Level25Page() {

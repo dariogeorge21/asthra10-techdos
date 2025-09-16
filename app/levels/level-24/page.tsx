@@ -37,145 +37,75 @@ interface Question {
  */
 const questions: Question[] = [
   {
-  id: 1,
-  question: "In 2016, which AI program by DeepMind stunned the world by defeating Lee Sedol in Go?",
-  options: ["AlphaGo", "Deep Blue", "Watson", "ChatGPT"],
-  correct: "AlphaGo",
-  hint: "This was a major breakthrough in artificial intelligence for mastering complex board games."
-},
-{
-  id: 2,
-  question: "Who was the first Indian woman to win the Jnanpith Award?",
-  options: ["Ashapoorna Devi", "Mahadevi Verma", "Amrita Pritam", "Subhadra Kumari Chauhan"],
-  correct: "Ashapoorna Devi",
-  hint: "She won the award in 1976 for her contribution to Bengali literature."
-},
-{
-  id: 3,
-  question: "Which player has scored in a World Cup Final, Champions League Final, and European Championship Final?",
-  options: ["Cristiano Ronaldo", "Zinedine Zidane", "Lionel Messi", "Kylian Mbappé"],
-  correct: "Cristiano Ronaldo",
-  hint: "This Portuguese forward is one of the most decorated players in football history."
-},
-{
-  id: 4,
-  question: "Which blood group is known as the universal donor?",
-  options: ["O negative", "O positive", "AB positive", "B negative"],
-  correct: "O negative",
-  hint: "This blood group can be given to patients of any type in emergencies."
-},
-{
-  id: 5,
-  question: "The famous Indian epic Mahabharata was written by?",
-  options: ["Ved Vyasa", "Valmiki", "Kalidasa", "Tulsidas"],
-  correct: "Ved Vyasa",
-  hint: "This sage is also credited with compiling the Vedas and writing the Puranas."
-},
-{
-  id: 6,
-  question: "Which country has more volcanoes than any other in the world?",
-  options: ["Indonesia", "Japan", "Iceland", "Philippines"],
-  correct: "Indonesia",
-  hint: "Located on the Pacific Ring of Fire, this country has over 130 active volcanoes."
-},
-{
-  id: 7,
-  question: "Who was the first Indian woman to climb Mount Everest?",
-  options: ["Bachendri Pal", "Santosh Yadav", "Premlata Agarwal", "Anshu Jamsenpa"],
-  correct: "Bachendri Pal",
-  hint: "She achieved this feat in 1984."
-},
-{
-  id: 8,
-  question: "The sci-fi series 'Stranger Things' is set in which fictional town?",
-  options: ["Hawkins, Indiana", "Springfield", "Riverdale", "Mayfield"],
-  correct: "Hawkins, Indiana",
-  hint: "This small Midwestern town hides a portal to the Upside Down."
-},
-{
-  id: 9,
-  question: "If planets had favorite rings, which planet is famous for its stunning rings?",
-  options: ["Saturn", "Jupiter", "Uranus", "Neptune"],
-  correct: "Saturn",
-  hint: "This planet’s rings are made up of ice, rock, and dust."
-},
-{
-  id: 10,
-  question: "Which Indian city is home to the Sun Temple, a UNESCO World Heritage Site?",
-  options: ["Konark, Odisha", "Khajuraho, Madhya Pradesh", "Thanjavur, Tamil Nadu", "Bhubaneswar, Odisha"],
-  correct: "Konark, Odisha",
-  hint: "This 13th-century temple is shaped like a giant chariot."
-},
-{
-  id: 11,
-  question: "The FIFA Golden Ball in 2014 went to which player, even though his team lost the final?",
-  options: ["Lionel Messi", "Cristiano Ronaldo", "Thomas Müller", "Neymar"],
-  correct: "Lionel Messi",
-  hint: "He received the award despite Argentina’s loss to Germany in the final."
-},
-{
-  id: 12,
-  question: "The Indian classical dance form Mohiniyattam belongs to which state?",
-  options: ["Kerala", "Tamil Nadu", "Odisha", "Andhra Pradesh"],
-  correct: "Kerala",
-  hint: "This graceful dance form is traditionally performed by women."
-},
-{
-  id: 13,
-  question: "The dance style 'Moonwalk' was made popular by?",
-  options: ["Michael Jackson", "James Brown", "Elvis Presley", "Prince"],
-  correct: "Michael Jackson",
-  hint: "He first performed it publicly during 'Billie Jean' in 1983."
-},
-{
-  id: 14,
-  question: "Which Indian city is called the 'Pink City'?",
-  options: ["Jaipur", "Jodhpur", "Udaipur", "Bikaner"],
-  correct: "Jaipur",
-  hint: "This city was painted pink in 1876 to welcome the Prince of Wales."
-},
-{
-  id: 15,
-  question: "Which Mughal emperor built the Peacock Throne?",
-  options: ["Shah Jahan", "Akbar", "Aurangzeb", "Humayun"],
-  correct: "Shah Jahan",
-  hint: "The throne was a symbol of imperial splendor encrusted with precious jewels."
-},
-{
-  id: 16,
-  question: "What is the currency of South Korea?",
-  options: ["Won", "Yen", "Yuan", "Ringgit"],
-  correct: "Won",
-  hint: "Its symbol is ₩ and it is issued by the Bank of Korea."
-},
-{
-  id: 17,
-  question: "Who was India’s first Test cricket captain?",
-  options: ["C. K. Nayudu", "Vijay Hazare", "Lala Amarnath", "Polly Umrigar"],
-  correct: "C. K. Nayudu",
-  hint: "He led the Indian team in their debut Test match in 1932."
-},
-{
-  id: 18,
-  question: "The film 'RRR' won an Oscar in 2023 for which category?",
-  options: ["Best Original Song (Naatu Naatu)", "Best Sound", "Best Visual Effects", "Best International Feature Film"],
-  correct: "Best Original Song (Naatu Naatu)",
-  hint: "This was the first Indian song to win an Academy Award."
-},
-{
-  id: 19,
-  question: "Which Indian state is called the 'Land of Rising Sun'?",
-  options: ["Arunachal Pradesh", "Assam", "Nagaland", "Manipur"],
-  correct: "Arunachal Pradesh",
-  hint: "It is the easternmost state of India where the Sun rises first."
-},
-{
-  id: 20,
-  question: "Which footballer was nicknamed 'The Pharaoh' for his performance with Liverpool?",
-  options: ["Mohamed Salah", "Didier Drogba", "Sadio Mané", "Riyad Mahrez"],
-  correct: "Mohamed Salah",
-  hint: "This Egyptian forward became a legend at Liverpool with his scoring feats."
-}
+    id: 1,
+    question: "In 2016, which AI program by DeepMind stunned the world by defeating Lee Sedol in Go?",
+    options: ["AlphaGo", "Deep Blue", "Watson", "ChatGPT"],
+    correct: "AlphaGo",
+    hint: "This was a major breakthrough in artificial intelligence for mastering complex board games."
+  },
+  {
+    id: 2,
+    question: "Which blood group is known as the universal donor?",
+    options: ["O negative", "O positive", "AB positive", "B negative"],
+    correct: "O negative",
+    hint: "This blood group can be given to patients of any type in emergencies."
+  },
+  {
+    id: 3,
+    question: "Which country has more volcanoes than any other in the world?",
+    options: ["Indonesia", "Japan", "Iceland", "Philippines"],
+    correct: "Indonesia",
+    hint: "Located on the Pacific Ring of Fire, this country has over 130 active volcanoes."
+  },
+  {
+    id: 4,
+    question: "If planets had favorite rings, which planet is famous for its stunning rings?",
+    options: ["Saturn", "Jupiter", "Uranus", "Neptune"],
+    correct: "Saturn",
+    hint: "This planet’s rings are made up of ice, rock, and dust."
+  },
+  {
+    id: 5,
+    question: "Which Indian city is home to the Sun Temple, a UNESCO World Heritage Site?",
+    options: ["Konark, Odisha", "Khajuraho, Madhya Pradesh", "Thanjavur, Tamil Nadu", "Bhubaneswar, Odisha"],
+    correct: "Konark, Odisha",
+    hint: "This 13th-century temple is shaped like a giant chariot."
+  },
+  {
+    id: 6,
+    question: "The FIFA Golden Ball in 2014 went to which player, even though his team lost the final?",
+    options: ["Lionel Messi", "Cristiano Ronaldo", "Thomas Müller", "Neymar"],
+    correct: "Lionel Messi",
+    hint: "He received the award despite Argentina’s loss to Germany in the final."
+  },
+  {
+    id: 7,
+    question: "The dance style 'Moonwalk' was made popular by?",
+    options: ["Michael Jackson", "James Brown", "Elvis Presley", "Prince"],
+    correct: "Michael Jackson",
+    hint: "He first performed it publicly during 'Billie Jean' in 1983."
+  },
+  {
+    id: 8,
+    question: "Which Indian city is called the 'Pink City'?",
+    options: ["Jaipur", "Jodhpur", "Udaipur", "Bikaner"],
+    correct: "Jaipur",
+    hint: "This city was painted pink in 1876 to welcome the Prince of Wales."
+  },
+  {
+    id: 9,
+    question: "Which Mughal emperor built the Peacock Throne?",
+    options: ["Shah Jahan", "Akbar", "Aurangzeb", "Humayun"],
+    correct: "Shah Jahan",
+    hint: "The throne was a symbol of imperial splendor encrusted with precious jewels."
+  },
+  {
+    id: 10,
+    question: "The film 'RRR' won an Oscar in 2023 for which category?",
+    options: ["Best Original Song (Naatu Naatu)", "Best Sound", "Best Visual Effects", "Best International Feature Film"],
+    correct: "Best Original Song (Naatu Naatu)",
+    hint: "This was the first Indian song to win an Academy Award."
+  }
 ];
 
 export default function Level24Page() {
