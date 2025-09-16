@@ -39,38 +39,39 @@ const questions: Question[] =
 [
   {
     "id": 1,
-    "question": "A farmer must take a goat, a cabbage, and a wolf across a river. How does he get all across safely?",
-    "options": ["Wolf first → cabbage → goat", "Goat first → cabbage → wolf", "Cabbage first → goat → wolf", "Goat first → wolf → cabbage"],
-    "correct": "Goat first → cabbage → wolf"
+    "question": "Country with largest proven lithium reserves (2025)?",
+    "options": ["Australia", "Chile", "Bolivia", "China"],
+    "correct": "Bolivia"
   },
   {
     "id": 2,
-    "question": "You have 12 coins; one is counterfeit (heavier or lighter). What is the minimum number of weighings needed to find it?",
-    "options": ["2", "3", "4", "5"],
-    "correct": "3"
+    "question": "Only metal liquid at room temperature?",
+    "options": ["Mercury", "Gallium", "Bromine", "Francium"],
+    "correct": "Mercury"
   },
   {
     "id": 3,
-    "question": "A clock shows 3:15. What is the angle between the hour and minute hands?",
-    "options": ["0°", "7.5°", "15°", "22.5°"],
-    "correct": "7.5°"
+    "question": "Year India adopted the ₹ symbol officially?",
+    "options": ["2008", "2010", "2012", "2014"],
+    "correct": "2010"
   },
   {
     "id": 4,
-    "question": "A number when viewed in a mirror and rotated 180° gives a different valid number. Which number is it?",
-    "options": ["609", "808", "619", "996"],
-    "correct": "619"
+    "question": "Fastest-growing programming language (2025 surveys)?",
+    "options": ["Python", "Rust", "Java", "PHP"],
+    "correct": "Rust"
   },
   {
     "id": 5,
-    "question": "Cryptic clue: 'Planet disturbed, ring returned (7)'. Which planet is it?",
-    "options": ["Saturn", "Mercury", "Neptune", "Uranus"],
-    "correct": "Saturn"
+    "question": "Planet with a day longer than its year?",
+    "options": ["Mercury", "Venus", "Mars", "Neptune"],
+    "correct": "Venus"
   }
 ]
 
 
-export default function Level1Page() {
+
+export default function Level2Page() {
   const [team, setTeam] = useState<Team | null>(null);
   const [initialTeamStats, setInitialTeamStats] = useState<{
     correct_questions: number;
@@ -114,7 +115,7 @@ export default function Level1Page() {
         hint_count: teamData.hint_count
       });
 
-      if (teamData.current_level > 1) {
+      if (teamData.current_level > 2) {
         toast.info("You've already completed this level!");
         router.push('/levels');
         return;
@@ -399,7 +400,7 @@ export default function Level1Page() {
 
     const scoreData = calculateScore(timeTaken);
     const newTotalScore = team.score + scoreData.totalScore;
-    const newLevel = 2;
+    const newLevel = 3;
 
     try {
       // CRITICAL FIX: Ensure final level statistics are accurately saved to database
@@ -469,7 +470,7 @@ export default function Level1Page() {
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-600 mx-auto mb-4"></div>
-          <p className="text-lg text-gray-600">Loading Level 1...</p>
+          <p className="text-lg text-gray-600">Loading Level 2...</p>
         </div>
       </div>
     );
@@ -498,7 +499,7 @@ export default function Level1Page() {
             <div className="mx-auto mb-4 w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
               <CheckCircle className="h-8 w-8 text-green-600" />
             </div>
-            <CardTitle className="text-3xl font-bold text-green-700">Level 1 Complete!</CardTitle>
+            <CardTitle className="text-3xl font-bold text-green-700">Level 2 Complete!</CardTitle>
             <div className="mt-2">
               <Badge variant="outline" className={`text-lg px-4 py-2 ${
                 scoreData.performanceRating === 'Excellent' ? 'bg-green-50 text-green-700 border-green-200' :
@@ -608,7 +609,7 @@ export default function Level1Page() {
               onClick={() => router.push('/levels')}
               className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-lg py-3"
             >
-              Continue to Level 2
+              Continue to Level 3
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </CardContent>
@@ -628,7 +629,7 @@ export default function Level1Page() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
-                Level 1
+                Level 2
               </Badge>
               <span className="text-lg font-semibold text-gray-800">{team.team_name}</span>
             </div>

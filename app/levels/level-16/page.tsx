@@ -2,25 +2,27 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Trophy, Timer, SkipForward, ArrowRight, CheckCircle, Target } from "lucide-react";
+import { Trophy, Timer, HelpCircle, SkipForward, ArrowRight, CheckCircle, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 // import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
-import { Team, getGameTimeRemaining, formatTimeRemaining, getGameTimerStatus } from "@/lib/supabase";
+import { Team, isCheckpointLevel, getGameTimeRemaining, formatTimeRemaining, getGameTimerStatus } from "@/lib/supabase";
+import { Input } from "@/components/ui/input";
+import { Keyboard } from "./keyboard";
 
 interface Question {
   id: number;
   question: string;
-  options: string[];
+
   correct: string;
-//   hint: string;
+  format: string;
 }
 
 /**
- * LEVEL-1 QUESTION BANK
+ * LEVEL-4 QUESTION BANK
  *
  * A diverse collection of 20 multiple-choice questions covering:
  * - Astronomy & Science (planets, natural phenomena)
@@ -35,52 +37,76 @@ interface Question {
  * - One correct answer
  * - A helpful hint that provides context without giving away the answer
  */
-const questions: Question[] =
-[
+const questions: Question[] =[
   {
     "id": 1,
-    "question": "A farmer must take a goat, a cabbage, and a wolf across a river. How does he get all across safely?",
-    "options": ["Wolf first → cabbage → goat", "Goat first → cabbage → wolf", "Cabbage first → goat → wolf", "Goat first → wolf → cabbage"],
-    "correct": "Goat first → cabbage → wolf"
+    "question": "What comes once in a minute, twice in a moment, but never in a thousand years?",
+   
+    "correct": "M",
+    "format": "It may be a number or alphabet"
   },
   {
     "id": 2,
-    "question": "You have 12 coins; one is counterfeit (heavier or lighter). What is the minimum number of weighings needed to find it?",
-    "options": ["2", "3", "4", "5"],
-    "correct": "3"
+    "question": "I go up but never come down. What am I?",
+    "correct": "Age",
+    "format": "It is a word"
   },
   {
     "id": 3,
-    "question": "A clock shows 3:15. What is the angle between the hour and minute hands?",
-    "options": ["0°", "7.5°", "15°", "22.5°"],
-    "correct": "7.5°"
+    "question": "What kind of room has no doors or windows?",
+    "correct": "Mushroom",
+    "format": "It is a word"
   },
   {
     "id": 4,
-    "question": "A number when viewed in a mirror and rotated 180° gives a different valid number. Which number is it?",
-    "options": ["609", "808", "619", "996"],
-    "correct": "619"
+    "question": "I only understand 0s and 1s. What am I?",
+    "correct": "Binary",
+    "format": "It is a word"
   },
   {
     "id": 5,
-    "question": "Cryptic clue: 'Planet disturbed, ring returned (7)'. Which planet is it?",
-    "options": ["Saturn", "Mercury", "Neptune", "Uranus"],
-    "correct": "Saturn"
+    "question": "I can be hard or soft, but I’m not a pillow. What am I?",
+    "correct": "Hardware or Software",
+    "format": "It may be a word or phrase"
+  },
+  {
+    "id": 6,
+    "question": "I can branch, merge, and commit — but I’m not a tree. What am I?",
+    "correct": "git/github",
+    "format": "It may be a name"
+  },
+  {
+    "id": 7,
+    "question": "What belongs to you but is used more by others?",
+    "correct": "your name",
+    "format": "It may be a phrase"
+  },
+  {
+    "id": 8,
+    "question": "The person who makes me doesn’t use me, the person who buys me doesn’t need me, the person who uses me doesn’t know it.",
+    "correct": "Coffin",
+    "format": "It may be a word"
+  },
+  {
+    "id": 9,
+    "question": "The beginning of eternity, the end of time and space, the beginning of every end, and the end of every place.",
+    "correct": "Letter E",
+    "format": "It may be a letter"
   }
 ]
 
 
-export default function Level1Page() {
+export default function Level16Page() {
   const [team, setTeam] = useState<Team | null>(null);
   const [initialTeamStats, setInitialTeamStats] = useState<{
     correct_questions: number;
     incorrect_questions: number;
     skipped_questions: number;
-    hint_count: number;
+    // hint_count: number;
   } | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string>("");
-  const [showHint, setShowHint] = useState(false);
+  // const [showHint, setShowHint] = useState(false);
   const [levelStartTime] = useState<Date>(new Date());
   const [timeRemaining, setTimeRemaining] = useState<number>(0);
   const [timerStatus, setTimerStatus] = useState<'not_started' | 'active' | 'expired'>('not_started');
@@ -93,8 +119,10 @@ export default function Level1Page() {
     correct: 0,
     incorrect: 0,
     skipped: 0,
-    hintsUsed: 0
+    // hintsUsed: 0
   });
+  const [answer, setAnswer] = useState("");
+  const [showKeyboard, setShowKeyboard] = useState(true);
   const router = useRouter();
 
   const fetchTeamData = useCallback(async (teamCode: string) => {
@@ -111,10 +139,10 @@ export default function Level1Page() {
         correct_questions: teamData.correct_questions,
         incorrect_questions: teamData.incorrect_questions,
         skipped_questions: teamData.skipped_questions,
-        hint_count: teamData.hint_count
+        // hint_count: teamData.hint_count
       });
 
-      if (teamData.current_level > 1) {
+      if (teamData.current_level > 16) {
         toast.info("You've already completed this level!");
         router.push('/levels');
         return;
@@ -232,7 +260,7 @@ export default function Level1Page() {
     const updatedStats = {
       correct_questions: team.correct_questions + (isCorrect ? 1 : 0),
       incorrect_questions: team.incorrect_questions + (isCorrect ? 0 : 1),
-      hint_count: team.hint_count + (showHint ? 1 : 0)
+      // hint_count: team.hint_count + (showHint ? 1 : 0)
     };
 
     await updateTeamStats(updatedStats);
@@ -272,7 +300,7 @@ export default function Level1Page() {
 
     const updatedStats = {
       skipped_questions: team.skipped_questions + 1,
-      hint_count: team.hint_count + (showHint ? 1 : 0)
+      // hint_count: team.hint_count + (showHint ? 1 : 0)
     };
 
     await updateTeamStats(updatedStats);
@@ -280,7 +308,7 @@ export default function Level1Page() {
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
       setSelectedAnswer("");
-      setShowHint(false);
+      // setShowHint(false);
     } else {
       completeLevel();
     }
@@ -295,12 +323,20 @@ export default function Level1Page() {
   }
   };
 
-//   const handleHint = () => {
-//     setShowHint(true);
-//     const newStats = { ...levelStats };
-//     newStats.hintsUsed++;
-//     setLevelStats(newStats);
-//   };
+  // const handleHint = () => {
+  //   setShowHint(true);
+  //   const newStats = { ...levelStats };
+  //   newStats.hintsUsed++;
+  //   setLevelStats(newStats);
+  // };
+
+  const handleKeyPress = (key: KeyboardKey) => {
+    if (key.key === "Backspace") {
+      setAnswer(prev => prev.slice(0, -1));
+    }  else {
+      setAnswer(prev => prev + key.key);
+    }
+  };
 
   /**
    * ENHANCED SCORING ALGORITHM
@@ -341,12 +377,12 @@ export default function Level1Page() {
     const accuracy = totalQuestions > 0 ? (levelStats.correct / totalQuestions) * 100 : 0;
 
     // Base scoring calculation
-    const correctWithoutHints = Math.max(0, levelStats.correct - levelStats.hintsUsed);
-    const correctWithHints = Math.min(levelStats.correct, levelStats.hintsUsed);
+    const correctWithoutHints = Math.max(0, levelStats.correct);
+    // const correctWithHints = Math.min(levelStats.correct, levelStats.hintsUsed);
 
-    let baseScore = 0;
-    baseScore += correctWithoutHints * 1500; // Full points for unassisted correct answers
-    baseScore += correctWithHints * 1000;    // Reduced points for hint-assisted answers
+    // let baseScore = 0;
+    // baseScore += correctWithoutHints * 1500; // Full points for unassisted correct answers
+    // baseScore += correctWithHints * 1000;    // Reduced points for hint-assisted answers
 
     // Penalties
     const penalties = (levelStats.incorrect * 400) + (levelStats.skipped * 750);
@@ -399,7 +435,7 @@ export default function Level1Page() {
 
     const scoreData = calculateScore(timeTaken);
     const newTotalScore = team.score + scoreData.totalScore;
-    const newLevel = 2;
+    const newLevel = 17;
 
     try {
       // CRITICAL FIX: Ensure final level statistics are accurately saved to database
@@ -418,7 +454,7 @@ export default function Level1Page() {
           correct_questions: initialTeamStats.correct_questions + levelStats.correct,
           incorrect_questions: initialTeamStats.incorrect_questions + levelStats.incorrect,
           skipped_questions: initialTeamStats.skipped_questions + levelStats.skipped,
-          hint_count: initialTeamStats.hint_count + levelStats.hintsUsed
+          // hint_count: initialTeamStats.hint_count + levelStats.hintsUsed
         };
 
         console.log('Level completion - Final stats update:', {
@@ -446,16 +482,16 @@ export default function Level1Page() {
       });
 
       // Save checkpoint if this is a checkpoint level
-      // if (isCheckpointLevel(1)) {
-      //   await fetch(`/api/teams/${teamCode}/checkpoint`, {
-      //     method: 'PUT',
-      //     headers: { 'Content-Type': 'application/json' },
-      //     body: JSON.stringify({
-      //       checkpoint_score: newTotalScore,
-      //       checkpoint_level: 1
-      //     })
-      //   });
-      // }
+      if (isCheckpointLevel(1)) {
+        await fetch(`/api/teams/${teamCode}/checkpoint`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            checkpoint_score: newTotalScore,
+            checkpoint_level: 1
+          })
+        });
+      }
 
       setIsCompleted(true);
     } catch (error) {
@@ -469,7 +505,7 @@ export default function Level1Page() {
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-600 mx-auto mb-4"></div>
-          <p className="text-lg text-gray-600">Loading Level 1...</p>
+          <p className="text-lg text-gray-600">Loading Level 16...</p>
         </div>
       </div>
     );
@@ -498,7 +534,7 @@ export default function Level1Page() {
             <div className="mx-auto mb-4 w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
               <CheckCircle className="h-8 w-8 text-green-600" />
             </div>
-            <CardTitle className="text-3xl font-bold text-green-700">Level 1 Complete!</CardTitle>
+            <CardTitle className="text-3xl font-bold text-green-700">Level 6 Complete!</CardTitle>
             <div className="mt-2">
               <Badge variant="outline" className={`text-lg px-4 py-2 ${
                 scoreData.performanceRating === 'Excellent' ? 'bg-green-50 text-green-700 border-green-200' :
@@ -526,8 +562,8 @@ export default function Level1Page() {
                 <div className="text-sm text-yellow-700">Skipped</div>
               </div>
               <div className="p-4 bg-blue-50 rounded-lg">
-                <div className="text-2xl font-bold text-blue-600">{levelStats.hintsUsed}</div>
-                <div className="text-sm text-blue-700">Hints Used</div>
+                {/* <div className="text-2xl font-bold text-blue-600">{levelStats.hintsUsed}</div> */}
+                {/* <div className="text-sm text-blue-700">Hints Used</div> */}
               </div>
             </div>
 
@@ -608,7 +644,7 @@ export default function Level1Page() {
               onClick={() => router.push('/levels')}
               className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-lg py-3"
             >
-              Continue to Level 2
+              Continue to Level 17
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </CardContent>
@@ -628,7 +664,7 @@ export default function Level1Page() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
-                Level 1
+                Level 6
               </Badge>
               <span className="text-lg font-semibold text-gray-800">{team.team_name}</span>
             </div>
@@ -672,23 +708,40 @@ export default function Level1Page() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {/* Options */}
-              <div className="grid gap-3">
-                {currentQuestion.options.map((option, index) => (
-                  <Button
-                    key={index}
-                    variant={selectedAnswer === option ? "default" : "outline"}
-                    className={`p-4 h-auto text-left justify-start ${
-                      selectedAnswer === option 
-                        ? "bg-purple-600 hover:bg-purple-700" 
-                        : "hover:bg-purple-50"
-                    }`}
-                    onClick={() => setSelectedAnswer(option)}
-                  >
-                    <span className="font-medium mr-3">{String.fromCharCode(65 + index)}.</span>
-                    {option}
-                  </Button>
-                ))}
+              {/* Text Input */}
+              <div className="space-y-4">
+                <Input
+                  type="text"
+                  value={answer}
+                  onChange={(e) => setAnswer(e.target.value)}
+                  placeholder="Type your answer here..."
+                  className="text-lg p-6 rounded-lg border-2 border-purple-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-500"
+                />
+                
+                {/* Virtual Keyboard */}
+                {showKeyboard && (
+                  <div className="mt-4 bg-white/80 backdrop-blur-sm rounded-lg p-4 shadow-sm border border-purple-100">
+                    <Keyboard
+                      layout={[
+                        ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
+                        ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
+                        ['Z', 'X', 'C', 'V', 'B', 'N', 'M'],
+                        ['Space', 'Backspace', 'Enter']
+                      ]}
+                      onKeyPress={handleKeyPress}
+                      className="gap-1.5"
+                    />
+                  </div>
+                )}
+
+                {/* Toggle Keyboard Button */}
+                <Button
+                  variant="outline"
+                  onClick={() => setShowKeyboard(!showKeyboard)}
+                  className="w-full text-purple-600 border-purple-200 hover:bg-purple-50"
+                >
+                  {showKeyboard ? "Hide Keyboard" : "Show Keyboard"}
+                </Button>
               </div>
 
               {/* Hint */}
@@ -724,8 +777,8 @@ export default function Level1Page() {
                 </Button>
                 
                 <Button
-                  onClick={() => handleAnswer(selectedAnswer)}
-                  disabled={!selectedAnswer || submitLoading}
+                  onClick={() => handleAnswer(answer)}
+                  disabled={!answer || submitLoading}
                   className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
                 >
                   Submit Answer

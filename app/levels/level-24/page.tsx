@@ -2,21 +2,21 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Trophy, Timer, SkipForward, ArrowRight, CheckCircle, Target } from "lucide-react";
+import { Trophy, Timer, HelpCircle, SkipForward, ArrowRight, CheckCircle, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-// import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
-import { Team, getGameTimeRemaining, formatTimeRemaining, getGameTimerStatus } from "@/lib/supabase";
+import { Team, isCheckpointLevel, getGameTimeRemaining, formatTimeRemaining, getGameTimerStatus } from "@/lib/supabase";
 
 interface Question {
   id: number;
   question: string;
   options: string[];
   correct: string;
-//   hint: string;
+  hint: string;
 }
 
 /**
@@ -35,42 +35,80 @@ interface Question {
  * - One correct answer
  * - A helpful hint that provides context without giving away the answer
  */
-const questions: Question[] =
-[
+const questions: Question[] = [
   {
-    "id": 1,
-    "question": "A farmer must take a goat, a cabbage, and a wolf across a river. How does he get all across safely?",
-    "options": ["Wolf first → cabbage → goat", "Goat first → cabbage → wolf", "Cabbage first → goat → wolf", "Goat first → wolf → cabbage"],
-    "correct": "Goat first → cabbage → wolf"
+    id: 1,
+    question: "In 2016, which AI program by DeepMind stunned the world by defeating Lee Sedol in Go?",
+    options: ["AlphaGo", "Deep Blue", "Watson", "ChatGPT"],
+    correct: "AlphaGo",
+    hint: "This was a major breakthrough in artificial intelligence for mastering complex board games."
   },
   {
-    "id": 2,
-    "question": "You have 12 coins; one is counterfeit (heavier or lighter). What is the minimum number of weighings needed to find it?",
-    "options": ["2", "3", "4", "5"],
-    "correct": "3"
+    id: 2,
+    question: "Which blood group is known as the universal donor?",
+    options: ["O negative", "O positive", "AB positive", "B negative"],
+    correct: "O negative",
+    hint: "This blood group can be given to patients of any type in emergencies."
   },
   {
-    "id": 3,
-    "question": "A clock shows 3:15. What is the angle between the hour and minute hands?",
-    "options": ["0°", "7.5°", "15°", "22.5°"],
-    "correct": "7.5°"
+    id: 3,
+    question: "Which country has more volcanoes than any other in the world?",
+    options: ["Indonesia", "Japan", "Iceland", "Philippines"],
+    correct: "Indonesia",
+    hint: "Located on the Pacific Ring of Fire, this country has over 130 active volcanoes."
   },
   {
-    "id": 4,
-    "question": "A number when viewed in a mirror and rotated 180° gives a different valid number. Which number is it?",
-    "options": ["609", "808", "619", "996"],
-    "correct": "619"
+    id: 4,
+    question: "If planets had favorite rings, which planet is famous for its stunning rings?",
+    options: ["Saturn", "Jupiter", "Uranus", "Neptune"],
+    correct: "Saturn",
+    hint: "This planet’s rings are made up of ice, rock, and dust."
   },
   {
-    "id": 5,
-    "question": "Cryptic clue: 'Planet disturbed, ring returned (7)'. Which planet is it?",
-    "options": ["Saturn", "Mercury", "Neptune", "Uranus"],
-    "correct": "Saturn"
+    id: 5,
+    question: "Which Indian city is home to the Sun Temple, a UNESCO World Heritage Site?",
+    options: ["Konark, Odisha", "Khajuraho, Madhya Pradesh", "Thanjavur, Tamil Nadu", "Bhubaneswar, Odisha"],
+    correct: "Konark, Odisha",
+    hint: "This 13th-century temple is shaped like a giant chariot."
+  },
+  {
+    id: 6,
+    question: "The FIFA Golden Ball in 2014 went to which player, even though his team lost the final?",
+    options: ["Lionel Messi", "Cristiano Ronaldo", "Thomas Müller", "Neymar"],
+    correct: "Lionel Messi",
+    hint: "He received the award despite Argentina’s loss to Germany in the final."
+  },
+  {
+    id: 7,
+    question: "The dance style 'Moonwalk' was made popular by?",
+    options: ["Michael Jackson", "James Brown", "Elvis Presley", "Prince"],
+    correct: "Michael Jackson",
+    hint: "He first performed it publicly during 'Billie Jean' in 1983."
+  },
+  {
+    id: 8,
+    question: "Which Indian city is called the 'Pink City'?",
+    options: ["Jaipur", "Jodhpur", "Udaipur", "Bikaner"],
+    correct: "Jaipur",
+    hint: "This city was painted pink in 1876 to welcome the Prince of Wales."
+  },
+  {
+    id: 9,
+    question: "Which Mughal emperor built the Peacock Throne?",
+    options: ["Shah Jahan", "Akbar", "Aurangzeb", "Humayun"],
+    correct: "Shah Jahan",
+    hint: "The throne was a symbol of imperial splendor encrusted with precious jewels."
+  },
+  {
+    id: 10,
+    question: "The film 'RRR' won an Oscar in 2023 for which category?",
+    options: ["Best Original Song (Naatu Naatu)", "Best Sound", "Best Visual Effects", "Best International Feature Film"],
+    correct: "Best Original Song (Naatu Naatu)",
+    hint: "This was the first Indian song to win an Academy Award."
   }
-]
+];
 
-
-export default function Level1Page() {
+export default function Level24Page() {
   const [team, setTeam] = useState<Team | null>(null);
   const [initialTeamStats, setInitialTeamStats] = useState<{
     correct_questions: number;
@@ -114,7 +152,7 @@ export default function Level1Page() {
         hint_count: teamData.hint_count
       });
 
-      if (teamData.current_level > 1) {
+      if (teamData.current_level > 24) {
         toast.info("You've already completed this level!");
         router.push('/levels');
         return;
@@ -295,12 +333,12 @@ export default function Level1Page() {
   }
   };
 
-//   const handleHint = () => {
-//     setShowHint(true);
-//     const newStats = { ...levelStats };
-//     newStats.hintsUsed++;
-//     setLevelStats(newStats);
-//   };
+  const handleHint = () => {
+    setShowHint(true);
+    const newStats = { ...levelStats };
+    newStats.hintsUsed++;
+    setLevelStats(newStats);
+  };
 
   /**
    * ENHANCED SCORING ALGORITHM
@@ -399,7 +437,7 @@ export default function Level1Page() {
 
     const scoreData = calculateScore(timeTaken);
     const newTotalScore = team.score + scoreData.totalScore;
-    const newLevel = 2;
+    const newLevel = 25;
 
     try {
       // CRITICAL FIX: Ensure final level statistics are accurately saved to database
@@ -446,16 +484,16 @@ export default function Level1Page() {
       });
 
       // Save checkpoint if this is a checkpoint level
-      // if (isCheckpointLevel(1)) {
-      //   await fetch(`/api/teams/${teamCode}/checkpoint`, {
-      //     method: 'PUT',
-      //     headers: { 'Content-Type': 'application/json' },
-      //     body: JSON.stringify({
-      //       checkpoint_score: newTotalScore,
-      //       checkpoint_level: 1
-      //     })
-      //   });
-      // }
+      if (isCheckpointLevel(1)) {
+        await fetch(`/api/teams/${teamCode}/checkpoint`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            checkpoint_score: newTotalScore,
+            checkpoint_level: 1
+          })
+        });
+      }
 
       setIsCompleted(true);
     } catch (error) {
@@ -469,7 +507,7 @@ export default function Level1Page() {
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-600 mx-auto mb-4"></div>
-          <p className="text-lg text-gray-600">Loading Level 1...</p>
+          <p className="text-lg text-gray-600">Loading Level 24...</p>
         </div>
       </div>
     );
@@ -498,7 +536,7 @@ export default function Level1Page() {
             <div className="mx-auto mb-4 w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
               <CheckCircle className="h-8 w-8 text-green-600" />
             </div>
-            <CardTitle className="text-3xl font-bold text-green-700">Level 1 Complete!</CardTitle>
+            <CardTitle className="text-3xl font-bold text-green-700">Level 24 Complete!</CardTitle>
             <div className="mt-2">
               <Badge variant="outline" className={`text-lg px-4 py-2 ${
                 scoreData.performanceRating === 'Excellent' ? 'bg-green-50 text-green-700 border-green-200' :
@@ -608,7 +646,7 @@ export default function Level1Page() {
               onClick={() => router.push('/levels')}
               className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-lg py-3"
             >
-              Continue to Level 2
+              Continue to Level 25
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </CardContent>
@@ -628,7 +666,7 @@ export default function Level1Page() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
-                Level 1
+                Level 24
               </Badge>
               <span className="text-lg font-semibold text-gray-800">{team.team_name}</span>
             </div>
@@ -692,18 +730,18 @@ export default function Level1Page() {
               </div>
 
               {/* Hint */}
-              {/* {showHint && (
+              {showHint && (
                 <Alert className="bg-blue-50 border-blue-200">
                   <HelpCircle className="h-4 w-4 text-blue-600" />
                   <AlertDescription className="text-blue-700">
                     <strong>Hint:</strong> {currentQuestion.hint}
                   </AlertDescription>
                 </Alert>
-              )} */}
+              )}
 
               {/* Action Buttons */}
               <div className="flex gap-3 pt-4">
-                {/* <Button
+                <Button
                   variant="outline"
                   onClick={handleHint}
                   disabled={showHint}
@@ -711,7 +749,7 @@ export default function Level1Page() {
                 >
                   <HelpCircle className="mr-2 h-4 w-4" />
                   {showHint ? "Hint Shown" : "Show Hint"}
-                </Button> */}
+                </Button>
                 
                 <Button
                   variant="outline"

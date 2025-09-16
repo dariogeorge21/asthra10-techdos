@@ -2,12 +2,12 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Trophy, Timer, SkipForward, ArrowRight, CheckCircle, Target } from "lucide-react";
+import { Trophy, Timer, HelpCircle, SkipForward, ArrowRight, CheckCircle, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-// import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
 import { Team, getGameTimeRemaining, formatTimeRemaining, getGameTimerStatus } from "@/lib/supabase";
 
@@ -16,7 +16,7 @@ interface Question {
   question: string;
   options: string[];
   correct: string;
-//   hint: string;
+  hint: string;
 }
 
 /**
@@ -35,42 +35,120 @@ interface Question {
  * - One correct answer
  * - A helpful hint that provides context without giving away the answer
  */
-const questions: Question[] =
-[
-  {
-    "id": 1,
-    "question": "A farmer must take a goat, a cabbage, and a wolf across a river. How does he get all across safely?",
-    "options": ["Wolf first → cabbage → goat", "Goat first → cabbage → wolf", "Cabbage first → goat → wolf", "Goat first → wolf → cabbage"],
-    "correct": "Goat first → cabbage → wolf"
-  },
-  {
-    "id": 2,
-    "question": "You have 12 coins; one is counterfeit (heavier or lighter). What is the minimum number of weighings needed to find it?",
-    "options": ["2", "3", "4", "5"],
-    "correct": "3"
-  },
-  {
-    "id": 3,
-    "question": "A clock shows 3:15. What is the angle between the hour and minute hands?",
-    "options": ["0°", "7.5°", "15°", "22.5°"],
-    "correct": "7.5°"
-  },
-  {
-    "id": 4,
-    "question": "A number when viewed in a mirror and rotated 180° gives a different valid number. Which number is it?",
-    "options": ["609", "808", "619", "996"],
-    "correct": "619"
-  },
-  {
-    "id": 5,
-    "question": "Cryptic clue: 'Planet disturbed, ring returned (7)'. Which planet is it?",
-    "options": ["Saturn", "Mercury", "Neptune", "Uranus"],
-    "correct": "Saturn"
-  }
-]
+const questions: Question[] = [
+    {
+        id: 1,
+        question: "Which of these statements about Barack Obama is FALSE?",
+        options: [
+            "He won the Nobel Peace Prize in 2009",
+            "He released a Spotify playlist every summer",
+            "He was born in Kenya"
+        ],
+        correct: "He was born in Kenya",
+        hint: "Check his birthplace documentation carefully"
+    },
+    {
+        id: 2,
+        question: "Which of these statements about Cristiano Ronaldo is FALSE?",
+        options: [
+            "He has played in England, Spain, and Italy",
+            "He was the first footballer to reach 500 million Instagram followers",
+            "He has never played in the Champions League final"
+        ],
+        correct: "He has never played in the Champions League final",
+        hint: "Research his Champions League career achievements"
+    },
+    {
+        id: 3,
+        question: "Which of these statements about Usain Bolt is FALSE?",
+        options: [
+            "He holds the world record for both 100m and 200m sprints",
+            "His signature victory pose is called \"To the World\"",
+            "He once played professional cricket for Jamaica"
+        ],
+        correct: "He once played professional cricket for Jamaica",
+        hint: "Look into his post-athletics sports endeavors"
+    },
+    {
+        id: 4,
+        question: "Which of these statements about Mark Zuckerberg is FALSE?",
+        options: [
+            "He created Facebook in his Harvard dorm room",
+            "He bought Instagram in 2012",
+            "He dropped out of high school"
+        ],
+        correct: "He dropped out of high school",
+        hint: "Consider his educational background"
+    },
+    {
+        id: 5,
+        question: "Which of these statements about Bill Gates is FALSE?",
+        options: [
+            "He co-founded Microsoft with Paul Allen",
+            "He wrote his first computer program at age 13",
+            "He was the world's richest man continuously from 1980 to 2020"
+        ],
+        correct: "He was the world's richest man continuously from 1980 to 2020",
+        hint: "Review the history of world's wealthiest individuals"
+    },
+    {
+        id: 6,
+        question: "Which of these statements about Narendra Modi is FALSE?",
+        options: [
+            "He was the Chief Minister of Gujarat before becoming Prime Minister",
+            "He once sold tea in his childhood",
+            "He was the youngest Prime Minister of India"
+        ],
+        correct: "He was the youngest Prime Minister of India",
+        hint: "Look up India's youngest Prime Minister"
+    },
+    {
+        id: 7,
+        question: "Which of these statements about Isaac Newton is FALSE?",
+        options: [
+            "He formulated the laws of motion",
+            "He worked as Master of the Royal Mint",
+            "He invented the telescope"
+        ],
+        correct: "He invented the telescope",
+        hint: "Research the origins of the telescope"
+    },
+    {
+        id: 8,
+        question: "Which of these statements about Dr. APJ Abdul Kalam is FALSE?",
+        options: [
+            "He was known as the \"Missile Man of India\"",
+            "He was India's 11th President",
+            "He never received the Bharat Ratna award"
+        ],
+        correct: "He never received the Bharat Ratna award",
+        hint: "Check his civilian awards and honors"
+    },
+    {
+        id: 9,
+        question: "Which of these statements about Leonardo DiCaprio is FALSE?",
+        options: [
+            "He finally won his first Oscar for The Revenant",
+            "He once starred in a Titanic-themed sequel movie",
+            "He is an environmental activist"
+        ],
+        correct: "He once starred in a Titanic-themed sequel movie",
+        hint: "Consider his filmography carefully"
+    },
+    {
+        id: 10,
+        question: "Which of these statements about Mahatma Gandhi is FALSE?",
+        options: [
+            "He was trained as a lawyer in London",
+            "He led the Salt March against British rule",
+            "He won a Nobel Peace Prize"
+        ],
+        correct: "He won a Nobel Peace Prize",
+        hint: "Research his Nobel Prize nominations"
+    }
+];
 
-
-export default function Level1Page() {
+export default function Level18Page() {
   const [team, setTeam] = useState<Team | null>(null);
   const [initialTeamStats, setInitialTeamStats] = useState<{
     correct_questions: number;
@@ -114,7 +192,7 @@ export default function Level1Page() {
         hint_count: teamData.hint_count
       });
 
-      if (teamData.current_level > 1) {
+      if (teamData.current_level > 18) {
         toast.info("You've already completed this level!");
         router.push('/levels');
         return;
@@ -295,12 +373,12 @@ export default function Level1Page() {
   }
   };
 
-//   const handleHint = () => {
-//     setShowHint(true);
-//     const newStats = { ...levelStats };
-//     newStats.hintsUsed++;
-//     setLevelStats(newStats);
-//   };
+  const handleHint = () => {
+    setShowHint(true);
+    const newStats = { ...levelStats };
+    newStats.hintsUsed++;
+    setLevelStats(newStats);
+  };
 
   /**
    * ENHANCED SCORING ALGORITHM
@@ -399,7 +477,7 @@ export default function Level1Page() {
 
     const scoreData = calculateScore(timeTaken);
     const newTotalScore = team.score + scoreData.totalScore;
-    const newLevel = 2;
+    const newLevel = 19;
 
     try {
       // CRITICAL FIX: Ensure final level statistics are accurately saved to database
@@ -445,17 +523,17 @@ export default function Level1Page() {
         })
       });
 
-      // Save checkpoint if this is a checkpoint level
-      // if (isCheckpointLevel(1)) {
-      //   await fetch(`/api/teams/${teamCode}/checkpoint`, {
-      //     method: 'PUT',
-      //     headers: { 'Content-Type': 'application/json' },
-      //     body: JSON.stringify({
-      //       checkpoint_score: newTotalScore,
-      //       checkpoint_level: 1
-      //     })
-      //   });
-      // }
+    //   // Save checkpoint if this is a checkpoint level
+    //   if (isCheckpointLevel(1)) {
+    //     await fetch(`/api/teams/${teamCode}/checkpoint`, {
+    //       method: 'PUT',
+    //       headers: { 'Content-Type': 'application/json' },
+    //       body: JSON.stringify({
+    //         checkpoint_score: newTotalScore,
+    //         checkpoint_level: 5
+    //       })
+    //     });
+    //   }
 
       setIsCompleted(true);
     } catch (error) {
@@ -469,7 +547,7 @@ export default function Level1Page() {
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-600 mx-auto mb-4"></div>
-          <p className="text-lg text-gray-600">Loading Level 1...</p>
+          <p className="text-lg text-gray-600">Loading Level 18...</p>
         </div>
       </div>
     );
@@ -498,7 +576,7 @@ export default function Level1Page() {
             <div className="mx-auto mb-4 w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
               <CheckCircle className="h-8 w-8 text-green-600" />
             </div>
-            <CardTitle className="text-3xl font-bold text-green-700">Level 1 Complete!</CardTitle>
+            <CardTitle className="text-3xl font-bold text-green-700">Level 18 Complete!</CardTitle>
             <div className="mt-2">
               <Badge variant="outline" className={`text-lg px-4 py-2 ${
                 scoreData.performanceRating === 'Excellent' ? 'bg-green-50 text-green-700 border-green-200' :
@@ -608,7 +686,7 @@ export default function Level1Page() {
               onClick={() => router.push('/levels')}
               className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-lg py-3"
             >
-              Continue to Level 2
+              Continue to Level 19
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </CardContent>
@@ -628,7 +706,7 @@ export default function Level1Page() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
-                Level 1
+                Level 18
               </Badge>
               <span className="text-lg font-semibold text-gray-800">{team.team_name}</span>
             </div>
@@ -692,18 +770,18 @@ export default function Level1Page() {
               </div>
 
               {/* Hint */}
-              {/* {showHint && (
+              {showHint && (
                 <Alert className="bg-blue-50 border-blue-200">
                   <HelpCircle className="h-4 w-4 text-blue-600" />
                   <AlertDescription className="text-blue-700">
                     <strong>Hint:</strong> {currentQuestion.hint}
                   </AlertDescription>
                 </Alert>
-              )} */}
+              )}
 
               {/* Action Buttons */}
               <div className="flex gap-3 pt-4">
-                {/* <Button
+                <Button
                   variant="outline"
                   onClick={handleHint}
                   disabled={showHint}
@@ -711,7 +789,7 @@ export default function Level1Page() {
                 >
                   <HelpCircle className="mr-2 h-4 w-4" />
                   {showHint ? "Hint Shown" : "Show Hint"}
-                </Button> */}
+                </Button>
                 
                 <Button
                   variant="outline"

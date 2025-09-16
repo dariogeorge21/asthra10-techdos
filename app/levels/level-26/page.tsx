@@ -2,25 +2,25 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Trophy, Timer, SkipForward, ArrowRight, CheckCircle, Target } from "lucide-react";
+import { Trophy, Timer, HelpCircle, SkipForward, ArrowRight, CheckCircle, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-// import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
-import { Team, getGameTimeRemaining, formatTimeRemaining, getGameTimerStatus } from "@/lib/supabase";
+import { Team, isCheckpointLevel, getGameTimeRemaining, formatTimeRemaining, getGameTimerStatus } from "@/lib/supabase";
 
 interface Question {
   id: number;
   question: string;
   options: string[];
   correct: string;
-//   hint: string;
+  hint: string;
 }
 
 /**
- * LEVEL-1 QUESTION BANK
+ * LEVEL-4 QUESTION BANK
  *
  * A diverse collection of 20 multiple-choice questions covering:
  * - Astronomy & Science (planets, natural phenomena)
@@ -35,42 +35,80 @@ interface Question {
  * - One correct answer
  * - A helpful hint that provides context without giving away the answer
  */
-const questions: Question[] =
-[
+const questions: Question[] = [
   {
-    "id": 1,
-    "question": "A farmer must take a goat, a cabbage, and a wolf across a river. How does he get all across safely?",
-    "options": ["Wolf first → cabbage → goat", "Goat first → cabbage → wolf", "Cabbage first → goat → wolf", "Goat first → wolf → cabbage"],
-    "correct": "Goat first → cabbage → wolf"
+    id: 1,
+    question: "Who is known as the 'Missile Man of India'?",
+    options: ["Dr. A. P. J. Abdul Kalam", "Dr. Vikram Sarabhai", "Dr. Homi Bhabha", "Dr. C. V. Raman"],
+    correct: "Dr. A. P. J. Abdul Kalam",
+    hint: "He served as the 11th President of India and was a pioneer in ballistic missile development"
   },
   {
-    "id": 2,
-    "question": "You have 12 coins; one is counterfeit (heavier or lighter). What is the minimum number of weighings needed to find it?",
-    "options": ["2", "3", "4", "5"],
-    "correct": "3"
+    id: 2,
+    question: "In cricket, who was the first bowler to take 10 wickets in a single Test innings?",
+    options: ["Jim Laker", "Anil Kumble", "Shane Warne", "Muttiah Muralitharan"],
+    correct: "Jim Laker",
+    hint: "This English bowler achieved this feat in 1956 against Australia"
   },
   {
-    "id": 3,
-    "question": "A clock shows 3:15. What is the angle between the hour and minute hands?",
-    "options": ["0°", "7.5°", "15°", "22.5°"],
-    "correct": "7.5°"
+    id: 3,
+    question: "Kerala's state bird, known for its striking blue and orange plumage, is?",
+    options: ["Great Hornbill", "Indian Roller", "Paradise Flycatcher", "Malabar Trogon"],
+    correct: "Great Hornbill",
+    hint: "This large bird is also known as 'Malamuzhakki' in Malayalam"
   },
   {
-    "id": 4,
-    "question": "A number when viewed in a mirror and rotated 180° gives a different valid number. Which number is it?",
-    "options": ["609", "808", "619", "996"],
-    "correct": "619"
+    id: 4,
+    question: "If planets had 'reverse gears,' which one rotates backward compared to most others?",
+    options: ["Mars", "Venus", "Uranus", "Mercury"],
+    correct: "Venus",
+    hint: "This planet rotates clockwise, opposite to Earth's counterclockwise rotation"
   },
   {
-    "id": 5,
-    "question": "Cryptic clue: 'Planet disturbed, ring returned (7)'. Which planet is it?",
-    "options": ["Saturn", "Mercury", "Neptune", "Uranus"],
-    "correct": "Saturn"
+    id: 5,
+    question: "The Golden Boot winner of FIFA 2022, scoring 8 goals, was?",
+    options: ["Lionel Messi", "Kylian Mbappé", "Olivier Giroud", "Julian Alvarez"],
+    correct: "Kylian Mbappé",
+    hint: "This French footballer scored a hat-trick in the final against Argentina"
+  },
+  {
+    id: 6,
+    question: "In Kerala, the famous hill station Munnar is located in which district?",
+    options: ["Wayanad", "Idukki", "Palakkad", "Kannur"],
+    correct: "Idukki",
+    hint: "This district is known for its tea plantations and hydroelectric projects"
+  },
+  {
+    id: 7,
+    question: "Which countries are hosting FIFA 2026?",
+    options: ["US and Mexico", "US, Mexico and Canada", "Brazil and Argentina", "Spain and Portugal"],
+    correct: "US, Mexico and Canada",
+    hint: "This will be the first World Cup hosted by three nations"
+  },
+  {
+    id: 8,
+    question: "Which Mughal ruler is often called the 'Engineer King' for his architectural projects?",
+    options: ["Akbar", "Shah Jahan", "Jahangir", "Aurangzeb"],
+    correct: "Shah Jahan",
+    hint: "He commissioned the Taj Mahal"
+  },
+  {
+    id: 9,
+    question: "The Malayalam film 'Drishyam' was remade into how many languages officially?",
+    options: ["3", "4", "5", "6"],
+    correct: "4",
+    hint: "It was remade in Hindi, Tamil, Telugu, and Kannada"
+  },
+  {
+    id: 10,
+    question: "Which Greek goddess was believed to have sprung fully grown from the head of Zeus?",
+    options: ["Hera", "Aphrodite", "Athena", "Artemis"],
+    correct: "Athena",
+    hint: "She is the goddess of wisdom and strategic warfare"
   }
-]
+];
 
-
-export default function Level1Page() {
+export default function Level26Page() {
   const [team, setTeam] = useState<Team | null>(null);
   const [initialTeamStats, setInitialTeamStats] = useState<{
     correct_questions: number;
@@ -114,7 +152,7 @@ export default function Level1Page() {
         hint_count: teamData.hint_count
       });
 
-      if (teamData.current_level > 1) {
+      if (teamData.current_level > 26) {
         toast.info("You've already completed this level!");
         router.push('/levels');
         return;
@@ -295,12 +333,12 @@ export default function Level1Page() {
   }
   };
 
-//   const handleHint = () => {
-//     setShowHint(true);
-//     const newStats = { ...levelStats };
-//     newStats.hintsUsed++;
-//     setLevelStats(newStats);
-//   };
+  const handleHint = () => {
+    setShowHint(true);
+    const newStats = { ...levelStats };
+    newStats.hintsUsed++;
+    setLevelStats(newStats);
+  };
 
   /**
    * ENHANCED SCORING ALGORITHM
@@ -399,7 +437,7 @@ export default function Level1Page() {
 
     const scoreData = calculateScore(timeTaken);
     const newTotalScore = team.score + scoreData.totalScore;
-    const newLevel = 2;
+    const newLevel = 27;
 
     try {
       // CRITICAL FIX: Ensure final level statistics are accurately saved to database
@@ -446,16 +484,16 @@ export default function Level1Page() {
       });
 
       // Save checkpoint if this is a checkpoint level
-      // if (isCheckpointLevel(1)) {
-      //   await fetch(`/api/teams/${teamCode}/checkpoint`, {
-      //     method: 'PUT',
-      //     headers: { 'Content-Type': 'application/json' },
-      //     body: JSON.stringify({
-      //       checkpoint_score: newTotalScore,
-      //       checkpoint_level: 1
-      //     })
-      //   });
-      // }
+      if (isCheckpointLevel(1)) {
+        await fetch(`/api/teams/${teamCode}/checkpoint`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            checkpoint_score: newTotalScore,
+            checkpoint_level: 1
+          })
+        });
+      }
 
       setIsCompleted(true);
     } catch (error) {
@@ -469,7 +507,7 @@ export default function Level1Page() {
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-600 mx-auto mb-4"></div>
-          <p className="text-lg text-gray-600">Loading Level 1...</p>
+          <p className="text-lg text-gray-600">Loading Level 26...</p>
         </div>
       </div>
     );
@@ -498,7 +536,7 @@ export default function Level1Page() {
             <div className="mx-auto mb-4 w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
               <CheckCircle className="h-8 w-8 text-green-600" />
             </div>
-            <CardTitle className="text-3xl font-bold text-green-700">Level 1 Complete!</CardTitle>
+            <CardTitle className="text-3xl font-bold text-green-700">Level 26 Complete!</CardTitle>
             <div className="mt-2">
               <Badge variant="outline" className={`text-lg px-4 py-2 ${
                 scoreData.performanceRating === 'Excellent' ? 'bg-green-50 text-green-700 border-green-200' :
@@ -608,7 +646,7 @@ export default function Level1Page() {
               onClick={() => router.push('/levels')}
               className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-lg py-3"
             >
-              Continue to Level 2
+              Continue to Level 27
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </CardContent>
@@ -628,7 +666,7 @@ export default function Level1Page() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
-                Level 1
+                Level 26
               </Badge>
               <span className="text-lg font-semibold text-gray-800">{team.team_name}</span>
             </div>
@@ -692,18 +730,18 @@ export default function Level1Page() {
               </div>
 
               {/* Hint */}
-              {/* {showHint && (
+              {showHint && (
                 <Alert className="bg-blue-50 border-blue-200">
                   <HelpCircle className="h-4 w-4 text-blue-600" />
                   <AlertDescription className="text-blue-700">
                     <strong>Hint:</strong> {currentQuestion.hint}
                   </AlertDescription>
                 </Alert>
-              )} */}
+              )}
 
               {/* Action Buttons */}
               <div className="flex gap-3 pt-4">
-                {/* <Button
+                <Button
                   variant="outline"
                   onClick={handleHint}
                   disabled={showHint}
@@ -711,7 +749,7 @@ export default function Level1Page() {
                 >
                   <HelpCircle className="mr-2 h-4 w-4" />
                   {showHint ? "Hint Shown" : "Show Hint"}
-                </Button> */}
+                </Button>
                 
                 <Button
                   variant="outline"

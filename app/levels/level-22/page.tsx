@@ -2,21 +2,21 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Trophy, Timer, SkipForward, ArrowRight, CheckCircle, Target } from "lucide-react";
+import { Trophy, Timer, HelpCircle, SkipForward, ArrowRight, CheckCircle, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-// import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
-import { Team, getGameTimeRemaining, formatTimeRemaining, getGameTimerStatus } from "@/lib/supabase";
+import { Team, isCheckpointLevel, getGameTimeRemaining, formatTimeRemaining, getGameTimerStatus } from "@/lib/supabase";
 
 interface Question {
   id: number;
   question: string;
   options: string[];
   correct: string;
-//   hint: string;
+  hint: string;
 }
 
 /**
@@ -35,42 +35,80 @@ interface Question {
  * - One correct answer
  * - A helpful hint that provides context without giving away the answer
  */
-const questions: Question[] =
-[
+const questions: Question[] = [
   {
-    "id": 1,
-    "question": "A farmer must take a goat, a cabbage, and a wolf across a river. How does he get all across safely?",
-    "options": ["Wolf first → cabbage → goat", "Goat first → cabbage → wolf", "Cabbage first → goat → wolf", "Goat first → wolf → cabbage"],
-    "correct": "Goat first → cabbage → wolf"
+    id: 1,
+    question: "If planets were in a dance battle, this one would spin so fast it completes a day in less than 10 hours. Which speedy planet is it?",
+    options: ["Jupiter", "Saturn", "Mars", "Venus"],
+    correct: "Jupiter",
+    hint: "This gas giant is the largest planet in our solar system and rotates once every 9.9 hours."
   },
   {
-    "id": 2,
-    "question": "You have 12 coins; one is counterfeit (heavier or lighter). What is the minimum number of weighings needed to find it?",
-    "options": ["2", "3", "4", "5"],
-    "correct": "3"
+    id: 2,
+    question: "Who wrote the epic fantasy series 'The Lord of the Rings'?",
+    options: ["J. R. R. Tolkien", "C. S. Lewis", "George R. R. Martin", "Terry Pratchett"],
+    correct: "J. R. R. Tolkien",
+    hint: "This Oxford professor created Middle-earth and invented several languages for his fantasy world."
   },
   {
-    "id": 3,
-    "question": "A clock shows 3:15. What is the angle between the hour and minute hands?",
-    "options": ["0°", "7.5°", "15°", "22.5°"],
-    "correct": "7.5°"
+    id: 3,
+    question: "Which tennis player is nicknamed the 'King of Clay'?",
+    options: ["Rafael Nadal", "Roger Federer", "Novak Djokovic", "Andy Murray"],
+    correct: "Rafael Nadal",
+    hint: "This Spanish player has won the French Open a record number of times on clay courts."
   },
   {
-    "id": 4,
-    "question": "A number when viewed in a mirror and rotated 180° gives a different valid number. Which number is it?",
-    "options": ["609", "808", "619", "996"],
-    "correct": "619"
+    id: 4,
+    question: "Which country won the very first FIFA World Cup in 1930?",
+    options: ["Uruguay", "Brazil", "Argentina", "Italy"],
+    correct: "Uruguay",
+    hint: "This South American country also hosted the inaugural tournament and defeated Argentina in the final."
   },
   {
-    "id": 5,
-    "question": "Cryptic clue: 'Planet disturbed, ring returned (7)'. Which planet is it?",
-    "options": ["Saturn", "Mercury", "Neptune", "Uranus"],
-    "correct": "Saturn"
+    id: 5,
+    question: "Tesla’s humanoid robot project is called what?",
+    options: ["Optimus", "Atlas", "Sophia", "Asimo"],
+    correct: "Optimus",
+    hint: "Also known as Tesla Bot, this project was unveiled by Tesla in 2021."
+  },
+  {
+    id: 6,
+    question: "Which footballer has the most Ballon d’Or awards?",
+    options: ["Lionel Messi", "Cristiano Ronaldo", "Johan Cruyff", "Michel Platini"],
+    correct: "Lionel Messi",
+    hint: "This Argentine player has won 8 Ballon d'Or awards as of 2023, more than any other player in history."
+  },
+  {
+    id: 7,
+    question: "Who was awarded the first Booker Prize from India?",
+    options: ["Arundhati Roy", "Salman Rushdie", "R. K. Narayan", "Vikram Seth"],
+    correct: "Arundhati Roy",
+    hint: "She won for her novel 'The God of Small Things' in 1997, becoming the first Indian woman to win this prestigious award."
+  },
+  {
+    id: 8,
+    question: "The Kaziranga National Park in Assam is famous for which animal?",
+    options: ["One-horned Rhinoceros", "Bengal Tiger", "Asian Elephant", "Hoolock Gibbon"],
+    correct: "One-horned Rhinoceros",
+    hint: "This UNESCO World Heritage Site hosts two-thirds of the world's population of this endangered species."
+  },
+  {
+    id: 9,
+    question: "The first video on YouTube to cross 1 billion views was which song?",
+    options: ["Gangnam Style", "Baby by Justin Bieber", "Despacito", "See You Again"],
+    correct: "Gangnam Style",
+    hint: "This 2012 K-pop hit by Psy became a global phenomenon and broke YouTube's view counter."
+  },
+  {
+    id: 10,
+    question: "Which Indian poet is popularly known as the Nightingale of India?",
+    options: ["Sarojini Naidu", "Kamala Das", "Mahadevi Varma", "Amrita Pritam"],
+    correct: "Sarojini Naidu",
+    hint: "She was also a freedom fighter and the first woman to become the President of the Indian National Congress."
   }
-]
+];
 
-
-export default function Level1Page() {
+export default function Level22Page() {
   const [team, setTeam] = useState<Team | null>(null);
   const [initialTeamStats, setInitialTeamStats] = useState<{
     correct_questions: number;
@@ -114,7 +152,7 @@ export default function Level1Page() {
         hint_count: teamData.hint_count
       });
 
-      if (teamData.current_level > 1) {
+      if (teamData.current_level > 22) {
         toast.info("You've already completed this level!");
         router.push('/levels');
         return;
@@ -295,12 +333,12 @@ export default function Level1Page() {
   }
   };
 
-//   const handleHint = () => {
-//     setShowHint(true);
-//     const newStats = { ...levelStats };
-//     newStats.hintsUsed++;
-//     setLevelStats(newStats);
-//   };
+  const handleHint = () => {
+    setShowHint(true);
+    const newStats = { ...levelStats };
+    newStats.hintsUsed++;
+    setLevelStats(newStats);
+  };
 
   /**
    * ENHANCED SCORING ALGORITHM
@@ -399,7 +437,7 @@ export default function Level1Page() {
 
     const scoreData = calculateScore(timeTaken);
     const newTotalScore = team.score + scoreData.totalScore;
-    const newLevel = 2;
+    const newLevel = 23;
 
     try {
       // CRITICAL FIX: Ensure final level statistics are accurately saved to database
@@ -469,7 +507,7 @@ export default function Level1Page() {
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-600 mx-auto mb-4"></div>
-          <p className="text-lg text-gray-600">Loading Level 1...</p>
+          <p className="text-lg text-gray-600">Loading Level 22...</p>
         </div>
       </div>
     );
@@ -498,7 +536,7 @@ export default function Level1Page() {
             <div className="mx-auto mb-4 w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
               <CheckCircle className="h-8 w-8 text-green-600" />
             </div>
-            <CardTitle className="text-3xl font-bold text-green-700">Level 1 Complete!</CardTitle>
+            <CardTitle className="text-3xl font-bold text-green-700">Level 22 Complete!</CardTitle>
             <div className="mt-2">
               <Badge variant="outline" className={`text-lg px-4 py-2 ${
                 scoreData.performanceRating === 'Excellent' ? 'bg-green-50 text-green-700 border-green-200' :
@@ -608,7 +646,7 @@ export default function Level1Page() {
               onClick={() => router.push('/levels')}
               className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-lg py-3"
             >
-              Continue to Level 2
+              Continue to Level 23
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </CardContent>
@@ -628,7 +666,7 @@ export default function Level1Page() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
-                Level 1
+                Level 22
               </Badge>
               <span className="text-lg font-semibold text-gray-800">{team.team_name}</span>
             </div>
@@ -692,18 +730,18 @@ export default function Level1Page() {
               </div>
 
               {/* Hint */}
-              {/* {showHint && (
+              {showHint && (
                 <Alert className="bg-blue-50 border-blue-200">
                   <HelpCircle className="h-4 w-4 text-blue-600" />
                   <AlertDescription className="text-blue-700">
                     <strong>Hint:</strong> {currentQuestion.hint}
                   </AlertDescription>
                 </Alert>
-              )} */}
+              )}
 
               {/* Action Buttons */}
               <div className="flex gap-3 pt-4">
-                {/* <Button
+                <Button
                   variant="outline"
                   onClick={handleHint}
                   disabled={showHint}
@@ -711,7 +749,7 @@ export default function Level1Page() {
                 >
                   <HelpCircle className="mr-2 h-4 w-4" />
                   {showHint ? "Hint Shown" : "Show Hint"}
-                </Button> */}
+                </Button>
                 
                 <Button
                   variant="outline"
