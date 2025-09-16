@@ -241,6 +241,7 @@ export default function Level1Page() {
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
       setSelectedAnswer("");
+
       setShowHint(false);
     } else {
       completeLevel();
