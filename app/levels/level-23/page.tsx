@@ -118,136 +118,66 @@ const questions: Question[] = [
   },
   {
     id: 2,
-    question: "Who was the first woman to become the Chief Minister of an Indian state?",
-    options: ["Sucheta Kripalani (Uttar Pradesh, 1963)", "Indira Gandhi", "Jayalalithaa", "Mamata Banerjee"],
-    correct: "Sucheta Kripalani (Uttar Pradesh, 1963)",
-    hint: "She was a freedom fighter and became the first woman Chief Minister in India, serving Uttar Pradesh from 1963 to 1967."
-  },
-  {
-    id: 3,
     question: "The movie 'Inception' plays with the concept of dreams within dreams. Who directed it?",
     options: ["Christopher Nolan", "Steven Spielberg", "Martin Scorsese", "Quentin Tarantino"],
     correct: "Christopher Nolan",
     hint: "This British-American director is known for complex, non-linear storytelling and mind-bending concepts in films like this 2010 sci-fi thriller."
   },
   {
-    id: 4,
+    id: 3,
     question: "Which Indian cricket captain is called 'Dada' and 'Prince of Kolkata'?",
     options: ["Sourav Ganguly", "Sachin Tendulkar", "Rahul Dravid", "MS Dhoni"],
     correct: "Sourav Ganguly",
     hint: "This former Indian cricket captain from Kolkata is affectionately called 'Dada' (elder brother) and led India to many memorable victories."
   },
   {
-    id: 5,
+    id: 4,
     question: "A city in Kerala is nicknamed the 'Venice of the East' because of its backwaters. Which city?",
     options: ["Alappuzha", "Kochi", "Thiruvananthapuram", "Kozhikode"],
     correct: "Alappuzha",
     hint: "This coastal city is famous for its intricate network of canals, lagoons, and backwaters, earning it the nickname 'Venice of the East'."
   },
   {
-    id: 6,
-    question: "In FIFA World Cup history, which country has lost the most finals?",
-    options: ["Germany", "Brazil", "Argentina", "Italy"],
-    correct: "Germany",
-    hint: "Germany has reached the World Cup final 8 times but lost 4 of them, making them the country with the most final defeats in World Cup history."
-  },
-  {
-    id: 7,
+    id: 5,
     question: "If you were looking for Mount Everest's neighbor, which mountain is the second highest in the world?",
     options: ["K2", "Kangchenjunga", "Lhotse", "Makalu"],
     correct: "K2",
     hint: "Located on the China-Pakistan border, this mountain is known as the 'Savage Mountain' and is considered more challenging to climb than Everest."
   },
   {
-    id: 8,
-    question: "Who was the first Indian actress to receive the Padma Shri Award?",
-    options: ["Nargis Dutt", "Meena Kumari", "Madhubala", "Waheeda Rehman"],
-    correct: "Nargis Dutt",
-    hint: "This legendary actress, known for films like 'Mother India', received the Padma Shri in 1958, becoming the first Indian actress to receive this civilian honor."
-  },
-  {
-    id: 9,
+    id: 6,
     question: "The Android operating system was originally developed by which company before Google acquired it?",
     options: ["Android Inc.", "Microsoft", "Apple", "Samsung"],
     correct: "Android Inc.",
     hint: "Founded in 2003 by Andy Rubin, Rich Miner, Nick Sears, and Chris White, this company was acquired by Google in 2005 for about $50 million."
   },
   {
-    id: 10,
-    question: "Which Indian state is famous for the Hornbill Festival?",
-    options: ["Nagaland", "Manipur", "Mizoram", "Arunachal Pradesh"],
-    correct: "Nagaland",
-    hint: "This northeastern state celebrates the Hornbill Festival annually in December, showcasing the rich culture and traditions of the Naga tribes."
-  },
-  {
-    id: 11,
+    id: 7,
     question: "Who was the first Indian woman to win an Olympic silver medal?",
     options: ["P. V. Sindhu (badminton, 2016)", "Saina Nehwal", "Mary Kom", "Karnam Malleswari"],
     correct: "P. V. Sindhu (badminton, 2016)",
     hint: "This badminton player from Hyderabad won silver at the 2016 Rio Olympics, becoming the first Indian woman to win an Olympic silver medal."
   },
   {
-    id: 12,
-    question: "Who was the first Indian batsman to hit six sixes in an over in international cricket?",
-    options: ["Yuvraj Singh (2007 T20 World Cup)", "Rohit Sharma", "MS Dhoni", "Virender Sehwag"],
-    correct: "Yuvraj Singh (2007 T20 World Cup)",
-    hint: "In the 2007 T20 World Cup against England, this left-handed batsman hit Stuart Broad for six consecutive sixes in one over."
-  },
-  {
-    id: 13,
+    id: 8,
     question: "The Nobel Prize medal features the portrait of which scientist?",
     options: ["Alfred Nobel", "Albert Einstein", "Marie Curie", "Isaac Newton"],
     correct: "Alfred Nobel",
     hint: "The founder of the Nobel Prizes, this Swedish chemist and inventor of dynamite is featured on the medal that bears his name."
   },
   {
-    id: 14,
-    question: "Which Indian city is known as the 'City of Nawabs'?",
-    options: ["Lucknow", "Hyderabad", "Delhi", "Mysore"],
-    correct: "Lucknow",
-    hint: "The capital of Uttar Pradesh, this city was ruled by the Nawabs of Awadh and is famous for its rich culture, cuisine, and architecture."
-  },
-  {
-    id: 15,
+    id: 9,
     question: "If music awards were planets, the 'Grammy' is Earth's biggest. Which award is considered the world's highest honor in cinema?",
     options: ["The Oscars (Academy Awards)", "Golden Globe", "Cannes Film Festival", "BAFTA"],
     correct: "The Oscars (Academy Awards)",
     hint: "Presented by the Academy of Motion Picture Arts and Sciences, this is considered the most prestigious award in the film industry."
   },
   {
-    id: 16,
+    id: 10,
     question: "In Kerala, which river is the longest?",
     options: ["Periyar River", "Bharathapuzha", "Pamba River", "Chaliyar River"],
     correct: "Periyar River",
     hint: "This 244 km long river flows through Kerala and is the longest river in the state, originating from the Western Ghats."
-  },
-  {
-    id: 17,
-    question: "The fastest man-made object ever built is a spacecraft that 'touched the Sun.' What is its name?",
-    options: ["Parker Solar Probe", "Voyager 1", "New Horizons", "Juno"],
-    correct: "Parker Solar Probe",
-    hint: "Launched in 2018, this NASA spacecraft holds the record for the fastest human-made object, reaching speeds of up to 430,000 mph."
-  },
-  {
-    id: 18,
-    question: "Who was India's first individual Olympic gold medalist?",
-    options: ["Abhinav Bindra (2008, shooting)", "Rajyavardhan Singh Rathore", "Vijay Kumar", "Gagan Narang"],
-    correct: "Abhinav Bindra (2008, shooting)",
-    hint: "This shooter from Chandigarh won gold in the 10m Air Rifle event at the 2008 Beijing Olympics, becoming India's first individual Olympic gold medalist."
-  },
-  {
-    id: 19,
-    question: "In literature, which Indian author wrote the novel 'The White Tiger' (Booker Prize winner)?",
-    options: ["Aravind Adiga", "Salman Rushdie", "Arundhati Roy", "Vikram Seth"],
-    correct: "Aravind Adiga",
-    hint: "This Indian-Australian author won the Man Booker Prize in 2008 for his debut novel about class struggle in modern India."
-  },
-  {
-    id: 20,
-    question: "Which superhero's real name is T'Challa?",
-    options: ["Black Panther", "Black Widow", "Black Lightning", "Black Canary"],
-    correct: "Black Panther",
-    hint: "This Marvel superhero is the king of Wakanda and first appeared in Fantastic Four #52 in 1966, later getting his own series and movie."
   }
 ];
 
