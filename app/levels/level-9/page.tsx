@@ -1,177 +1,134 @@
 /**
- * LEVEL-11 WORD UNSCRAMBLING IMPLEMENTATION - TECHDOS GAME
+ * LEVEL-9 KEYBOARD TREASURE HUNT IMPLEMENTATION - TECHDOS GAME
  *
  * OVERVIEW:
- * Level-11 represents a word unscrambling challenge in the TechDOS quiz game, featuring
- * misspelled/scrambled words that players need to correct by typing the proper spelling
- * using a display keyboard interface with text input validation.
+ * Level-9 represents a keyboard treasure hunt challenge in the TechDOS quiz game, featuring
+ * riddles about keyboard shortcuts that players need to solve by selecting the correct
+ * shortcut from a dropdown menu with 35-40 options.
  *
  * PUZZLE MECHANICS:
- * - Format: Scrambled/misspelled words with text input answers
- * - Total Questions: 20 diverse word puzzles covering technology terms
- * - Input Method: Display keyboard with text input field (letters only, no numbers)
- * - Answer Validation: Lowercase conversion, letters only, exact match required
- * - No Hint System: Players must solve without hints to increase difficulty
+ * - Format: Riddle-based questions about keyboard shortcuts
+ * - Total Questions: 10 diverse keyboard shortcut riddles
+ * - Input Method: Dropdown menu with 35-40 keyboard shortcut options
+ * - Answer Validation: Exact match with correct shortcut
+ * - Hint System: Players can use hints similar to level-22
  * - Timer Integration: Real-time countdown with global game timer
  * - Navigation Protection: Prevents accidental page refresh/navigation during quiz
  *
  * GAME FLOW:
- * 1. Word Display: Scrambled words are presented sequentially
- * 2. Answer Input: Players type correct spelling using display keyboard or regular keyboard
- * 3. Answer Validation: Input is converted to lowercase and validated (letters only)
- * 4. Answer Submission: Submit typed answer or skip to next word
- * 5. Progress Tracking: Visual progress bar and word counter
- * 6. Level Completion: Automatic progression after all words answered/skipped
+ * 1. Riddle Display: Keyboard shortcut riddles are presented sequentially
+ * 2. Answer Selection: Players select correct shortcut from dropdown menu
+ * 3. Answer Validation: Selection is validated against correct answer
+ * 4. Answer Submission: Submit selected answer or skip to next question
+ * 5. Progress Tracking: Visual progress bar and question counter
+ * 6. Level Completion: Automatic progression after all questions answered/skipped
  */
 
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Trophy, Timer, SkipForward, ArrowRight, CheckCircle, Target, Keyboard } from "lucide-react";
+import { Timer, HelpCircle, SkipForward, ArrowRight, CheckCircle, Target, Keyboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
 import { Team, getGameTimeRemaining, formatTimeRemaining, getGameTimerStatus } from "@/lib/supabase";
 
-interface WordPuzzle {
+interface KeyboardQuestion {
   id: number;
-  scrambledWord: string;
-  correctWord: string;
-  category: string;
+  riddle: string;
+  correctAnswer: string;
+  hint: string;
 }
 
 /**
- * LEVEL-11 WORD PUZZLE BANK
- * 20 scrambled/misspelled technology-related words
+ * LEVEL-9 KEYBOARD TREASURE HUNT QUESTIONS
+ * 10 riddles about keyboard shortcuts with hints
  */
-const puzzles: WordPuzzle[] = [
+const questions: KeyboardQuestion[] = [
   {
     id: 1,
-    scrambledWord: "PTALOP",
-    correctWord: "laptop",
-    category: "Technology"
+    riddle: "I can undo your biggest mistake… but if you press me too many times, I'll also undo your success. Who am I?",
+    correctAnswer: "Ctrl + Z",
+    hint: "This shortcut reverses the last action you performed in most applications."
   },
   {
     id: 2,
-    scrambledWord: "EPNHO",
-    correctWord: "phone",
-    category: "Technology"
+    riddle: "You closed me in anger, but now regret it. Which shortcut brings me back from the dead?",
+    correctAnswer: "Ctrl + Shift + T",
+    hint: "This shortcut reopens the most recently closed tab in your browser."
   },
   {
     id: 3,
-    scrambledWord: "EOGLOG",
-    correctWord: "google",
-    category: "Technology"
+    riddle: "Your boss is behind you. Hide everything instantly!",
+    correctAnswer: "Win + D",
+    hint: "This Windows shortcut minimizes all windows and shows the desktop immediately."
   },
   {
     id: 4,
-    scrambledWord: "NERTNITE",
-    correctWord: "internet",
-    category: "Technology"
+    riddle: "I can copy myself infinitely. Shortcut to duplicate me?",
+    correctAnswer: "Ctrl + D",
+    hint: "This shortcut duplicates the current tab in most browsers or duplicates objects in design software."
   },
   {
     id: 5,
-    scrambledWord: "CFAKOBOE",
-    correctWord: "facebook",
-    category: "Technology"
+    riddle: "You want to look smarter instantly. Shortcut to zoom in? And to zoom out?",
+    correctAnswer: "Ctrl + +",
+    hint: "This shortcut increases the zoom level in most applications. Use Ctrl + - to zoom out."
   },
   {
     id: 6,
-    scrambledWord: "OZAMNA",
-    correctWord: "amazon",
-    category: "Technology"
+    riddle: "I make words louder, thicker, stronger… Press me.",
+    correctAnswer: "Ctrl + B",
+    hint: "This shortcut makes selected text bold in most text editors and word processors."
   },
   {
     id: 7,
-    scrambledWord: "SPWAHATT",
-    correctWord: "whatsapp",
-    category: "Technology"
+    riddle: "I don't leave anyone behind. One press, and I take everyone with me.",
+    correctAnswer: "Ctrl + A",
+    hint: "This shortcut selects all content in the current document or window."
   },
   {
     id: 8,
-    scrambledWord: "TUBOYUE",
-    correctWord: "youtube",
-    category: "Technology"
+    riddle: "Final level! Open the secret world where nothing is saved in history.",
+    correctAnswer: "Ctrl + Shift + N",
+    hint: "This shortcut opens a new incognito/private browsing window in most browsers."
   },
   {
     id: 9,
-    scrambledWord: "MOEYMR",
-    correctWord: "memory",
-    category: "Technology"
+    riddle: "I'm a magician. I instantly move you from one window to another — left, right, left, right… Which shortcut am I?",
+    correctAnswer: "Alt + Tab",
+    hint: "This shortcut switches between open applications or windows on your computer."
   },
   {
     id: 10,
-    scrambledWord: "ACMENI",
-    correctWord: "cinema",
-    category: "Technology"
-  },
-  {
-    id: 11,
-    scrambledWord: "PHSRNEAMTO",
-    correctWord: "smartphone",
-    category: "Technology"
-  },
-  {
-    id: 12,
-    scrambledWord: "CIEITFNCSI",
-    correctWord: "scientific",
-    category: "Technology"
-  },
-  {
-    id: 13,
-    scrambledWord: "RESREV",
-    correctWord: "server",
-    category: "Technology"
-  },
-  {
-    id: 14,
-    scrambledWord: "CFSOMTIRO",
-    correctWord: "microsoft",
-    category: "Technology"
-  },
-  {
-    id: 15,
-    scrambledWord: "PECSILNAA",
-    correctWord: "appliance",
-    category: "Technology"
-  },
-  {
-    id: 16,
-    scrambledWord: "NOHTEGYLOCT",
-    correctWord: "technology",
-    category: "Technology"
-  },
-  {
-    id: 17,
-    scrambledWord: "MOGRALTIH",
-    correctWord: "algorithm",
-    category: "Technology"
-  },
-  {
-    id: 18,
-    scrambledWord: "NONNAVOTII",
-    correctWord: "innovation",
-    category: "Technology"
-  },
-  {
-    id: 19,
-    scrambledWord: "FILARTAICI",
-    correctWord: "artificial",
-    category: "Technology"
-  },
-  {
-    id: 20,
-    scrambledWord: "NOGAZTOIARNI",
-    correctWord: "organization",
-    category: "Technology"
+    riddle: "I let you preview all your open windows at once — like a spy with many eyes. What's my move?",
+    correctAnswer: "Win + Tab",
+    hint: "This Windows shortcut shows Task View with all your open windows and virtual desktops."
   }
 ];
 
-export default function Level11Page() {
+/**
+ * KEYBOARD SHORTCUT OPTIONS FOR DROPDOWN
+ * 40 keyboard shortcuts including correct answers and distractors
+ */
+const keyboardShortcuts = [
+  "Ctrl + Z", "Ctrl + Y", "Ctrl + X", "Ctrl + C", "Ctrl + V",
+  "Ctrl + A", "Ctrl + S", "Ctrl + F", "Ctrl + G", "Ctrl + H",
+  "Ctrl + N", "Ctrl + O", "Ctrl + P", "Ctrl + Q", "Ctrl + R",
+  "Ctrl + T", "Ctrl + U", "Ctrl + W", "Ctrl + D", "Ctrl + B",
+  "Ctrl + I", "Ctrl + K", "Ctrl + L", "Ctrl + +", "Ctrl + -",
+  "Ctrl + 0", "Ctrl + 1", "Ctrl + 2", "Ctrl + 3", "Ctrl + 4",
+  "Ctrl + Shift + T", "Ctrl + Shift + N", "Ctrl + Shift + W", "Ctrl + Shift + Tab",
+  "Alt + Tab", "Alt + F4", "Alt + Enter", "Win + D", "Win + Tab", "Win + L",
+  "F5", "F11", "Esc", "Tab", "Shift + Tab", "Enter", "Space", "Backspace", "Delete"
+];
+
+export default function Level9Page() {
   const [team, setTeam] = useState<Team | null>(null);
   const [initialTeamStats, setInitialTeamStats] = useState<{
     correct_questions: number;
@@ -179,8 +136,9 @@ export default function Level11Page() {
     skipped_questions: number;
     hint_count: number;
   } | null>(null);
-  const [currentPuzzleIndex, setCurrentPuzzleIndex] = useState(0);
-  const [userAnswer, setUserAnswer] = useState<string>("");
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [selectedAnswer, setSelectedAnswer] = useState<string>("");
+  const [showHint, setShowHint] = useState(false);
   const [levelStartTime] = useState<Date>(new Date());
   const [timeRemaining, setTimeRemaining] = useState<number>(0);
   const [timerStatus, setTimerStatus] = useState<'not_started' | 'active' | 'expired'>('not_started');
@@ -213,7 +171,7 @@ export default function Level11Page() {
         hint_count: teamData.hint_count
       });
 
-      if (teamData.current_level > 11) {
+      if (teamData.current_level > 9) {
         toast.info("You've already completed this level!");
         router.push('/levels');
         return;
@@ -297,22 +255,16 @@ export default function Level11Page() {
     }
   };
 
-  const validateAnswer = (input: string, correctAnswer: string): boolean => {
-    const normalizedInput = input.toLowerCase().trim().replace(/[^a-z]/g, '');
-    const normalizedCorrect = correctAnswer.toLowerCase().trim();
-    return normalizedInput === normalizedCorrect;
-  };
-
   const handleAnswer = async () => {
-    if (submitLoading || !userAnswer.trim()) {
+    if (submitLoading || !selectedAnswer) {
       return;
     }
 
     setSubmitLoading(true);
 
     try {
-      const currentPuzzle = puzzles[currentPuzzleIndex];
-      const isCorrect = validateAnswer(userAnswer, currentPuzzle.correctWord);
+      const currentQuestion = questions[currentQuestionIndex];
+      const isCorrect = selectedAnswer === currentQuestion.correctAnswer;
       
       const newStats = { ...levelStats };
       if (isCorrect) {
@@ -326,14 +278,16 @@ export default function Level11Page() {
       
       const updatedStats = {
         correct_questions: team.correct_questions + (isCorrect ? 1 : 0),
-        incorrect_questions: team.incorrect_questions + (isCorrect ? 0 : 1)
+        incorrect_questions: team.incorrect_questions + (isCorrect ? 0 : 1),
+        hint_count: team.hint_count + (showHint ? 1 : 0)
       };
 
       await updateTeamStats(updatedStats);
 
-      if (currentPuzzleIndex < puzzles.length - 1) {
-        setCurrentPuzzleIndex(currentPuzzleIndex + 1);
-        setUserAnswer("");
+      if (currentQuestionIndex < questions.length - 1) {
+        setCurrentQuestionIndex(currentQuestionIndex + 1);
+        setSelectedAnswer("");
+        setShowHint(false);
       } else {
         completeLevel();
       }
@@ -359,14 +313,16 @@ export default function Level11Page() {
       if (!team) return;
 
       const updatedStats = {
-        skipped_questions: team.skipped_questions + 1
+        skipped_questions: team.skipped_questions + 1,
+        hint_count: team.hint_count + (showHint ? 1 : 0)
       };
 
       await updateTeamStats(updatedStats);
 
-      if (currentPuzzleIndex < puzzles.length - 1) {
-        setCurrentPuzzleIndex(currentPuzzleIndex + 1);
-        setUserAnswer("");
+      if (currentQuestionIndex < questions.length - 1) {
+        setCurrentQuestionIndex(currentQuestionIndex + 1);
+        setSelectedAnswer("");
+        setShowHint(false);
       } else {
         completeLevel();
       }
@@ -377,7 +333,14 @@ export default function Level11Page() {
     }
   };
 
-  const calculateScore = useCallback((completionTime?: number): {
+  const handleHint = () => {
+    setShowHint(true);
+    const newStats = { ...levelStats };
+    newStats.hintsUsed++;
+    setLevelStats(newStats);
+  };
+
+  const calculateScore = (completionTime?: number): {
     totalScore: number;
     baseScore: number;
     timeBonus: number;
@@ -393,8 +356,12 @@ export default function Level11Page() {
     const totalQuestions = levelStats.correct + levelStats.incorrect + levelStats.skipped;
     const accuracy = totalQuestions > 0 ? (levelStats.correct / totalQuestions) * 100 : 0;
 
-    const correctWithoutHints = levelStats.correct;
-    const baseScore = correctWithoutHints * 1500;
+    const correctWithoutHints = Math.max(0, levelStats.correct - levelStats.hintsUsed);
+    const correctWithHints = Math.min(levelStats.correct, levelStats.hintsUsed);
+
+    let baseScore = 0;
+    baseScore += correctWithoutHints * 1500;
+    baseScore += correctWithHints * 1000;
 
     const penalties = (levelStats.incorrect * 400) + (levelStats.skipped * 750);
     const consecutiveBonus = Math.floor(levelStats.correct / 3) * 200;
@@ -428,9 +395,9 @@ export default function Level11Page() {
       accuracy,
       performanceRating
     };
-  }, [levelStats, levelStartTime]);
+  };
 
-  const completeLevel = useCallback(async () => {
+  const completeLevel = async () => {
     if (!team) return;
 
     const teamCode = localStorage.getItem('team_code');
@@ -441,7 +408,7 @@ export default function Level11Page() {
 
     const scoreData = calculateScore(timeTaken);
     const newTotalScore = team.score + scoreData.totalScore;
-    const newLevel = 12;
+    const newLevel = 10;
 
     try {
       if (initialTeamStats) {
@@ -449,7 +416,7 @@ export default function Level11Page() {
           correct_questions: initialTeamStats.correct_questions + levelStats.correct,
           incorrect_questions: initialTeamStats.incorrect_questions + levelStats.incorrect,
           skipped_questions: initialTeamStats.skipped_questions + levelStats.skipped,
-          hint_count: initialTeamStats.hint_count
+          hint_count: initialTeamStats.hint_count + levelStats.hintsUsed
         };
 
         await fetch(`/api/teams/${teamCode}/stats`, {
@@ -473,103 +440,6 @@ export default function Level11Page() {
       console.error('Error completing level:', error);
       toast.error("Failed to save progress. Please try again.");
     }
-  }, [team, levelStats, initialTeamStats, calculateScore, levelStartTime, setCompletionTimeMinutes, setIsCompleted]);
-
-  const DisplayKeyboard = () => {
-    const keys = [
-      ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
-      ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
-      ['z', 'x', 'c', 'v', 'b', 'n', 'm'],
-      ['space', 'backspace']
-    ];
-
-    const handleKeyPress = (key: string) => {
-      const currentPuzzle = puzzles[currentPuzzleIndex];
-      
-      if (key === 'backspace') {
-        setUserAnswer(prev => prev.slice(0, -1));
-        return;
-      }
-      
-      let newValue = userAnswer;
-      if (key === 'space') {
-        newValue = userAnswer + ' ';
-      } else {
-        newValue = userAnswer + key;
-      }
-      
-      // Apply the same validation logic as the input field
-      const expectedWords = currentPuzzle.correctWord.trim().split(/\s+/);
-      if (expectedWords.length === 1 && newValue.includes(' ')) {
-        return; // Don't allow spaces for one-word answers
-      }
-      
-      // Only allow letters and spaces
-      const cleanValue = newValue.replace(/[^a-zA-Z\s]/g, '');
-      
-      // Check maximum length
-      if (cleanValue.length > currentPuzzle.correctWord.length) {
-        toast.error("Maximum length reached");
-        return;
-      }
-      
-      // Check character frequency limits
-      const targetChars = currentPuzzle.correctWord.toLowerCase();
-      
-      // Count character frequencies in target
-      const targetFreq: { [key: string]: number } = {};
-      for (const char of targetChars) {
-        targetFreq[char] = (targetFreq[char] || 0) + 1;
-      }
-      
-      // Validate character by character
-      let validInput = '';
-      const usedFreq: { [key: string]: number } = {};
-      
-      for (const char of cleanValue) {
-        const lowerChar = char.toLowerCase();
-        usedFreq[lowerChar] = (usedFreq[lowerChar] || 0) + 1;
-        
-        // Allow the character if it doesn't exceed the target frequency
-        if (targetFreq[lowerChar] && usedFreq[lowerChar] <= targetFreq[lowerChar]) {
-          validInput += char;
-        } else {
-          // Reset the frequency count for this character since we're not adding it
-          usedFreq[lowerChar]--;
-        }
-      }
-      
-      setUserAnswer(validInput);
-    };
-
-    return (
-      <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-        <div className="flex items-center mb-3">
-          <Keyboard className="h-5 w-5 text-gray-600 mr-2" />
-          <span className="text-sm font-medium text-gray-700">Display Keyboard</span>
-        </div>
-        <div className="space-y-2">
-          {keys.map((row, rowIndex) => (
-            <div key={rowIndex} className="flex justify-center gap-1">
-              {row.map((key) => (
-                <Button
-                  key={key}
-                  variant="outline"
-                  size="sm"
-                  className={`min-w-[2.5rem] h-8 text-xs ${
-                    key === 'space' ? 'min-w-[8rem]' : 
-                    key === 'backspace' ? 'min-w-[4rem]' : ''
-                  }`}
-                  onClick={() => handleKeyPress(key)}
-                >
-                  {key === 'space' ? 'Space' : key === 'backspace' ? '⌫' : key.toUpperCase()}
-                </Button>
-              ))}
-            </div>
-          ))}
-        </div>
-      </div>
-    );
   };
 
   if (loading) {
@@ -577,7 +447,7 @@ export default function Level11Page() {
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-600 mx-auto mb-4"></div>
-          <p className="text-lg text-gray-600">Loading Level 11...</p>
+          <p className="text-lg text-gray-600">Loading Level 9...</p>
         </div>
       </div>
     );
@@ -606,7 +476,7 @@ export default function Level11Page() {
             <div className="mx-auto mb-4 w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
               <CheckCircle className="h-8 w-8 text-green-600" />
             </div>
-            <CardTitle className="text-3xl font-bold text-green-700">Level 11 Complete! 🎉</CardTitle>
+            <CardTitle className="text-3xl font-bold text-green-700">Level 9 Complete! 🎉</CardTitle>
             <div className="mt-2">
               <Badge variant="outline" className={`text-lg px-4 py-2 ${
                 scoreData.performanceRating === 'Excellent' ? 'bg-green-50 text-green-700 border-green-200' :
@@ -619,7 +489,7 @@ export default function Level11Page() {
             </div>
           </CardHeader>
           <CardContent className="space-y-8">
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-center">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
               <div className="p-4 bg-green-50 rounded-lg">
                 <div className="text-2xl font-bold text-green-600">{levelStats.correct}</div>
                 <div className="text-sm text-green-700">Correct</div>
@@ -631,6 +501,10 @@ export default function Level11Page() {
               <div className="p-4 bg-yellow-50 rounded-lg">
                 <div className="text-2xl font-bold text-yellow-600">{levelStats.skipped}</div>
                 <div className="text-sm text-yellow-700">Skipped</div>
+              </div>
+              <div className="p-4 bg-blue-50 rounded-lg">
+                <div className="text-2xl font-bold text-blue-600">{levelStats.hintsUsed}</div>
+                <div className="text-sm text-blue-700">Hints Used</div>
               </div>
             </div>
 
@@ -703,8 +577,8 @@ export default function Level11Page() {
     );
   }
 
-  const currentPuzzle = puzzles[currentPuzzleIndex];
-  const progress = ((currentPuzzleIndex + 1) / puzzles.length) * 100;
+  const currentQuestion = questions[currentQuestionIndex];
+  const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
   const timerDisplay = getTimerDisplay();
 
   return (
@@ -714,11 +588,11 @@ export default function Level11Page() {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2">
-                <Trophy className="h-6 w-6 text-purple-600" />
-                <h1 className="text-2xl font-bold text-purple-800">Level 11 - Word Unscrambling</h1>
+                <Keyboard className="h-6 w-6 text-purple-600" />
+                <h1 className="text-2xl font-bold text-purple-800">Level 9 - Keyboard Treasure Hunt</h1>
               </div>
               <Badge variant="outline" className="text-purple-700 border-purple-300">
-                {currentPuzzleIndex + 1} of {puzzles.length}
+                {currentQuestionIndex + 1} of {questions.length}
               </Badge>
             </div>
             <div className="flex items-center space-x-2">
@@ -731,103 +605,59 @@ export default function Level11Page() {
           
           <Progress value={progress} className="h-2 bg-purple-100" />
           <p className="text-sm text-gray-600 mt-2">
-            Progress: {currentPuzzleIndex + 1}/{puzzles.length} words completed
+            Progress: {currentQuestionIndex + 1}/{questions.length} questions completed
           </p>
         </div>
 
         <Card className="mb-6">
           <CardHeader>
             <CardTitle className="text-center">
-              <div className="text-4xl font-bold text-red-600 mb-4 tracking-wider">
-                {currentPuzzle.scrambledWord}
+              <div className="text-2xl font-bold text-purple-700 mb-4">
+                {currentQuestion.riddle}
               </div>
-              <div className="text-lg text-gray-700">
-                Unscramble this word to find the correct spelling
+              <div className="text-lg text-gray-600">
+                Select the correct keyboard shortcut from the dropdown below
               </div>
-              <Badge variant="secondary" className="mt-2">
-                Category: {currentPuzzle.category}
-              </Badge>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Your Answer:</label>
-              <Input
-                value={userAnswer}
-                onChange={(e) => {
-                  const currentPuzzle = puzzles[currentPuzzleIndex];
-                  const newValue = e.target.value;
-                  
-                  // Check if answer is one word and prevent spaces
-                  const expectedWords = currentPuzzle.correctWord.trim().split(/\s+/);
-                  if (expectedWords.length === 1 && newValue.includes(' ')) {
-                    return; // Don't allow spaces for one-word answers
-                  }
-                  
-                  // Only allow letters and spaces
-                  const cleanValue = newValue.replace(/[^a-zA-Z\s]/g, '');
-                  
-                  // Check maximum length
-                  if (cleanValue.length > currentPuzzle.correctWord.length) {
-                    toast.error("Maximum length reached");
-                    return;
-                  }
-                  
-                  // Check character frequency limits
-                  const targetChars = currentPuzzle.correctWord.toLowerCase();
-                  
-                  // Count character frequencies in target
-                  const targetFreq: { [key: string]: number } = {};
-                  for (const char of targetChars) {
-                    targetFreq[char] = (targetFreq[char] || 0) + 1;
-                  }
-                  
-                  // Validate character by character
-                  let validInput = '';
-                  const usedFreq: { [key: string]: number } = {};
-                  
-                  for (const char of cleanValue) {
-                    const lowerChar = char.toLowerCase();
-                    usedFreq[lowerChar] = (usedFreq[lowerChar] || 0) + 1;
-                    
-                    // Allow the character if it doesn't exceed the target frequency
-                    if (targetFreq[lowerChar] && usedFreq[lowerChar] <= targetFreq[lowerChar]) {
-                      validInput += char;
-                    } else {
-                      // Reset the frequency count for this character since we're not adding it
-                      usedFreq[lowerChar]--;
-                    }
-                  }
-                  
-                  setUserAnswer(validInput);
-                }}
-                placeholder="Type the correct spelling here..."
-                className="text-lg p-4"
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter' && userAnswer.trim()) {
-                    handleAnswer();
-                  }
-                }}
-              />
+              <label className="text-sm font-medium text-gray-700">Choose your answer:</label>
+              <Select value={selectedAnswer} onValueChange={setSelectedAnswer}>
+                <SelectTrigger className="w-full text-lg p-4">
+                  <SelectValue placeholder="Select a keyboard shortcut..." />
+                </SelectTrigger>
+                <SelectContent className="max-h-60">
+                  {keyboardShortcuts.map((shortcut, index) => (
+                    <SelectItem key={index} value={shortcut} className="text-lg p-2">
+                      {shortcut}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <p className="text-xs text-gray-500">
-                Tip: Only letters are allowed. Use the display keyboard below or type directly. Press Enter to submit.
+                Tip: Look for the keyboard shortcut that best matches the riddle description.
               </p>
             </div>
 
-            <DisplayKeyboard />
+            {showHint && (
+              <Alert className="bg-blue-50 border-blue-200">
+                <HelpCircle className="h-4 w-4 text-blue-600" />
+                <AlertDescription className="text-blue-700">
+                  <strong>Hint:</strong> {currentQuestion.hint}
+                </AlertDescription>
+              </Alert>
+            )}
 
             <div className="flex flex-col sm:flex-row gap-3">
               <Button
-                onClick={handleAnswer}
-                disabled={!userAnswer.trim() || submitLoading}
-                className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                variant="outline"
+                onClick={handleHint}
+                disabled={showHint}
+                className="flex-1"
               >
-                {submitLoading ? (
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                ) : (
-                  <CheckCircle className="mr-2 h-4 w-4" />
-                )}
-                Submit Answer
+                <HelpCircle className="mr-2 h-4 w-4" />
+                {showHint ? "Hint Shown" : "Show Hint"}
               </Button>
               
               <Button
@@ -842,6 +672,19 @@ export default function Level11Page() {
                   <SkipForward className="mr-2 h-4 w-4" />
                 )}
                 Skip
+              </Button>
+              
+              <Button
+                onClick={handleAnswer}
+                disabled={!selectedAnswer || submitLoading}
+                className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+              >
+                {submitLoading ? (
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                ) : (
+                  <CheckCircle className="mr-2 h-4 w-4" />
+                )}
+                Submit Answer
               </Button>
             </div>
           </CardContent>

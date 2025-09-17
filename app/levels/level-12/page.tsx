@@ -2,20 +2,22 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
+import { getGameTimeRemaining, getGameTimerStatus, formatTimeRemaining } from "@/lib/supabase";
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Input } from '@/components/ui/input';
-import { 
-  Trophy, 
-  Timer, 
-  CheckCircle, 
-  SkipForward, 
+import {
+  Trophy,
+  Timer,
+  CheckCircle,
+  SkipForward,
   ArrowRight,
   Target,
   Keyboard,
-  Image as ImageIcon
+  Image as ImageIcon,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -28,9 +30,20 @@ interface ImagePuzzle {
 
 interface Team {
   id: string;
-  name: string;
+  team_name: string;
+  team_code: string;
   score: number;
+  game_loaded: boolean;
+  game_start_time: string | null;
+  checkpoint_score: number;
+  checkpoint_level: number;
   current_level: number;
+  correct_questions: number;
+  incorrect_questions: number;
+  skipped_questions: number;
+  hint_count: number;
+  created_at: string;
+  updated_at: string;
 }
 
 interface TeamStats {
@@ -42,7 +55,7 @@ interface TeamStats {
 
 export default function Level12Page() {
   const router = useRouter();
-  
+
   // Game state
   const [currentPuzzleIndex, setCurrentPuzzleIndex] = useState(0);
   const [userAnswer, setUserAnswer] = useState('');
@@ -50,21 +63,22 @@ export default function Level12Page() {
   const [loading, setLoading] = useState(true);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [skipLoading, setSkipLoading] = useState(false);
-  
+
   // Team and stats
   const [team, setTeam] = useState<Team | null>(null);
   const [levelStats, setLevelStats] = useState({
     correct: 0,
     incorrect: 0,
-    skipped: 0
+    skipped: 0,
   });
   const [initialTeamStats, setInitialTeamStats] = useState<TeamStats | null>(null);
-  
+
   // Timer
   const [timeRemaining, setTimeRemaining] = useState(0);
+  const [timerStatus, setTimerStatus] = useState<'not_started' | 'active' | 'expired'>('not_started');
   const [levelStartTime] = useState(new Date());
   const [completionTimeMinutes, setCompletionTimeMinutes] = useState(0);
-  
+
   // Image puzzles data
   const puzzles: ImagePuzzle[] = [
     { id: 1, imagePath: '/levels/level-12/img1.webp', answer: 'APPLE PIE', category: 'Food' },
@@ -76,51 +90,53 @@ export default function Level12Page() {
     { id: 7, imagePath: '/levels/level-12/img7.png', answer: 'FIRST AID', category: 'Medical' },
     { id: 8, imagePath: '/levels/level-12/img8.png', answer: 'BUCKET LIST', category: 'Concept' },
     { id: 9, imagePath: '/levels/level-12/img9.png', answer: 'ROBIN HOOD', category: 'Character' },
-    { id: 10, imagePath: '/levels/level-12/img10.png', answer: 'WATERFALL', category: 'Nature' }
+    { id: 10, imagePath: '/levels/level-12/img10.png', answer: 'WATERFALL', category: 'Nature' },
   ];
 
-  const fetchTeamData = useCallback(async (teamCode: string) => {
-    try {
-      const response = await fetch(`/api/teams/${teamCode}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch team data');
+  // Removed duplicate puzzles array
+
+  const fetchTeamData = useCallback(
+    async (teamCode: string) => {
+      try {
+        const response = await fetch(`/api/teams/${teamCode}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch team data');
+        }
+        const teamData = await response.json();
+        setTeam(teamData);
+
+        setInitialTeamStats({
+          correct_questions: teamData.correct_questions,
+          incorrect_questions: teamData.incorrect_questions,
+          skipped_questions: teamData.skipped_questions,
+          hint_count: teamData.hint_count,
+        });
+
+        if (teamData.current_level < 12) {
+          toast.info('You need to complete previous levels first!');
+          router.push('/levels');
+          return;
+        }
+
+        if (teamData.current_level > 12) {
+          toast.info('You&apos;ve already completed this level!');
+          router.push('/levels');
+          return;
+        }
+
+        // Initialize timer status (match Levels page)
+        const status = getGameTimerStatus(teamData);
+        setTimerStatus(status);
+        setTimeRemaining(getGameTimeRemaining(teamData));
+      } catch (error) {
+        console.error('Error fetching team data:', error);
+        toast.error('Failed to load team data. Please try again.');
+      } finally {
+        setLoading(false);
       }
-      const teamData = await response.json();
-      setTeam(teamData);
-
-      setInitialTeamStats({
-        correct_questions: teamData.correct_questions,
-        incorrect_questions: teamData.incorrect_questions,
-        skipped_questions: teamData.skipped_questions,
-        hint_count: teamData.hint_count
-      });
-
-      if (teamData.current_level < 12) {
-        toast.info("You need to complete previous levels first!");
-        router.push('/levels');
-        return;
-      }
-
-      if (teamData.current_level > 12) {
-        toast.info("You've already completed this level!");
-        router.push('/levels');
-        return;
-      }
-
-      // Set timer based on game start time
-      const gameStartTime = new Date(teamData.game_start_time);
-      const currentTime = new Date();
-      const elapsedMinutes = (currentTime.getTime() - gameStartTime.getTime()) / (1000 * 60);
-      const totalGameTimeMinutes = 60; // 1 hour total game time
-      const remainingMinutes = Math.max(0, totalGameTimeMinutes - elapsedMinutes);
-      setTimeRemaining(Math.floor(remainingMinutes * 60)); // Convert to seconds
-    } catch (error) {
-      console.error('Error fetching team data:', error);
-      toast.error("Failed to load team data. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  }, [router]);
+    },
+    [router]
+  );
 
   useEffect(() => {
     const teamCode = localStorage.getItem('team_code');
@@ -143,23 +159,7 @@ export default function Level12Page() {
     };
   }, [router, fetchTeamData]);
 
-  // Timer effect
-  useEffect(() => {
-    if (timeRemaining <= 0 || isCompleted) return;
-
-    const timer = setInterval(() => {
-      setTimeRemaining(prev => {
-        if (prev <= 1) {
-          toast.error("Time's up!");
-          completeLevel();
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [timeRemaining, isCompleted]);
+  // Removed timer effect to place it after completeLevel definition
 
   // Navigation protection
   useEffect(() => {
@@ -174,16 +174,17 @@ export default function Level12Page() {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [isCompleted]);
 
-  const getTimerDisplay = () => {
-    const minutes = Math.floor(timeRemaining / 60);
-    const seconds = timeRemaining % 60;
-    const timeString = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-    
-    let className = 'text-green-600';
-    if (timeRemaining < 300) className = 'text-yellow-600';
-    if (timeRemaining < 120) className = 'text-red-600';
-    
-    return { text: timeString, className };
+  const getTimerDisplay = (): { text: string; className: string } => {
+    switch (timerStatus) {
+      case 'not_started':
+        return { text: 'Game Not Started', className: 'text-gray-500' };
+      case 'expired':
+        return { text: '00:00:00', className: 'text-red-600' };
+      case 'active':
+        return { text: formatTimeRemaining(timeRemaining), className: 'text-red-600' };
+      default:
+        return { text: 'Game Not Started', className: 'text-gray-500' };
+    }
   };
 
   // Get answer format description using regex
@@ -278,7 +279,7 @@ export default function Level12Page() {
     }
   };
 
-  const calculateScore = (completionTime?: number): {
+  const calculateScore = useCallback((completionTime?: number): {
     totalScore: number;
     baseScore: number;
     timeBonus: number;
@@ -295,7 +296,7 @@ export default function Level12Page() {
     const accuracy = totalQuestions > 0 ? (levelStats.correct / totalQuestions) * 100 : 0;
 
     const correctWithoutHints = levelStats.correct;
-    let baseScore = correctWithoutHints * 1500;
+    const baseScore = correctWithoutHints * 1500;
 
     const penalties = (levelStats.incorrect * 400) + (levelStats.skipped * 750);
     const consecutiveBonus = Math.floor(levelStats.correct / 3) * 200;
@@ -329,9 +330,9 @@ export default function Level12Page() {
       accuracy,
       performanceRating
     };
-  };
+  }, [levelStats, levelStartTime]);
 
-  const completeLevel = async () => {
+  const completeLevel = useCallback(async () => {
     if (!team) return;
 
     const teamCode = localStorage.getItem('team_code');
@@ -374,12 +375,32 @@ export default function Level12Page() {
       console.error('Error completing level:', error);
       toast.error("Failed to save progress. Please try again.");
     }
-  };
+  }, [team, levelStats, initialTeamStats, calculateScore, levelStartTime, setCompletionTimeMinutes, setIsCompleted]);
+
+  // Timer effect
+  useEffect(() => {
+    if (team) {
+      const timer = setInterval(() => {
+        const remaining = getGameTimeRemaining(team);
+        const status = getGameTimerStatus(team);
+
+        setTimeRemaining(remaining);
+        setTimerStatus(status);
+
+        if (status === 'expired' && timerStatus !== 'expired') {
+          toast.error("Time's up! The game has ended.");
+          completeLevel();
+        }
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }
+  }, [team, timerStatus, completeLevel]);
 
   const DisplayKeyboard = () => {
     const currentPuzzle = puzzles[currentPuzzleIndex];
     
-    let keys = [
+    const keys = [
       ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'],
       ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
       ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
@@ -581,7 +602,7 @@ export default function Level12Page() {
               </Badge>
             </div>
             <div className="flex items-center space-x-2">
-              <Timer className="h-5 w-5 text-red-600" />
+              <Timer className={`h-5 w-5 ${timerStatus === 'not_started' ? 'text-gray-500' : 'text-red-600'}`} />
               <span className={`font-mono text-lg font-semibold ${timerDisplay.className}`}>
                 {timerDisplay.text}
               </span>
@@ -609,14 +630,20 @@ export default function Level12Page() {
           <CardContent className="space-y-6">
             <div className="flex justify-center">
               <div className="relative w-full max-w-md h-64 bg-gray-100 rounded-lg overflow-hidden border-2 border-gray-200">
-                <img
+                <Image
                   src={currentPuzzle.imagePath}
                   alt={`Puzzle ${currentPuzzle.id}`}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5YTNhZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlIE5vdCBGb3VuZDwvdGV4dD48L3N2Zz4=';
+                  fill
+                  className="object-cover"
+                  onError={() => {
+                    // Handle error by showing a fallback image
+                    const fallbackImage = document.getElementById(`puzzle-image-${currentPuzzle.id}`) as HTMLImageElement;
+                    if (fallbackImage) {
+                      fallbackImage.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5YTNhZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlIE5vdCBGb3VuZDwvdGV4dD48L3N2Zz4=';
+                    }
                   }}
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  id={`puzzle-image-${currentPuzzle.id}`}
                 />
               </div>
             </div>
