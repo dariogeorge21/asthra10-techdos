@@ -1,76 +1,3 @@
-/**
- * LEVEL-2 QUIZ IMPLEMENTATION - TECHDOS GAME
- *
- * OVERVIEW:
- * Level-2 represents the second stage of the TechDOS quiz game, featuring a comprehensive
- * multiple-choice question (MCQ) format designed to test advanced knowledge across various
- * domains including technology, science, mathematics, programming, and modern innovations.
- *
- * QUIZ MECHANICS:
- * - Format: Multiple Choice Questions (MCQ) with 4 options each
- * - Total Questions: 20 diverse questions covering different knowledge areas
- * - Hint System: Each question includes a helpful hint that can be revealed
- * - Timer Integration: Real-time countdown with global game timer
- * - Navigation Protection: Prevents accidental page refresh/navigation during quiz
- *
- * GAME FLOW:
- * 1. Question Selection: Questions are presented sequentially (no random order)
- * 2. Answer Selection: Players choose from 4 multiple-choice options (A, B, C, D)
- * 3. Hint Usage: Optional hints available for each question (affects scoring)
- * 4. Answer Submission: Submit selected answer or skip to next question
- * 5. Progress Tracking: Visual progress bar and question counter
- * 6. Level Completion: Automatic progression after all questions answered/skipped
- *
- * STATISTICS TRACKING:
- * - Correct Answers: Number of questions answered correctly
- * - Incorrect Answers: Number of questions answered incorrectly
- * - Skipped Questions: Number of questions skipped without answering
- * - Hints Used: Total number of hints revealed during the level
- * - Time Taken: Duration from level start to completion
- * - Consecutive Correct: Tracks streaks for bonus calculations
- *
- * SCORING ALGORITHM:
- * Base Points:
- * - Correct Answer (no hint): 1500 points
- * - Correct Answer (with hint): 1000 points
- * - Incorrect Answer: -400 points penalty
- * - Skipped Question: -750 points penalty
- *
- * Bonus Systems:
- * - Consecutive Correct Bonus: +200 points for every 3 consecutive correct answers
- * - Time Bonus (based on completion speed):
- *   * Under 1 min: +250 points
- *   * 1-1.5 min: +225 points
- *   * 1.5-2 min: +200 points
- *   * 2-2.5 min: +175 points
- *   * 2.5-3 min: +150 points
- *   * 3-3.5 min: +125 points
- *   * 3.5-4 min: +100 points
- *   * 4-4.5 min: +75 points
- *   * 4.5-5 min: +50 points
- *   * 5-5.5 min: +25 points
- *   * Over 5.5 min: No time bonus
- *
- * FINAL SCORE CALCULATION:
- * Total Score = (Base Points) + (Consecutive Bonus) + (Time Bonus)
- * Minimum Score: 0 (negative scores are clamped to zero)
- *
- * INTEGRATION FEATURES:
- * - Global Timer: Respects game-wide time limits and displays remaining time
- * - Team Management: Updates team statistics and progression status
- * - API Integration: Real-time updates to database for scores and statistics
- * - Navigation Control: Prevents data loss through page navigation protection
- * - Toast Notifications: User feedback for actions and errors
- *
- * LEVEL COMPLETION SUMMARY:
- * Upon completion, players receive detailed feedback including:
- * - Performance breakdown (correct/incorrect/skipped/hints)
- * - Time taken to complete the level
- * - Detailed scoring breakdown showing base points, bonuses, and penalties
- * - Performance rating based on accuracy and speed
- * - Clear navigation to proceed to the next level
- */
-
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -83,6 +10,7 @@ import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
 import { Team, getGameTimeRemaining, formatTimeRemaining, getGameTimerStatus } from "@/lib/supabase";
+import RulesModal from "./RulesModal";
 
 interface Question {
   id: number;
@@ -93,15 +21,15 @@ interface Question {
 }
 
 /**
- * LEVEL-2 QUESTION BANK
+ * LEVEL-19 QUESTION BANK
  *
  * A diverse collection of 20 multiple-choice questions covering:
- * - Astronomy & Science (planets, space exploration)
- * - Indian History & Politics (leaders, achievements, firsts)
- * - Entertainment & Cinema (movies, awards, celebrities)
- * - Sports & Olympics (cricket, Olympic achievements)
- * - Geography & Culture (cities, festivals, landmarks)
- * - Literature & Awards (Nobel Prize, Booker Prize, authors)
+ * - Astronomy & Science (planets, natural phenomena)
+ * - Indian History & Politics (leaders, achievements)
+ * - Literature & Arts (authors, awards)
+ * - Sports & Entertainment (records, achievements)
+ * - Geography & Nature (locations, landmarks)
+ * - Pop Culture & Technology (viral content, innovations)
  *
  * Each question includes:
  * - 4 carefully crafted options with plausible distractors
@@ -109,79 +37,131 @@ interface Question {
  * - A helpful hint that provides context without giving away the answer
  */
 const questions: Question[] = [
-  {
-    id: 1,
-    question: "If Earth had a crazy cousin that spins on its side like a rolling ball around the Sun, which planet would that be?",
-    options: ["Uranus", "Neptune", "Saturn", "Jupiter"],
-    correct: "Uranus",
-    hint: "This ice giant planet rotates on its side at a 98-degree angle, making it appear to roll around the Sun."
-  },
-  {
-    id: 2,
-    question: "The movie 'Inception' plays with the concept of dreams within dreams. Who directed it?",
-    options: ["Christopher Nolan", "Steven Spielberg", "Martin Scorsese", "Quentin Tarantino"],
-    correct: "Christopher Nolan",
-    hint: "This British-American director is known for complex, non-linear storytelling and mind-bending concepts in films like this 2010 sci-fi thriller."
-  },
-  {
-    id: 3,
-    question: "Which Indian cricket captain is called 'Dada' and 'Prince of Kolkata'?",
-    options: ["Sourav Ganguly", "Sachin Tendulkar", "Rahul Dravid", "MS Dhoni"],
-    correct: "Sourav Ganguly",
-    hint: "This former Indian cricket captain from Kolkata is affectionately called 'Dada' (elder brother) and led India to many memorable victories."
-  },
-  {
-    id: 4,
-    question: "A city in Kerala is nicknamed the 'Venice of the East' because of its backwaters. Which city?",
-    options: ["Alappuzha", "Kochi", "Thiruvananthapuram", "Kozhikode"],
-    correct: "Alappuzha",
-    hint: "This coastal city is famous for its intricate network of canals, lagoons, and backwaters, earning it the nickname 'Venice of the East'."
-  },
-  {
-    id: 5,
-    question: "If you were looking for Mount Everest's neighbor, which mountain is the second highest in the world?",
-    options: ["K2", "Kangchenjunga", "Lhotse", "Makalu"],
-    correct: "K2",
-    hint: "Located on the China-Pakistan border, this mountain is known as the 'Savage Mountain' and is considered more challenging to climb than Everest."
-  },
-  {
-    id: 6,
-    question: "The Android operating system was originally developed by which company before Google acquired it?",
-    options: ["Android Inc.", "Microsoft", "Apple", "Samsung"],
-    correct: "Android Inc.",
-    hint: "Founded in 2003 by Andy Rubin, Rich Miner, Nick Sears, and Chris White, this company was acquired by Google in 2005 for about $50 million."
-  },
-  {
-    id: 7,
-    question: "Who was the first Indian woman to win an Olympic silver medal?",
-    options: ["P. V. Sindhu (badminton, 2016)", "Saina Nehwal", "Mary Kom", "Karnam Malleswari"],
-    correct: "P. V. Sindhu (badminton, 2016)",
-    hint: "This badminton player from Hyderabad won silver at the 2016 Rio Olympics, becoming the first Indian woman to win an Olympic silver medal."
-  },
-  {
-    id: 8,
-    question: "The Nobel Prize medal features the portrait of which scientist?",
-    options: ["Alfred Nobel", "Albert Einstein", "Marie Curie", "Isaac Newton"],
-    correct: "Alfred Nobel",
-    hint: "The founder of the Nobel Prizes, this Swedish chemist and inventor of dynamite is featured on the medal that bears his name."
-  },
-  {
-    id: 9,
-    question: "If music awards were planets, the 'Grammy' is Earth's biggest. Which award is considered the world's highest honor in cinema?",
-    options: ["The Oscars (Academy Awards)", "Golden Globe", "Cannes Film Festival", "BAFTA"],
-    correct: "The Oscars (Academy Awards)",
-    hint: "Presented by the Academy of Motion Picture Arts and Sciences, this is considered the most prestigious award in the film industry."
-  },
-  {
-    id: 10,
-    question: "In Kerala, which river is the longest?",
-    options: ["Periyar River", "Bharathapuzha", "Pamba River", "Chaliyar River"],
-    correct: "Periyar River",
-    hint: "This 244 km long river flows through Kerala and is the longest river in the state, originating from the Western Ghats."
-  }
+    {
+        id: 1,
+        question: "Nikola Tesla",
+        options: [
+            "Painted The starry Night",
+            "Developed alternating current",
+            "Invented the printing press",
+            "Discovered penicillin"
+
+        ],
+        correct: "Developed alternating current",
+        hint: "Research his contributions to electrical engineering"
+    },
+    {
+        id: 2,
+        question:"Marie Curie",
+        options: [
+            "Wrote pride and prejudice",
+            "Discovered radioactivity",
+            "Composed The four Season",
+            "Won the FIFA World Cup"
+        ],
+        correct: "Discovered radioactivity",
+        hint: "Research her contributions to physics"
+    },
+    {
+        id: 3,
+        question: "William Shakespeare",
+        options: [
+            "Directed Titanic",
+            "Invented the light bulb",
+            "Wrote The play Hamlet",
+            
+            "Founded Tesla Motors"
+        ],
+        correct: "Wrote The play Hamlet",
+        hint: "Research his contributions to literature"
+    },
+    {
+        id: 4,
+        question: "Rosa Parks",
+        options: [
+            "Refused to give up her seat on a bus and sparked a protest movement",            
+            "Composed Fur Elise",
+            "Invented the telephone",
+            "Discovered Gravity"
+        ],
+        correct: "Refused to give up her seat on a bus and sparked a protest movement",
+        hint: "Think about the American civil rights movement and public transportation."
+    },
+    {
+        id: 5,
+        question: "Vincent van Gogh",
+        options: [
+            "Painted The starry Night",
+            "Discovered relativity",
+            "Won olympic gold",
+            "Wrote 1984"
+        ],
+        correct: "Painted The starry Night",
+        hint: "Think about famous post-impressionist painters and iconic night sky artwork."
+    },
+    {
+        id: 6,
+        question: "Cleopatra",
+        options: [
+            "Ruled ancient Egypt and formed political alliances with julias Caesar and Mark Antony",
+            "Directed Avatar",
+            "Led India's independence movement",
+            "Discovered electricity"
+        ],
+        correct: "Ruled ancient Egypt and formed political alliances with julias Caesar and Mark Antony",
+        hint: "Think about ancient Egyptian history and politics."
+    },
+    {
+        id: 7,
+        question: "Neil Armstrong",
+        options: [
+            "Was the first person to walk  on the moon",
+            "Invented the airplane",
+            "composed Moonlight Sonata" ,
+            "Painted the Mona Lisa"
+        ],
+        correct: "Was the first person to walk  on the moon",
+        hint: "Research the origins of the moon landing"
+    },
+    {
+        id: 8,
+        question: "Ada Lovelace",
+        options: [
+            "Led the Boston Tea Party",
+            "Discovered Penicilin",
+            "Wrote the first computer algorithm",
+            "Won the nobel peace price"
+        ],
+        correct: "Wrote the first computer algorithm",
+        hint: "Think about the contributions of women in science and technology."
+    },
+    {
+        id: 9,
+        question: "Winston Churchill",
+        options: [
+            "Painted the Starry Night",
+            "Led the UK during WWII and was famous for his speeches",
+            "Wrote Hamlet",
+            "Invented alternating current"
+                ],
+        correct: "Led the UK during WWII and was famous for his speeches",
+        hint: "Think about the contributions of Winston Churchill to the world."
+    },
+    {
+        id: 10,
+        question: "Amelia Earhart",
+        options: [
+            "Developed the theory of relativity",
+            "First female aviator to fly solo across the Atlantic Ocean",
+            "Composed The four Seasons",
+            "Discovered penicillin"
+        ],
+        correct: "First female aviator to fly solo across the Atlantic Ocean",
+        hint: "Think about the contributions of Amelia Earhart to the world."
+    }
 ];
 
-export default function Level23Page() {
+export default function Level19Page() {
   const [team, setTeam] = useState<Team | null>(null);
   const [initialTeamStats, setInitialTeamStats] = useState<{
     correct_questions: number;
@@ -196,6 +176,8 @@ export default function Level23Page() {
   const [timeRemaining, setTimeRemaining] = useState<number>(0);
   const [timerStatus, setTimerStatus] = useState<'not_started' | 'active' | 'expired'>('not_started');
   const [loading, setLoading] = useState(true);
+  const [skipLoading,setskipLoading]=useState(false);
+  const [submitLoading,setSubmitLoading]=useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
   const [completionTimeMinutes, setCompletionTimeMinutes] = useState<number>(0);
   const [levelStats, setLevelStats] = useState({
@@ -204,6 +186,9 @@ export default function Level23Page() {
     skipped: 0,
     hintsUsed: 0
   });
+
+  const [showRules, setShowRules] = useState<boolean>(true);
+
   const router = useRouter();
 
   const fetchTeamData = useCallback(async (teamCode: string) => {
@@ -223,7 +208,7 @@ export default function Level23Page() {
         hint_count: teamData.hint_count
       });
 
-      if (teamData.current_level > 23) {
+      if (teamData.current_level > 19) {
         toast.info("You've already completed this level!");
         router.push('/levels');
         return;
@@ -250,6 +235,14 @@ export default function Level23Page() {
     }
 
     fetchTeamData(teamCode);
+
+    // Show modal on first load unless user previously dismissed it
+    const rulesSeen = localStorage.getItem('level19_rules_shown');
+    if (rulesSeen) {
+      setShowRules(false);
+    } else {
+      setShowRules(true);
+    }
 
     // Prevent page reload/navigation
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -313,10 +306,20 @@ export default function Level23Page() {
   };
 
   const handleAnswer = async (answer: string) => {
+
+   
     const currentQuestion = questions[currentQuestionIndex];
     const isCorrect = answer === currentQuestion.correct;
+
+     if(submitLoading){
+      return;
+    }
+
+    setSubmitLoading(true);
     
     // Update local stats
+
+    try{
     const newStats = { ...levelStats };
     if (isCorrect) {
       newStats.correct++;
@@ -344,9 +347,25 @@ export default function Level23Page() {
     } else {
       completeLevel();
     }
+  }
+
+  catch(err){
+     console.error(" API request for submit answer failed", err);
+  }
+
+  finally{
+    setSubmitLoading(false);
+  }
   };
 
   const handleSkip = async () => {
+    if(skipLoading){
+      return;
+    }
+
+    setskipLoading(true)
+
+    try{
     const newStats = { ...levelStats };
     newStats.skipped++;
     setLevelStats(newStats);
@@ -367,6 +386,15 @@ export default function Level23Page() {
     } else {
       completeLevel();
     }
+  }
+
+    catch (err) {
+      console.error(" API request for skip question failed", err);
+  }
+
+  finally{
+    setskipLoading(false);
+  }
   };
 
   const handleHint = () => {
@@ -473,7 +501,7 @@ export default function Level23Page() {
 
     const scoreData = calculateScore(timeTaken);
     const newTotalScore = team.score + scoreData.totalScore;
-    const newLevel = 24;
+    const newLevel = 20;
 
     try {
       // CRITICAL FIX: Ensure final level statistics are accurately saved to database
@@ -519,6 +547,17 @@ export default function Level23Page() {
         })
       });
 
+    //   // Save checkpoint if this is a checkpoint level
+    //   if (isCheckpointLevel(1)) {
+    //     await fetch(`/api/teams/${teamCode}/checkpoint`, {
+    //       method: 'PUT',
+    //       headers: { 'Content-Type': 'application/json' },
+    //       body: JSON.stringify({
+    //         checkpoint_score: newTotalScore,
+    //         checkpoint_level: 5
+    //       })
+    //     });
+    //   }
 
       setIsCompleted(true);
     } catch (error) {
@@ -532,7 +571,7 @@ export default function Level23Page() {
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-600 mx-auto mb-4"></div>
-          <p className="text-lg text-gray-600">Loading Level 23...</p>
+          <p className="text-lg text-gray-600">Loading Level 19...</p>
         </div>
       </div>
     );
@@ -561,7 +600,7 @@ export default function Level23Page() {
             <div className="mx-auto mb-4 w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
               <CheckCircle className="h-8 w-8 text-green-600" />
             </div>
-            <CardTitle className="text-3xl font-bold text-green-700">Level 23 Complete!</CardTitle>
+            <CardTitle className="text-3xl font-bold text-green-700">Level 19 Complete!</CardTitle>
             <div className="mt-2">
               <Badge variant="outline" className={`text-lg px-4 py-2 ${
                 scoreData.performanceRating === 'Excellent' ? 'bg-green-50 text-green-700 border-green-200' :
@@ -671,7 +710,7 @@ export default function Level23Page() {
               onClick={() => router.push('/levels')}
               className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-lg py-3"
             >
-              Continue to Level 24
+              Continue to Level 20
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </CardContent>
@@ -685,119 +724,130 @@ export default function Level23Page() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-sm border-b border-purple-200">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
-                Level 2
-              </Badge>
-              <span className="text-lg font-semibold text-gray-800">{team.team_name}</span>
-            </div>
-            
-            <div className="flex items-center space-x-6">
-              <div className="flex items-center space-x-2">
-                <Trophy className="h-5 w-5 text-yellow-600" />
-                <span className="text-lg font-semibold text-gray-800">
-                  {team.score.toLocaleString()} pts
-                </span>
+      {/* RENDER RULES MODAL (shown at beginning) */}
+      <RulesModal
+        open={showRules && !isCompleted}
+        onClose={() => setShowRules(false)}
+      />
+
+      {/* Wrap entire content in conditional visibility */}
+      <div className={`transition-opacity duration-300 ${showRules ? 'opacity-0' : 'opacity-100'}`}>
+        {/* Header */}
+        <header className="sticky top-0 z-10 bg-white/80 backdrop-blur-sm border-b border-purple-200">
+          <div className="container mx-auto px-4 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
+                  Level 19
+                </Badge>
+                <span className="text-lg font-semibold text-gray-800">{team.team_name}</span>
               </div>
               
-              <div className="flex items-center space-x-2">
-                <Timer className={`h-5 w-5 ${timerStatus === 'not_started' ? 'text-gray-500' : 'text-red-600'}`} />
-                <span className={`text-lg font-mono font-semibold ${getTimerDisplay().className}`}>
-                  {getTimerDisplay().text}
-                </span>
+              <div className="flex items-center space-x-6">
+                <div className="flex items-center space-x-2">
+                  <Trophy className="h-5 w-5 text-yellow-600" />
+                  <span className="text-lg font-semibold text-gray-800">
+                    {team.score.toLocaleString()} pts
+                  </span>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <Timer className={`h-5 w-5 ${timerStatus === 'not_started' ? 'text-gray-500' : 'text-red-600'}`} />
+                  <span className={`text-lg font-mono font-semibold ${getTimerDisplay().className}`}>
+                    {getTimerDisplay().text}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </header>
+        </header>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-          {/* Progress */}
-          <div className="mb-8">
-            <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
-              <span>Question {currentQuestionIndex + 1} of {questions.length}</span>
-              <span>{Math.round(progress)}% Complete</span>
+        {/* Main Content */}
+        <main className="container mx-auto px-4 py-8">
+          <div className="max-w-4xl mx-auto">
+            {/* Progress */}
+            <div className="mb-8">
+              <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
+                <span>Question {currentQuestionIndex + 1} of {questions.length}</span>
+                <span>{Math.round(progress)}% Complete</span>
+              </div>
+              <Progress value={progress} className="h-2" />
             </div>
-            <Progress value={progress} className="h-2" />
-          </div>
 
-          {/* Question Card */}
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle className="text-2xl text-center text-gray-800">
-                {currentQuestion.question}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {/* Options */}
-              <div className="grid gap-3">
-                {currentQuestion.options.map((option, index) => (
+            {/* Question Card */}
+            <Card className="mb-8">
+              <CardHeader>
+                <CardTitle className="text-2xl text-center text-gray-800">
+                  {currentQuestion.question}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Options */}
+                <div className="grid gap-3">
+                  {currentQuestion.options.map((option, index) => (
+                    <Button
+                      key={index}
+                      variant={selectedAnswer === option ? "default" : "outline"}
+                      className={`p-4 h-auto text-left justify-start ${
+                        selectedAnswer === option 
+                          ? "bg-purple-600 hover:bg-purple-700" 
+                          : "hover:bg-purple-50"
+                      }`}
+                      onClick={() => setSelectedAnswer(option)}
+                    >
+                      <span className="font-medium mr-3">{String.fromCharCode(65 + index)}.</span>
+                      {option}
+                    </Button>
+                  ))}
+                </div>
+
+                {/* Hint */}
+                {showHint && (
+                  <Alert className="bg-blue-50 border-blue-200">
+                    <HelpCircle className="h-4 w-4 text-blue-600" />
+                    <AlertDescription className="text-blue-700">
+                      <strong>Hint:</strong> {currentQuestion.hint}
+                    </AlertDescription>
+                  </Alert>
+                )}
+
+                {/* Action Buttons */}
+                <div className="flex gap-3 pt-4">
                   <Button
-                    key={index}
-                    variant={selectedAnswer === option ? "default" : "outline"}
-                    className={`p-4 h-auto text-left justify-start ${
-                      selectedAnswer === option 
-                        ? "bg-purple-600 hover:bg-purple-700" 
-                        : "hover:bg-purple-50"
-                    }`}
-                    onClick={() => setSelectedAnswer(option)}
+                    variant="outline"
+                    onClick={handleHint}
+                    disabled={showHint}
+                    className="flex-1"
                   >
-                    <span className="font-medium mr-3">{String.fromCharCode(65 + index)}.</span>
-                    {option}
+                    <HelpCircle className="mr-2 h-4 w-4" />
+                    {showHint ? "Hint Shown" : "Show Hint"}
                   </Button>
-                ))}
-              </div>
-
-              {/* Hint */}
-              {showHint && (
-                <Alert className="bg-blue-50 border-blue-200">
-                  <HelpCircle className="h-4 w-4 text-blue-600" />
-                  <AlertDescription className="text-blue-700">
-                    <strong>Hint:</strong> {currentQuestion.hint}
-                  </AlertDescription>
-                </Alert>
-              )}
-
-              {/* Action Buttons */}
-              <div className="flex gap-3 pt-4">
-                <Button
-                  variant="outline"
-                  onClick={handleHint}
-                  disabled={showHint}
-                  className="flex-1"
-                >
-                  <HelpCircle className="mr-2 h-4 w-4" />
-                  {showHint ? "Hint Shown" : "Show Hint"}
-                </Button>
-                
-                <Button
-                  variant="outline"
-                  onClick={handleSkip}
-                  className="flex-1 text-yellow-600 border-yellow-200 hover:bg-yellow-50"
-                >
-                  <SkipForward className="mr-2 h-4 w-4" />
-                  Skip Question
-                </Button>
-                
-                <Button
-                  onClick={() => handleAnswer(selectedAnswer)}
-                  disabled={!selectedAnswer}
-                  className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
-                >
-                  Submit Answer
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </main>
+                  
+                  <Button
+                    variant="outline"
+                    onClick={handleSkip}
+                    disabled={skipLoading}
+                    className="flex-1 text-yellow-600 border-yellow-200 hover:bg-yellow-50"
+                  >
+                    <SkipForward className="mr-2 h-4 w-4" />
+                    Skip Question
+                  </Button>
+                  
+                  <Button
+                    onClick={() => handleAnswer(selectedAnswer)}
+                    disabled={!selectedAnswer || submitLoading}
+                    className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+                  >
+                    Submit Answer
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </main>
+      </div>
     </div>
   );
 }
+

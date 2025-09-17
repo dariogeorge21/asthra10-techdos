@@ -1,3 +1,76 @@
+/**
+ * LEVEL-6 QUIZ IMPLEMENTATION - TECHDOS GAME
+ *
+ * OVERVIEW:
+ * Level-6 represents the sixth stage of the TechDOS quiz game, featuring a comprehensive
+ * multiple-choice question (MCQ) format designed to test knowledge with trick questions
+ * that challenge common assumptions and require careful thinking.
+ *
+ * QUIZ MECHANICS:
+ * - Format: Multiple Choice Questions (MCQ) with 4 options each
+ * - Total Questions: 14 trick questions designed to challenge assumptions
+ * - Hint System: Each question includes a helpful hint that can be revealed
+ * - Timer Integration: Real-time countdown with global game timer
+ * - Navigation Protection: Prevents accidental page refresh/navigation during quiz
+ *
+ * GAME FLOW:
+ * 1. Question Selection: Questions are presented sequentially (no random order)
+ * 2. Answer Selection: Players choose from 4 multiple-choice options (A, B, C, D)
+ * 3. Hint Usage: Optional hints available for each question (affects scoring)
+ * 4. Answer Submission: Submit selected answer or skip to next question
+ * 5. Progress Tracking: Visual progress bar and question counter
+ * 6. Level Completion: Automatic progression after all questions answered/skipped
+ *
+ * STATISTICS TRACKING:
+ * - Correct Answers: Number of questions answered correctly
+ * - Incorrect Answers: Number of questions answered incorrectly
+ * - Skipped Questions: Number of questions skipped without answering
+ * - Hints Used: Total number of hints revealed during the level
+ * - Time Taken: Duration from level start to completion
+ * - Consecutive Correct: Tracks streaks for bonus calculations
+ *
+ * SCORING ALGORITHM:
+ * Base Points:
+ * - Correct Answer (no hint): 1500 points
+ * - Correct Answer (with hint): 1000 points
+ * - Incorrect Answer: -400 points penalty
+ * - Skipped Question: -750 points penalty
+ *
+ * Bonus Systems:
+ * - Consecutive Correct Bonus: +200 points for every 3 consecutive correct answers
+ * - Time Bonus (based on completion speed):
+ *   * Under 1 min: +250 points
+ *   * 1-1.5 min: +225 points
+ *   * 1.5-2 min: +200 points
+ *   * 2-2.5 min: +175 points
+ *   * 2.5-3 min: +150 points
+ *   * 3-3.5 min: +125 points
+ *   * 3.5-4 min: +100 points
+ *   * 4-4.5 min: +75 points
+ *   * 4.5-5 min: +50 points
+ *   * 5-5.5 min: +25 points
+ *   * Over 5.5 min: No time bonus
+ *
+ * FINAL SCORE CALCULATION:
+ * Total Score = (Base Points) + (Consecutive Bonus) + (Time Bonus)
+ * Minimum Score: 0 (negative scores are clamped to zero)
+ *
+ * INTEGRATION FEATURES:
+ * - Global Timer: Respects game-wide time limits and displays remaining time
+ * - Team Management: Updates team statistics and progression status
+ * - API Integration: Real-time updates to database for scores and statistics
+ * - Navigation Control: Prevents data loss through page navigation protection
+ * - Toast Notifications: User feedback for actions and errors
+ *
+ * LEVEL COMPLETION SUMMARY:
+ * Upon completion, players receive detailed feedback including:
+ * - Performance breakdown (correct/incorrect/skipped/hints)
+ * - Time taken to complete the level
+ * - Detailed scoring breakdown showing base points, bonuses, and penalties
+ * - Performance rating based on accuracy and speed
+ * - Clear navigation to proceed to the next level
+ */
+
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -9,7 +82,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
-import { Team, isCheckpointLevel, getGameTimeRemaining, formatTimeRemaining, getGameTimerStatus } from "@/lib/supabase";
+import { Team, getGameTimeRemaining, formatTimeRemaining, getGameTimerStatus } from "@/lib/supabase";
 
 interface Question {
   id: number;
@@ -20,164 +93,119 @@ interface Question {
 }
 
 /**
- * LEVEL-4 QUESTION BANK
+ * LEVEL-6 QUESTION BANK - TRICK QUESTIONS THEME
  *
- * A diverse collection of 20 multiple-choice questions covering:
- * - Astronomy & Science (planets, natural phenomena)
- * - Indian History & Politics (leaders, achievements)
- * - Literature & Arts (authors, awards)
- * - Sports & Entertainment (records, achievements)
- * - Geography & Nature (locations, landmarks)
- * - Pop Culture & Technology (viral content, innovations)
+ * A collection of 14 trick questions designed to challenge common assumptions:
+ * - Logic puzzles that require careful thinking
+ * - Questions with unexpected answers
+ * - Common misconceptions and surprising facts
+ * - Geography, science, and general knowledge with twists
  *
  * Each question includes:
  * - 4 carefully crafted options with plausible distractors
- * - One correct answer
+ * - One correct answer that may be surprising
  * - A helpful hint that provides context without giving away the answer
  */
-const questions: Question[] =[
+const questions: Question[] = [
   {
-    "id": 1,
-    "question": "Which Indian city is home to the headquarters of ISRO?",
-    "options": ["Hyderabad", "Bengaluru", "Pune", "Chennai"],
-    "correct": "Bengaluru",
-    "hint": "This city is also known as India’s Silicon Valley."
+    id: 1,
+    question: "How many months have 28 days?",
+    options: ["1", "6", "12", "Depends on leap year"],
+    correct: "12",
+    hint: "Think about the minimum number of days each month has, not just February."
   },
   {
-    "id": 2,
-    "question": "In football, who is the only player to score in five different World Cups?",
-    "options": ["Lionel Messi", "Cristiano Ronaldo", "Miroslav Klose", "Pele"],
-    "correct": "Cristiano Ronaldo",
-    "hint": "He is Portugal’s all-time leading goal scorer."
+    id: 2,
+    question: "Which country has the most pyramids in the world?",
+    options: ["Egypt", "Sudan", "Mexico", "Peru"],
+    correct: "Sudan",
+    hint: "While Egypt is famous for its pyramids, another African country actually has more of them."
   },
   {
-    "id": 3,
-    "question": "The oldest university in Kerala, founded in 1937, is?",
-    "options": ["University of Kerala", "Mahatma Gandhi University", "Calicut University", "Kannur University"],
-    "correct": "University of Travancore (now University of Kerala)",
-    "hint": "It was originally known by a different name before being renamed."
+    id: 3,
+    question: "What's the only food that never spoils?",
+    options: ["Salt", "Rice", "Honey", "Sugar"],
+    correct: "Honey",
+    hint: "This sweet substance has been found in ancient Egyptian tombs and was still edible after thousands of years."
   },
   {
-    "id": 4,
-    "question": "Which Shakespeare play inspired the Bollywood film *Maqbool*?",
-    "options": ["Hamlet", "Macbeth", "Othello", "King Lear"],
-    "correct": "Macbeth",
-    "hint": "The original play deals with ambition and power."
+    id: 4,
+    question: "If you're running a race and pass the person in 2nd place, what place are you in?",
+    options: ["1st", "2nd", "3rd", "Last"],
+    correct: "2nd",
+    hint: "Think carefully about what happens when you pass someone who is in second place."
   },
   {
-    "id": 5,
-    "question": "The first Indian woman Grandmaster in chess was?",
-    "options": ["Dronavalli Harika", "Koneru Humpy", "Tania Sachdev", "Vidit Gujrathi"],
-    "correct": "Koneru Humpy",
-    "hint": "She achieved this title at a very young age."
+    id: 5,
+    question: "Which animal is known to cause the most human deaths annually?",
+    options: ["Lion", "Snake", "Mosquito", "Shark"],
+    correct: "Mosquito",
+    hint: "This tiny creature is dangerous not because of its size, but because of the diseases it can transmit."
   },
   {
-    "id": 6,
-    "question": "If planets had 'ice caps' made of dry ice instead of water, which planet would that be?",
-    "options": ["Mars", "Venus", "Jupiter", "Saturn"],
-    "correct": "Mars",
-    "hint": "This planet is known as the Red Planet."
+    id: 6,
+    question: "The national animal of Scotland is:",
+    options: ["Lion", "Dragon", "Unicorn", "Stag"],
+    correct: "Unicorn",
+    hint: "Scotland chose a mythical creature as its national animal, symbolizing purity and power."
   },
   {
-    "id": 7,
-    "question": "Who was India’s first Vice President?",
-    "options": ["Dr. Rajendra Prasad", "Dr. Sarvepalli Radhakrishnan", "Dr. A. P. J. Abdul Kalam", "Lal Bahadur Shastri"],
-    "correct": "Dr. Sarvepalli Radhakrishnan",
-    "hint": "He later became the second President of India."
+    id: 7,
+    question: "What's the capital of Australia?",
+    options: ["Sydney", "Melbourne", "Canberra", "Perth"],
+    correct: "Canberra",
+    hint: "It's not the largest or most famous city, but a purpose-built capital city."
   },
   {
-    "id": 8,
-    "question": "Apple’s Lisa computer (1983) was named after whom?",
-    "options": ["Steve Jobs’ daughter", "Steve Wozniak’s wife", "Bill Gates’ sister", "Tim Cook’s mother"],
-    "correct": "Steve Jobs’ daughter",
-    "hint": "She is the daughter of one of Apple’s co-founders."
+    id: 8,
+    question: "If you have a bowl with 6 apples and you take away 4, how many do you have?",
+    options: ["2", "4", "6", "0"],
+    correct: "4",
+    hint: "Focus on what the question is actually asking - how many do YOU have?"
   },
   {
-    "id": 9,
-    "question": "In Kerala, the Nehru Trophy Boat Race is held on which lake?",
-    "options": ["Ashtamudi Lake", "Vembanad Lake", "Punnamada Lake", "Sasthamkotta Lake"],
-    "correct": "Punnamada Lake",
-    "hint": "This lake is famous for its snake boat races."
+    id: 9,
+    question: "What begins with 'e', ends with 'e', but only has one letter?",
+    options: ["Ewe", "Envelope", "Eye", "Eerie"],
+    correct: "Envelope",
+    hint: "Think about what this object contains, not the letters that spell its name."
   },
   {
-    "id": 10,
-    "question": "Who became the first Indian woman boxer to win an Olympic medal?",
-    "options": ["Mary Kom", "Laxmi Rani", "Pooja Rani", "Sarita Devi"],
-    "correct": "Mary Kom",
-    "hint": "She won a bronze medal in the 2012 London Olympics."
+    id: 10,
+    question: "Which country is both in Europe and Asia?",
+    options: ["Russia", "Turkey", "Kazakhstan", "All of the above"],
+    correct: "All of the above",
+    hint: "Several countries span across both continents, not just one."
   },
   {
-    "id": 11,
-    "question": "The first practical magnetic resonance imaging (MRI) machine was invented by whom?",
-    "options": ["Raymond Damadian", "Albert Einstein", "Niels Bohr", "Werner Heisenberg"],
-    "correct": "Raymond Damadian",
-    "hint": "He developed the MRI in 1977."
+    id: 11,
+    question: "Which planet has the most moons?",
+    options: ["Jupiter", "Saturn", "Neptune", "Uranus"],
+    correct: "Saturn",
+    hint: "Recent discoveries have changed the moon count, and this planet recently overtook Jupiter."
   },
   {
-    "id": 12,
-    "question": "Which Indian state is known as the 'Land of the Gods'?",
-    "options": ["Himachal Pradesh", "Uttarakhand", "Sikkim", "Arunachal Pradesh"],
-    "correct": "Uttarakhand",
-    "hint": "This state is famous for its temples and Himalayan peaks."
+    id: 12,
+    question: "If you write all the numbers from 1 to 100, how many times does the digit '9' appear?",
+    options: ["10", "19", "20", "21"],
+    correct: "20",
+    hint: "Count both the ones place and the tens place occurrences of the digit 9."
   },
   {
-    "id": 13,
-    "question": "The 2019 film *Parasite* became the first non-English film to win Best Picture at the Oscars. Which country produced it?",
-    "options": ["Japan", "China", "South Korea", "Thailand"],
-    "correct": "South Korea",
-    "hint": "The film director is Bong Joon-ho."
+    id: 13,
+    question: "How many bones are in the human body?",
+    options: ["206", "205", "Depends on age", "208"],
+    correct: "Depends on age",
+    hint: "Babies are born with more bones than adults because some bones fuse together as we grow."
   },
   {
-    "id": 14,
-    "question": "Kerala’s Periyar Wildlife Sanctuary is most famous for which animal?",
-    "options": ["Tigers", "Elephants", "Lions", "Leopards"],
-    "correct": "Elephants",
-    "hint": "This sanctuary is a key habitat for Asian elephants."
-  },
-  {
-    "id": 15,
-    "question": "Who was the first Indian to win the Man Booker International Prize?",
-    "options": ["Arundhati Roy", "Geetanjali Shree", "Jhumpa Lahiri", "Kiran Desai"],
-    "correct": "Geetanjali Shree",
-    "hint": "Her work *Tomb of Sand* won in 2022."
-  },
-  {
-    "id": 16,
-    "question": "The FIFA World Cup trophy is made mostly of which metal?",
-    "options": ["Silver", "Platinum", "18-carat gold", "Copper"],
-    "correct": "18-carat gold",
-    "hint": "It is one of the most prestigious sports trophies."
-  },
-  {
-    "id": 17,
-    "question": "Who was the first cricketer to score 10,000 runs in Test cricket?",
-    "options": ["Sachin Tendulkar", "Rahul Dravid", "Sunil Gavaskar", "Virat Kohli"],
-    "correct": "Sunil Gavaskar",
-    "hint": "He achieved this milestone in 1987."
-  },
-  {
-    "id": 18,
-    "question": "Which country has won the most FIFA World Cup titles as of 2023?",
-    "options": ["Germany", "Italy", "Brazil", "Argentina"],
-    "correct": "Brazil",
-    "hint": "They have lifted the trophy 5 times."
-  },
-  {
-    "id": 19,
-    "question": "In tennis, which player holds the record for most Grand Slam singles titles in the Open Era (as of 2023)?",
-    "options": ["Roger Federer", "Rafael Nadal", "Novak Djokovic", "Pete Sampras"],
-    "correct": "Novak Djokovic",
-    "hint": "He has won 24 Grand Slam titles."
-  },
-  {
-    "id": 20,
-    "question": "Which AI company created the art model *DALL·E*?",
-    "options": ["DeepMind", "OpenAI", "IBM Watson", "NVIDIA"],
-    "correct": "OpenAI",
-    "hint": "This is the same organization behind ChatGPT."
+    id: 14,
+    question: "What invention lets you look right through a wall?",
+    options: ["Window", "X-ray", "Mirror", "Glasses"],
+    correct: "Window",
+    hint: "Sometimes the simplest answer is the correct one. Think about everyday objects."
   }
-]
-
+];
 
 export default function Level6Page() {
   const [team, setTeam] = useState<Team | null>(null);
@@ -194,8 +222,6 @@ export default function Level6Page() {
   const [timeRemaining, setTimeRemaining] = useState<number>(0);
   const [timerStatus, setTimerStatus] = useState<'not_started' | 'active' | 'expired'>('not_started');
   const [loading, setLoading] = useState(true);
-  const [skipLoading,setskipLoading]=useState(false);
-  const [submitLoading,setSubmitLoading]=useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
   const [completionTimeMinutes, setCompletionTimeMinutes] = useState<number>(0);
   const [levelStats, setLevelStats] = useState({
@@ -282,8 +308,6 @@ export default function Level6Page() {
     }
   }, [team, timerStatus]);
 
-
-
   const getTimerDisplay = (): { text: string; className: string } => {
     switch (timerStatus) {
       case 'not_started':
@@ -313,20 +337,10 @@ export default function Level6Page() {
   };
 
   const handleAnswer = async (answer: string) => {
-
-   
     const currentQuestion = questions[currentQuestionIndex];
     const isCorrect = answer === currentQuestion.correct;
 
-     if(submitLoading){
-      return;
-    }
-
-    setSubmitLoading(true);
-    
     // Update local stats
-
-    try{
     const newStats = { ...levelStats };
     if (isCorrect) {
       newStats.correct++;
@@ -337,7 +351,7 @@ export default function Level6Page() {
 
     // Update team stats in database
     if (!team) return;
-    
+
     const updatedStats = {
       correct_questions: team.correct_questions + (isCorrect ? 1 : 0),
       incorrect_questions: team.incorrect_questions + (isCorrect ? 0 : 1),
@@ -354,25 +368,9 @@ export default function Level6Page() {
     } else {
       completeLevel();
     }
-  }
-
-  catch(err){
-     console.error(" API request for submit answer failed", err);
-  }
-
-  finally{
-    setSubmitLoading(false);
-  }
   };
 
   const handleSkip = async () => {
-    if(skipLoading){
-      return;
-    }
-
-    setskipLoading(true)
-
-    try{
     const newStats = { ...levelStats };
     newStats.skipped++;
     setLevelStats(newStats);
@@ -393,15 +391,6 @@ export default function Level6Page() {
     } else {
       completeLevel();
     }
-  }
-
-    catch (err) {
-      console.error(" API request for skip question failed", err);
-  }
-
-  finally{
-    setskipLoading(false);
-  }
   };
 
   const handleHint = () => {
@@ -414,7 +403,7 @@ export default function Level6Page() {
   /**
    * ENHANCED SCORING ALGORITHM
    *
-   * Calculates the final score for Level-1 based on multiple factors:
+   * Calculates the final score for Level-6 based on multiple factors:
    *
    * BASE SCORING:
    * - Correct answers without hints: 1500 points each
@@ -443,8 +432,8 @@ export default function Level6Page() {
     performanceRating: string;
   } => {
     // Use provided completion time if available, otherwise calculate from current time
-    const timeTaken = completionTime !== undefined ? 
-      completionTime : 
+    const timeTaken = completionTime !== undefined ?
+      completionTime :
       (new Date().getTime() - levelStartTime.getTime()) / 1000 / 60; // minutes
     const totalQuestions = levelStats.correct + levelStats.incorrect + levelStats.skipped;
     const accuracy = totalQuestions > 0 ? (levelStats.correct / totalQuestions) * 100 : 0;
@@ -553,18 +542,6 @@ export default function Level6Page() {
           current_level: newLevel
         })
       });
-
-      // Save checkpoint if this is a checkpoint level
-      if (isCheckpointLevel(1)) {
-        await fetch(`/api/teams/${teamCode}/checkpoint`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            checkpoint_score: newTotalScore,
-            checkpoint_level: 1
-          })
-        });
-      }
 
       setIsCompleted(true);
     } catch (error) {
@@ -741,7 +718,7 @@ export default function Level6Page() {
               </Badge>
               <span className="text-lg font-semibold text-gray-800">{team.team_name}</span>
             </div>
-            
+
             <div className="flex items-center space-x-6">
               <div className="flex items-center space-x-2">
                 <Trophy className="h-5 w-5 text-yellow-600" />
@@ -749,7 +726,7 @@ export default function Level6Page() {
                   {team.score.toLocaleString()} pts
                 </span>
               </div>
-              
+
               <div className="flex items-center space-x-2">
                 <Timer className={`h-5 w-5 ${timerStatus === 'not_started' ? 'text-gray-500' : 'text-red-600'}`} />
                 <span className={`text-lg font-mono font-semibold ${getTimerDisplay().className}`}>
@@ -788,8 +765,8 @@ export default function Level6Page() {
                     key={index}
                     variant={selectedAnswer === option ? "default" : "outline"}
                     className={`p-4 h-auto text-left justify-start ${
-                      selectedAnswer === option 
-                        ? "bg-purple-600 hover:bg-purple-700" 
+                      selectedAnswer === option
+                        ? "bg-purple-600 hover:bg-purple-700"
                         : "hover:bg-purple-50"
                     }`}
                     onClick={() => setSelectedAnswer(option)}
@@ -821,20 +798,19 @@ export default function Level6Page() {
                   <HelpCircle className="mr-2 h-4 w-4" />
                   {showHint ? "Hint Shown" : "Show Hint"}
                 </Button>
-                
+
                 <Button
                   variant="outline"
                   onClick={handleSkip}
-                  disabled={skipLoading}
                   className="flex-1 text-yellow-600 border-yellow-200 hover:bg-yellow-50"
                 >
                   <SkipForward className="mr-2 h-4 w-4" />
                   Skip Question
                 </Button>
-                
+
                 <Button
                   onClick={() => handleAnswer(selectedAnswer)}
-                  disabled={!selectedAnswer || submitLoading}
+                  disabled={!selectedAnswer}
                   className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
                 >
                   Submit Answer

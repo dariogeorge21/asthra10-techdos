@@ -2,25 +2,26 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Trophy, Timer, SkipForward, ArrowRight, CheckCircle, Target } from "lucide-react";
+import { Trophy, Timer, HelpCircle, SkipForward, ArrowRight, CheckCircle, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-// import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
 import { Team, getGameTimeRemaining, formatTimeRemaining, getGameTimerStatus } from "@/lib/supabase";
+import RulesModal from "./RulesModal";
 
 interface Question {
   id: number;
   question: string;
   options: string[];
   correct: string;
-//   hint: string;
+  hint: string;
 }
 
 /**
- * LEVEL-1 QUESTION BANK
+ * LEVEL-19 QUESTION BANK
  *
  * A diverse collection of 20 multiple-choice questions covering:
  * - Astronomy & Science (planets, natural phenomena)
@@ -35,42 +36,129 @@ interface Question {
  * - One correct answer
  * - A helpful hint that provides context without giving away the answer
  */
-const questions: Question[] =
-[
-  {
-    "id": 1,
-    "question": "A farmer must take a goat, a cabbage, and a wolf across a river. How does he get all across safely?",
-    "options": ["Wolf first → cabbage → goat", "Goat first → cabbage → wolf", "Cabbage first → goat → wolf", "Goat first → wolf → cabbage"],
-    "correct": "Goat first → cabbage → wolf"
-  },
-  {
-    "id": 2,
-    "question": "You have 12 coins; one is counterfeit (heavier or lighter). What is the minimum number of weighings needed to find it?",
-    "options": ["2", "3", "4", "5"],
-    "correct": "3"
-  },
-  {
-    "id": 3,
-    "question": "A clock shows 3:15. What is the angle between the hour and minute hands?",
-    "options": ["0°", "7.5°", "15°", "22.5°"],
-    "correct": "7.5°"
-  },
-  {
-    "id": 4,
-    "question": "A number when viewed in a mirror and rotated 180° gives a different valid number. Which number is it?",
-    "options": ["609", "808", "619", "996"],
-    "correct": "619"
-  },
-  {
-    "id": 5,
-    "question": "Cryptic clue: 'Planet disturbed, ring returned (7)'. Which planet is it?",
-    "options": ["Saturn", "Mercury", "Neptune", "Uranus"],
-    "correct": "Saturn"
-  }
-]
-
-
-export default function Level1Page() {
+const questions: Question[] = [
+    {
+        "id": 1,
+        "question": "A rich guy gets bored, throws parties for strangers, and dies because no one RSVP’d.",
+        "options": [
+            "The Great Gatsby",
+            "Citizen Kane",
+            "Pride and Prejudice",
+            "Anna Karenina"
+        ],
+        "correct": "The Great Gatsby",
+        "hint": "Think about 1920s jazz age novels filled with parties and tragedy."
+    },
+    {
+        "id": 2,
+        "question": "A man stared at the stars, guessed wrong about circles, but still rewrote the universe.",
+        "options": [
+            "Claudius Ptolemy",
+            "Nicolaus Copernicus",
+            "Johannes Kepler",
+            "Tycho Brahe"
+        ],
+        "correct": "Johannes Kepler",
+        "hint": "He gave us elliptical orbits instead of 'perfect circles'."
+    },
+    {
+        "id": 3,
+        "question": "A war that killed millions technically began because someone’s car took a wrong turn.",
+        "options": [
+            "Crimean War",
+            "World War I",
+            "Spanish Civil War",
+            "Franco-Prussian War"
+        ],
+        "correct": "World War I",
+        "hint": "Think about the assassination of Archduke Franz Ferdinand."
+    },
+    {
+        "id": 4,
+        "question": "An entire war was launched because a face was 'too pretty.'",
+        "options": [
+            "Trojan War",
+            "World War I",
+            "War of the Roses",
+            "Spanish Armada"
+        ],
+        "correct": "Trojan War",
+        "hint": "Helen of Troy was literally called 'the face that launched a thousand ships.'"
+    },
+    {
+        "id": 5,
+        "question": "A bunch of wizards fight over jewelry for three movies straight.",
+        "options": [
+            "Harry Potter",
+            "The Lord of the Rings",
+            "The Chronicles of Narnia",
+            "Percy Jackson"
+        ],
+        "correct": "The Lord of the Rings",
+        "hint": "One ring to rule them all."
+    },
+    {
+        "id": 6,
+        "question": "A guy spends 27 years in jail and then becomes president — no Netflix deal.",
+        "options": [
+            "Mahatma Gandhi",
+            "Martin Luther King Jr.",
+            "Nelson Mandela",
+            "Barack Obama"
+        ],
+        "correct": "Nelson Mandela",
+        "hint": "Think about South Africa and apartheid."
+    },
+    {
+        "id": 7,
+        "question": "The most important scientific revolution started because a monk had too much time counting peas.",
+        "options": [
+            "Charles Darwin’s 'Origin of Species'",
+            "Gregor Mendel’s genetics experiments",
+            "Isaac Newton’s Laws of Motion",
+            "Louis Pasteur’s microbiology tests"
+        ],
+        "correct": "Gregor Mendel’s genetics experiments",
+        "hint": "He grew pea plants to figure out heredity."
+    },
+    {
+        "id": 8,
+        "question": "A scientist proved atoms exist by watching pollen do the cha-cha in water.",
+        "options": [
+            "Niels Bohr",
+            "Albert Einstein",
+            "Robert Brown",
+            "Max Planck"
+        ],
+        "correct": "Albert Einstein",
+        "hint": "He mathematically explained Brownian motion."
+    },
+    {
+        "id": 9,
+        "question": "A music genre invented when people couldn’t afford guitars, so they scratched vinyls instead.",
+        "options": [
+            "Punk",
+            "Hip-Hop",
+            "Jazz",
+            "Reggae"
+        ],
+        "correct": "Hip-Hop",
+        "hint": "Think about DJ turntables and block parties in the Bronx."
+    },
+    {
+        "id": 10,
+        "question": "A philosophy that says 'life is pain' became trendy for teenagers 2,000 years later.",
+        "options": [
+            "Epicureanism",
+            "Cynicism",
+            "Stoicism",
+            "Nihilism"
+        ],
+        "correct": "Stoicism",
+        "hint": "Think Marcus Aurelius, not Instagram influencers."
+    }
+];
+export default function Level27Page() {
   const [team, setTeam] = useState<Team | null>(null);
   const [initialTeamStats, setInitialTeamStats] = useState<{
     correct_questions: number;
@@ -95,6 +183,9 @@ export default function Level1Page() {
     skipped: 0,
     hintsUsed: 0
   });
+
+  const [showRules, setShowRules] = useState<boolean>(true);
+
   const router = useRouter();
 
   const fetchTeamData = useCallback(async (teamCode: string) => {
@@ -114,7 +205,7 @@ export default function Level1Page() {
         hint_count: teamData.hint_count
       });
 
-      if (teamData.current_level > 1) {
+      if (teamData.current_level > 27) {
         toast.info("You've already completed this level!");
         router.push('/levels');
         return;
@@ -141,6 +232,12 @@ export default function Level1Page() {
     }
 
     fetchTeamData(teamCode);
+
+    // Show modal on first load unless previously dismissed
+    const rulesSeen = localStorage.getItem('level27_rules_shown');
+    if (rulesSeen) {
+      setShowRules(false);
+    }
 
     // Prevent page reload/navigation
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -241,7 +338,6 @@ export default function Level1Page() {
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
       setSelectedAnswer("");
-
       setShowHint(false);
     } else {
       completeLevel();
@@ -296,12 +392,12 @@ export default function Level1Page() {
   }
   };
 
-//   const handleHint = () => {
-//     setShowHint(true);
-//     const newStats = { ...levelStats };
-//     newStats.hintsUsed++;
-//     setLevelStats(newStats);
-//   };
+  const handleHint = () => {
+    setShowHint(true);
+    const newStats = { ...levelStats };
+    newStats.hintsUsed++;
+    setLevelStats(newStats);
+  };
 
   /**
    * ENHANCED SCORING ALGORITHM
@@ -400,7 +496,7 @@ export default function Level1Page() {
 
     const scoreData = calculateScore(timeTaken);
     const newTotalScore = team.score + scoreData.totalScore;
-    const newLevel = 2;
+    const newLevel = 28;
 
     try {
       // CRITICAL FIX: Ensure final level statistics are accurately saved to database
@@ -446,17 +542,17 @@ export default function Level1Page() {
         })
       });
 
-      // Save checkpoint if this is a checkpoint level
-      // if (isCheckpointLevel(1)) {
-      //   await fetch(`/api/teams/${teamCode}/checkpoint`, {
-      //     method: 'PUT',
-      //     headers: { 'Content-Type': 'application/json' },
-      //     body: JSON.stringify({
-      //       checkpoint_score: newTotalScore,
-      //       checkpoint_level: 1
-      //     })
-      //   });
-      // }
+    //   // Save checkpoint if this is a checkpoint level
+    //   if (isCheckpointLevel(1)) {
+    //     await fetch(`/api/teams/${teamCode}/checkpoint`, {
+    //       method: 'PUT',
+    //       headers: { 'Content-Type': 'application/json' },
+    //       body: JSON.stringify({
+    //         checkpoint_score: newTotalScore,
+    //         checkpoint_level: 5
+    //       })
+    //     });
+    //   }
 
       setIsCompleted(true);
     } catch (error) {
@@ -470,7 +566,7 @@ export default function Level1Page() {
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-600 mx-auto mb-4"></div>
-          <p className="text-lg text-gray-600">Loading Level 1...</p>
+          <p className="text-lg text-gray-600">Loading Level 27...</p>
         </div>
       </div>
     );
@@ -499,7 +595,7 @@ export default function Level1Page() {
             <div className="mx-auto mb-4 w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
               <CheckCircle className="h-8 w-8 text-green-600" />
             </div>
-            <CardTitle className="text-3xl font-bold text-green-700">Level 1 Complete!</CardTitle>
+            <CardTitle className="text-3xl font-bold text-green-700">Level 27 Complete!</CardTitle>
             <div className="mt-2">
               <Badge variant="outline" className={`text-lg px-4 py-2 ${
                 scoreData.performanceRating === 'Excellent' ? 'bg-green-50 text-green-700 border-green-200' :
@@ -609,7 +705,7 @@ export default function Level1Page() {
               onClick={() => router.push('/levels')}
               className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-lg py-3"
             >
-              Continue to Level 2
+              Continue to Level 28
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </CardContent>
@@ -623,120 +719,130 @@ export default function Level1Page() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-sm border-b border-purple-200">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
-                Level 1
-              </Badge>
-              <span className="text-lg font-semibold text-gray-800">{team.team_name}</span>
-            </div>
-            
-            <div className="flex items-center space-x-6">
-              <div className="flex items-center space-x-2">
-                <Trophy className="h-5 w-5 text-yellow-600" />
-                <span className="text-lg font-semibold text-gray-800">
-                  {team.score.toLocaleString()} pts
-                </span>
+      {/* Rules Modal */}
+      <RulesModal
+        open={showRules && !isCompleted}
+        onClose={() => setShowRules(false)}
+      />
+
+      {/* Wrap content for modal visibility control */}
+      <div className={`transition-opacity duration-300 ${showRules ? 'opacity-0' : 'opacity-100'}`}>
+        {/* Header */}
+        <header className="sticky top-0 z-10 bg-white/80 backdrop-blur-sm border-b border-purple-200">
+          <div className="container mx-auto px-4 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
+                  Level 27
+                </Badge>
+                <span className="text-lg font-semibold text-gray-800">{team.team_name}</span>
               </div>
               
-              <div className="flex items-center space-x-2">
-                <Timer className={`h-5 w-5 ${timerStatus === 'not_started' ? 'text-gray-500' : 'text-red-600'}`} />
-                <span className={`text-lg font-mono font-semibold ${getTimerDisplay().className}`}>
-                  {getTimerDisplay().text}
-                </span>
+              <div className="flex items-center space-x-6">
+                <div className="flex items-center space-x-2">
+                  <Trophy className="h-5 w-5 text-yellow-600" />
+                  <span className="text-lg font-semibold text-gray-800">
+                    {team.score.toLocaleString()} pts
+                  </span>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <Timer className={`h-5 w-5 ${timerStatus === 'not_started' ? 'text-gray-500' : 'text-red-600'}`} />
+                  <span className={`text-lg font-mono font-semibold ${getTimerDisplay().className}`}>
+                    {getTimerDisplay().text}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </header>
+        </header>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-          {/* Progress */}
-          <div className="mb-8">
-            <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
-              <span>Question {currentQuestionIndex + 1} of {questions.length}</span>
-              <span>{Math.round(progress)}% Complete</span>
+        {/* Main Content */}
+        <main className="container mx-auto px-4 py-8">
+          <div className="max-w-4xl mx-auto">
+            {/* Progress */}
+            <div className="mb-8">
+              <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
+                <span>Question {currentQuestionIndex + 1} of {questions.length}</span>
+                <span>{Math.round(progress)}% Complete</span>
+              </div>
+              <Progress value={progress} className="h-2" />
             </div>
-            <Progress value={progress} className="h-2" />
-          </div>
 
-          {/* Question Card */}
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle className="text-2xl text-center text-gray-800">
-                {currentQuestion.question}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {/* Options */}
-              <div className="grid gap-3">
-                {currentQuestion.options.map((option, index) => (
+            {/* Question Card */}
+            <Card className="mb-8">
+              <CardHeader>
+                <CardTitle className="text-2xl text-center text-gray-800">
+                  {currentQuestion.question}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Options */}
+                <div className="grid gap-3">
+                  {currentQuestion.options.map((option, index) => (
+                    <Button
+                      key={index}
+                      variant={selectedAnswer === option ? "default" : "outline"}
+                      className={`p-4 h-auto text-left justify-start ${
+                        selectedAnswer === option 
+                          ? "bg-purple-600 hover:bg-purple-700" 
+                          : "hover:bg-purple-50"
+                      }`}
+                      onClick={() => setSelectedAnswer(option)}
+                    >
+                      <span className="font-medium mr-3">{String.fromCharCode(65 + index)}.</span>
+                      {option}
+                    </Button>
+                  ))}
+                </div>
+
+                {/* Hint */}
+                {showHint && (
+                  <Alert className="bg-blue-50 border-blue-200">
+                    <HelpCircle className="h-4 w-4 text-blue-600" />
+                    <AlertDescription className="text-blue-700">
+                      <strong>Hint:</strong> {currentQuestion.hint}
+                    </AlertDescription>
+                  </Alert>
+                )}
+
+                {/* Action Buttons */}
+                <div className="flex gap-3 pt-4">
                   <Button
-                    key={index}
-                    variant={selectedAnswer === option ? "default" : "outline"}
-                    className={`p-4 h-auto text-left justify-start ${
-                      selectedAnswer === option 
-                        ? "bg-purple-600 hover:bg-purple-700" 
-                        : "hover:bg-purple-50"
-                    }`}
-                    onClick={() => setSelectedAnswer(option)}
+                    variant="outline"
+                    onClick={handleHint}
+                    disabled={showHint}
+                    className="flex-1"
                   >
-                    <span className="font-medium mr-3">{String.fromCharCode(65 + index)}.</span>
-                    {option}
+                    <HelpCircle className="mr-2 h-4 w-4" />
+                    {showHint ? "Hint Shown" : "Show Hint"}
                   </Button>
-                ))}
-              </div>
-
-              {/* Hint */}
-              {/* {showHint && (
-                <Alert className="bg-blue-50 border-blue-200">
-                  <HelpCircle className="h-4 w-4 text-blue-600" />
-                  <AlertDescription className="text-blue-700">
-                    <strong>Hint:</strong> {currentQuestion.hint}
-                  </AlertDescription>
-                </Alert>
-              )} */}
-
-              {/* Action Buttons */}
-              <div className="flex gap-3 pt-4">
-                {/* <Button
-                  variant="outline"
-                  onClick={handleHint}
-                  disabled={showHint}
-                  className="flex-1"
-                >
-                  <HelpCircle className="mr-2 h-4 w-4" />
-                  {showHint ? "Hint Shown" : "Show Hint"}
-                </Button> */}
-                
-                <Button
-                  variant="outline"
-                  onClick={handleSkip}
-                  disabled={skipLoading}
-                  className="flex-1 text-yellow-600 border-yellow-200 hover:bg-yellow-50"
-                >
-                  <SkipForward className="mr-2 h-4 w-4" />
-                  Skip Question
-                </Button>
-                
-                <Button
-                  onClick={() => handleAnswer(selectedAnswer)}
-                  disabled={!selectedAnswer || submitLoading}
-                  className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
-                >
-                  Submit Answer
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </main>
+                  
+                  <Button
+                    variant="outline"
+                    onClick={handleSkip}
+                    disabled={skipLoading}
+                    className="flex-1 text-yellow-600 border-yellow-200 hover:bg-yellow-50"
+                  >
+                    <SkipForward className="mr-2 h-4 w-4" />
+                    Skip Question
+                  </Button>
+                  
+                  <Button
+                    onClick={() => handleAnswer(selectedAnswer)}
+                    disabled={!selectedAnswer || submitLoading}
+                    className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+                  >
+                    Submit Answer
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </main>
+      </div>
     </div>
   );
 }
+
