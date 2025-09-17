@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback,useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Trophy, Timer, SkipForward, ArrowRight, CheckCircle, Target } from "lucide-react";
+import { Trophy, Timer, SkipForward, ArrowRight ,CheckCircle, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -10,26 +10,18 @@ import { Progress } from "@/components/ui/progress";
 // import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
 import { Team, getGameTimeRemaining, formatTimeRemaining, getGameTimerStatus } from "@/lib/supabase";
-import { Input } from "@/components/ui/input";
-import { Keyboard } from "./keyboard";
 import Image from "next/image";
-
-
-
 interface Question {
   id: number;
   question: string;
+  image:string;
+  options: string[];
   correct: string;
-  FormatAnswer: string;
-}
-
-interface KeyboardKey {
-  key: string;
-  isSpecial?: boolean;
+//   hint: string;
 }
 
 /**
- * LEVEL-4 QUESTION BANK
+ * LEVEL-1 QUESTION BANK
  *
  * A diverse collection of 20 multiple-choice questions covering:
  * - Astronomy & Science (planets, natural phenomena)
@@ -44,29 +36,86 @@ interface KeyboardKey {
  * - One correct answer
  * - A helpful hint that provides context without giving away the answer
  */
-const questions: Question[] =[
-  { id: 1, question: '/levels/level-30/img1.png', correct: '8', FormatAnswer:"letter or number" },
-    { id: 2, question: '/levels/level-30/img2.png', correct: 'G', FormatAnswer:"letter or number"},
-    { id: 3, question: '/levels/level-30/img3.png', correct: '02&30',FormatAnswer:"Letter or number separated by & eg:(A&E)" },
-    { id: 4, question: '/levels/level-30/img4.png', correct: '5324',FormatAnswer:"letter or number " },
-    { id: 5, question: '/levels/level-30/img5.png', correct: '257', FormatAnswer:"letter or number "},
+const questions: Question[] =
+[
+  {
+    "id": 1,
+    "image": "/levels/level-13/img1.jpg",
+    "question": "This innovator unveiled the …….. in which year?",
+    "options": [
+      "iPhone,2007",
+      "microsoft,1975",
+      "iPhone,2005",
+      "microsoft,1975"
+    ],
+    "correct": "iPhone,2007"
+ }, {
+    "id": 2,
+    "image": "/levels/level-13/img2.jpg",
+    "question": "He delivered the Gettysburg Address during which war?",
+    "options": [
+      "World War I",
+      "American Revolutionary War",
+      "American Civil War",
+      "War of 1812"
+    ],
+    "correct": "American Civil War"
 
+  },
+  {
+    "id": 3,
+    "image": "/levels/level-13/img3.jpg",
+"question": "Which legendary dance move did he first showcase on TV in 1983?",
+    "options": [
+      "Robot",
+      "Moonwalk",
+      "Breakdance",
+      "Popping"
+    ],
+    "correct": "Moonwalk"
+  },
+  {
+    "id": 4,
+    "image": "/levels/level-13/img4.jpg",
+  "question": "He won the Nobel Prize for explaining which phenomenon?",
+    "options": [
+      "Theory of Relativity",
+      "Photoelectric effect",
+      "Quantum Entanglement",
+      "Wave-Particle Duality"
+    ],
+    "correct": "Photoelectric effect"
+  },
+  {
+    "id": 5,
+    "image": "/levels/level-13/img5.jpg",
+    
+    "question": "In 2022, he bought what and named it what?",
+    "options": [
+      "Facebook, Meta",
+      "Twitter, X",
+      "Instagram, Threads",
+      "Snapchat, Spot"
+    ],
+    "correct": "Twitter, X"
+  
+  }
 ]
 
 
-export default function Level30Page() {
+
+
+export default function Level13Page() {
   const [team, setTeam] = useState<Team | null>(null);
   const [initialTeamStats, setInitialTeamStats] = useState<{
     correct_questions: number;
     incorrect_questions: number;
     skipped_questions: number;
-    // hint_count: number;
+    hint_count: number;
   } | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const inputRef = useRef<HTMLInputElement>(null);
   const [selectedAnswer, setSelectedAnswer] = useState<string>("");
-  // const inputRef = useRef(null);
-  // const [showHint, setShowHint] = useState(false);
+  const [showHint, setShowHint] = useState(false);
   const [levelStartTime] = useState<Date>(new Date());
   const [timeRemaining, setTimeRemaining] = useState<number>(0);
   const [timerStatus, setTimerStatus] = useState<'not_started' | 'active' | 'expired'>('not_started');
@@ -74,16 +123,18 @@ export default function Level30Page() {
   const [skipLoading,setskipLoading]=useState(false);
   const [submitLoading,setSubmitLoading]=useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
-  const [completionTimeMinutes, setCompletionTimeMinutes] = useState<number>(0);
   const [completingLevel, setCompletingLevel] = useState(false);
+  const [completionTimeMinutes, setCompletionTimeMinutes] = useState<number>(0);
   const [levelStats, setLevelStats] = useState({
     correct: 0,
     incorrect: 0,
     skipped: 0,
-    // hintsUsed: 0
+    hintsUsed: 0
   });
-  const [answer, setAnswer] = useState("");
-  const [showKeyboard, setShowKeyboard] = useState(true);
+  const [showInstructions, setShowInstructions] = useState(true);
+  const [showQuestion, setShowQuestion] = useState(false);
+  const [showQuestionImage, setShowQuestionImage] = useState(false);
+  const [imageTimer, setImageTimer] = useState(5);
   const router = useRouter();
 
   const fetchTeamData = useCallback(async (teamCode: string) => {
@@ -100,10 +151,10 @@ export default function Level30Page() {
         correct_questions: teamData.correct_questions,
         incorrect_questions: teamData.incorrect_questions,
         skipped_questions: teamData.skipped_questions,
-        // hint_count: teamData.hint_count
+        hint_count: teamData.hint_count
       });
 
-      if (teamData.current_level > 30) {
+      if (teamData.current_level > 13) {
         toast.info("You've already completed this level!");
         router.push('/levels');
         return;
@@ -120,7 +171,8 @@ export default function Level30Page() {
       setLoading(false);
     }
   }, [router]);
-
+      console.log(loading)
+    
   useEffect(() => {
     const teamCode = localStorage.getItem('team_code');
     if (!teamCode) {
@@ -144,12 +196,6 @@ export default function Level30Page() {
     };
   }, [router, fetchTeamData]);
 
-  //input become clear after every question
-  useEffect(() => {
-    setAnswer("");
-    inputRef.current?.focus(); // Optional: focus the input on question change
-  }, [currentQuestionIndex]);
-
   useEffect(() => {
     if (team) {
       const timer = setInterval(() => {
@@ -168,7 +214,22 @@ export default function Level30Page() {
     }
   }, [team, timerStatus]);
 
-
+  useEffect(() => {
+    if (showQuestionImage && imageTimer > 0) {
+      const timer = setInterval(() => {
+        setImageTimer((prev) => {
+          if (prev <= 1) {
+            setShowQuestionImage(false);
+            setShowQuestion(true);
+            clearInterval(timer);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [showQuestionImage, imageTimer]);
 
   const getTimerDisplay = (): { text: string; className: string } => {
     switch (timerStatus) {
@@ -199,12 +260,12 @@ export default function Level30Page() {
   };
 
   const handleAnswer = async (answer: string) => {
-
-     if(submitLoading){
+  if(submitLoading){
       return;
     }
 
     setSubmitLoading(true);
+   
     const currentQuestion = questions[currentQuestionIndex];
     const isCorrect = answer === currentQuestion.correct;
 
@@ -222,25 +283,28 @@ export default function Level30Page() {
     setLevelStats(newStats);
 
     // Update team stats in database
-    if (team) {
+    if (!team) return;
     
     const updatedStats = {
       correct_questions: team.correct_questions + (isCorrect ? 1 : 0),
       incorrect_questions: team.incorrect_questions + (isCorrect ? 0 : 1),
-      // hint_count: team.hint_count + (showHint ? 1 : 0)
+      hint_count: team.hint_count + (showHint ? 1 : 0)
     };
 
     await updateTeamStats(updatedStats);
-  }
+
     // Move to next question or complete level
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
       setSelectedAnswer("");
-      console.log(selectedAnswer); 
-      // setShowHint(false);
+      setShowHint(false);
+      // Show image for next question
+      setShowQuestionImage(true);
+      setImageTimer(5);
+      setShowQuestion(false);
     } else {
-        setCompletingLevel(true);
-      await completeLevel();
+          setCompletingLevel(true);
+      completeLevel();
     }
   }
 
@@ -269,7 +333,7 @@ export default function Level30Page() {
 
     const updatedStats = {
       skipped_questions: team.skipped_questions + 1,
-      // hint_count: team.hint_count + (showHint ? 1 : 0)
+      hint_count: team.hint_count + (showHint ? 1 : 0)
     };
 
     await updateTeamStats(updatedStats);
@@ -277,9 +341,13 @@ export default function Level30Page() {
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
       setSelectedAnswer("");
-      // setShowHint(false);
+      setShowHint(false);
+      // Show image for next question
+      setShowQuestionImage(true);
+      setImageTimer(5);
+      setShowQuestion(false);
     } else {
-             setCompletingLevel(true);
+               setCompletingLevel(true);
       completeLevel();
     }
   }
@@ -293,36 +361,12 @@ export default function Level30Page() {
   }
   };
 
-  // const handleHint = () => {
-  //   setShowHint(true);
-  //   const newStats = { ...levelStats };
-  //   newStats.hintsUsed++;
-  //   setLevelStats(newStats);
-  // };
-
-  // const handleKeyPress = (key: KeyboardKey) => {
-  //   if (key.key === "Backspace") {
-  //     setAnswer(prev => prev.slice(0, -1));
-  //   }  else {
-  //     setAnswer(prev => 
-  //       if(prev.length===FormData,)
-  //       prev + key.key);
-  //   }
-  // };
-const handleKeyPress = (key: KeyboardKey) => {
-  if (key.key === "Backspace") {
-    setAnswer(prev => prev.slice(0, -1));
-  } else {
-    setAnswer(prev => {
-      if (prev.length < questions[currentQuestionIndex].correct.length) {
-   const newChar = prev.length === 0 ? key.key.toUpperCase() : key.key.toLowerCase();
-        return prev + newChar;
-      }
-      return prev;
-    });
-  }
-  inputRef.current?.focus(); // Ensure input stays focused
-};
+//   const handleHint = () => {
+//     setShowHint(true);
+//     const newStats = { ...levelStats };
+//     newStats.hintsUsed++;
+//     setLevelStats(newStats);
+//   };
 
   /**
    * ENHANCED SCORING ALGORITHM
@@ -363,12 +407,12 @@ const handleKeyPress = (key: KeyboardKey) => {
     const accuracy = totalQuestions > 0 ? (levelStats.correct / totalQuestions) * 100 : 0;
 
     // Base scoring calculation
-    const correctWithoutHints = Math.max(0, levelStats.correct);
-    // const correctWithHints = Math.min(levelStats.correct, levelStats.hintsUsed);
+    const correctWithoutHints = Math.max(0, levelStats.correct - levelStats.hintsUsed);
+    const correctWithHints = Math.min(levelStats.correct, levelStats.hintsUsed);
 
     let baseScore = 0;
     baseScore += correctWithoutHints * 1500; // Full points for unassisted correct answers
-    // baseScore += correctWithHints * 1000;    // Reduced points for hint-assisted answers
+    baseScore += correctWithHints * 1000;    // Reduced points for hint-assisted answers
 
     // Penalties
     const penalties = (levelStats.incorrect * 400) + (levelStats.skipped * 750);
@@ -421,7 +465,7 @@ const handleKeyPress = (key: KeyboardKey) => {
 
     const scoreData = calculateScore(timeTaken);
     const newTotalScore = team.score + scoreData.totalScore;
-    const newLevel = 31;
+    const newLevel = 14;
 
     try {
       // CRITICAL FIX: Ensure final level statistics are accurately saved to database
@@ -440,7 +484,7 @@ const handleKeyPress = (key: KeyboardKey) => {
           correct_questions: initialTeamStats.correct_questions + levelStats.correct,
           incorrect_questions: initialTeamStats.incorrect_questions + levelStats.incorrect,
           skipped_questions: initialTeamStats.skipped_questions + levelStats.skipped,
-          // hint_count: initialTeamStats.hint_count + levelStats.hintsUsed
+          hint_count: initialTeamStats.hint_count + levelStats.hintsUsed
         };
 
         console.log('Level completion - Final stats update:', {
@@ -485,13 +529,97 @@ const handleKeyPress = (key: KeyboardKey) => {
       toast.error("Failed to save progress. Please try again.");
     }
   };
+  console.log(setIsCompleted);
 
-  if (loading) {
+  const handleStartLevel = () => {
+    setShowInstructions(false);
+    setShowQuestionImage(true);
+    setImageTimer(5);
+  };
+
+  if (showInstructions) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center p-4">
+        <Card className="max-w-2xl w-full">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl font-bold text-purple-700">
+              Level 13 Instructions
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="prose prose-purple max-w-none">
+              <h3 className="text-lg font-semibold text-purple-600">Welcome Visual Challenge!</h3>
+              
+              <ul className="space-y-3 text-gray-700">
+                <li>You’ll be shown  image in quick succession—just a glimpse, barely enough to catch them..</li>
+                <li>After the images disappear, you’ll face question based on what you observed..</li>
+                <li>Stay focused and keep your eyes sharp—blink once, and you might miss something important!.</li>
+                {/* <li>Use process of elimination to solve the puzzles.</li>
+                <li>You can skip questions if needed, but it will affect your score.</li> */}
+              </ul>
+
+              {/* <div className="mt-6 p-4 bg-purple-50 rounded-lg border border-purple-100">
+                <h4 className="text-sm font-semibold text-purple-700 mb-2">Important Notes:</h4>
+                <ul className="text-sm text-purple-600 space-y-2">
+                  <li>• Take your time to understand each clue</li>
+                  <li>• All information needed is provided in the clues</li>
+                  <li>• There is only one correct answer per puzzle</li>
+                </ul>
+              </div> */}
+            </div>
+
+            <Button 
+              className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+              onClick={handleStartLevel}
+            >
+              Start Level
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Add this section for the timer and image display
+  if (showQuestionImage) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
+        {/* Timer Display */}
+        <div className="fixed top-4 left-4 z-50">
+          <div className="bg-white/90 backdrop-blur-sm rounded-lg shadow-md p-3 flex items-center space-x-2">
+            <Timer className="h-5 w-5 text-purple-600" />
+            <span className="text-2xl font-mono font-bold text-purple-600">
+              {imageTimer}s
+            </span>
+          </div>
+        </div>
+
+        {/* Image Display */}
+        <div className="container mx-auto px-4 h-screen flex items-center justify-center">
+          <Card className="w-full max-w-3xl">
+            <CardContent className="p-6">
+              <div className="relative aspect-video w-full">
+                <Image
+                  src={questions[currentQuestionIndex].image}
+                  alt={`Question ${currentQuestionIndex + 1}`}
+                  fill
+                  className="object-contain rounded-lg"
+                  priority
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+    if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-600 mx-auto mb-4"></div>
-          <p className="text-lg text-gray-600">Loading Level 30...</p>
+          <p className="text-lg text-gray-600">Loading Level 13...</p>
         </div>
       </div>
     );
@@ -520,7 +648,7 @@ const handleKeyPress = (key: KeyboardKey) => {
             <div className="mx-auto mb-4 w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
               <CheckCircle className="h-8 w-8 text-green-600" />
             </div>
-            <CardTitle className="text-3xl font-bold text-green-700">Level 30 Complete!</CardTitle>
+            <CardTitle className="text-3xl font-bold text-green-700">Level 13 Complete!</CardTitle>
             <div className="mt-2">
               <Badge variant="outline" className={`text-lg px-4 py-2 ${
                 scoreData.performanceRating === 'Excellent' ? 'bg-green-50 text-green-700 border-green-200' :
@@ -630,7 +758,7 @@ const handleKeyPress = (key: KeyboardKey) => {
               onClick={() => router.push('/levels')}
               className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-lg py-3"
             >
-              Continue to Level 31
+              Continue to Level 14
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </CardContent>
@@ -639,147 +767,151 @@ const handleKeyPress = (key: KeyboardKey) => {
     );
   }
 
-  const currentQuestion = questions[currentQuestionIndex];
-  const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-sm border-b border-purple-200">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
-                Level 30
-              </Badge>
-              <span className="text-lg font-semibold text-gray-800">{team.team_name}</span>
-            </div>
-            
-            <div className="flex items-center space-x-6">
-              <div className="flex items-center space-x-2">
-                <Trophy className="h-5 w-5 text-yellow-600" />
-                <span className="text-lg font-semibold text-gray-800">
-                  {team.score.toLocaleString()} pts
-                </span>
+  // Only show the question card if showQuestion is true
+  if (showQuestion) {
+    const currentQuestion = questions[currentQuestionIndex];
+    const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
+        {/* Header */}
+        <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-sm border-b border-purple-200">
+          <div className="container mx-auto px-4 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
+                  Level 13
+                </Badge>
+                {/* <span className="text-lg font-semibold text-gray-800">{team.team_name}</span> */}
               </div>
               
-              <div className="flex items-center space-x-2">
-                <Timer className={`h-5 w-5 ${timerStatus === 'not_started' ? 'text-gray-500' : 'text-red-600'}`} />
-                <span className={`text-lg font-mono font-semibold ${getTimerDisplay().className}`}>
-                  {getTimerDisplay().text}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-          {/* Progress */}
-          <div className="mb-8">
-            <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
-              <span>Question {currentQuestionIndex + 1} of {questions.length}</span>
-              <span>{Math.round(progress)}% Complete</span>
-            </div>
-            <Progress value={progress} className="h-2" />
-          </div>
-
-          {/* Question Card */}
-            <Card className="mb-8">
-            <CardHeader>
-              {/* <CardTitle className="text-2xl text-center text-gray-800">
-              {currentQuestion.question}
-              </CardTitle> */}
- <CardTitle className="text-2xl text-center text-gray-800">
-              Spot the Hidden Letter or Alphabet
-              </CardTitle> 
-              <div className="flex justify-center">
-              <div className="relative w-full max-w-md h-64 bg-gray-100 rounded-lg overflow-hidden border-2 border-gray-200">
-           
-                <Image
-  src={currentQuestion.question}
-  alt={`Puzzle ${currentQuestion.id}`}
-  fill // or width and height if not using fill
-  style={{ objectFit: 'cover' }}
-  onError={(e) => {
-    const target = e.target as HTMLImageElement;
-    target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5YTNhZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlIE5vdCBGb3VuZDwvdGV4dD48L3N2Zz4=';
-  }}
-/>
-
-              </div>
-            </div>
-              <div className="space-y-2 mt-4">
-              <p className="text-sm font-medium text-gray-500">Your Answer:</p>
-              <p className="text-sm text-gray-600">Format: {currentQuestion.FormatAnswer}</p>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {/* Text Input */}
-              <div className="space-y-4">
-              <Input
-                type="text"
-                value={answer}
-                ref={inputRef}
-                onChange={(e) => setAnswer(e.target.value)}
-                placeholder="Type your answer here..."
-                className="text-lg pt-4 p-6 rounded-lg border-2 border-purple-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-500"
-              />
-              
-              {/* Virtual Keyboard */}
-              {showKeyboard && (
-                <div className="mt-4 bg-white/80 backdrop-blur-sm rounded-lg p-4 shadow-sm border border-purple-100">
-                <Keyboard
-                  layout={[
-                  ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9','&'],
-                  ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
-                  ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
-                  ['Z', 'X', 'C', 'V', 'B', 'N', 'M'],
-                  ['Space', 'Backspace']
-                  ]}
-                  onKeyPress={handleKeyPress}
-                  className="gap-1.5"
-                />
+              <div className="flex items-center space-x-6">
+                <div className="flex items-center space-x-2">
+                  <Trophy className="h-5 w-5 text-yellow-600" />
+                  {/* <span className="text-lg font-semibold text-gray-800">
+                    {team.score.toLocaleString()} pts
+                  </span> */}
                 </div>
-              )}
-
-              {/* Toggle Keyboard Button */}
-              <Button
-                variant="outline"
-                onClick={() => setShowKeyboard(!showKeyboard)}
-                className="w-full text-purple-600 border-purple-200 hover:bg-purple-50"
-              >
-                {showKeyboard ? "Hide Keyboard" : "Show Keyboard"}
-              </Button>
+                
+                <div className="flex items-center space-x-2">
+                  <Timer className={`h-5 w-5 ${timerStatus === 'not_started' ? 'text-gray-500' : 'text-red-600'}`} />
+                  <span className={`text-lg font-mono font-semibold ${getTimerDisplay().className}`}>
+                    {getTimerDisplay().text}
+                  </span>
+                </div>
               </div>
+            </div>
+          </div>
+        </header>
 
-              {/* Action Buttons */}
-              <div className="flex gap-3 pt-4">
-              <Button
-                variant="outline"
-                onClick={handleSkip}
-                disabled={skipLoading || completingLevel}
-                className="flex-1 text-yellow-600 border-yellow-200 hover:bg-yellow-50"
-              >
-                <SkipForward className="mr-2 h-4 w-4" />
-                Skip Question
-              </Button>
-              
-              <Button
-                onClick={() => handleAnswer(answer)}
-                disabled={!answer || submitLoading || completingLevel}
-                className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
-              >
-                Submit Answer
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
+        {/* Main Content */}
+        <main className="container mx-auto px-4 py-8">
+          <div className="max-w-4xl mx-auto">
+            {/* Progress */}
+            <div className="mb-8">
+              <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
+                <span>Question {currentQuestionIndex + 1} of {questions.length}</span>
+                <span>{Math.round(progress)}% Complete</span>
               </div>
-            </CardContent>
+              <Progress value={progress} className="h-2" />
+            </div>
+
+            {/* Question Card */}
+            <Card className="mb-8">
+              <CardHeader>
+                  {/* <h2 className="text-center">hello</h2> */}
+                <CardTitle className="text-xl text-center text-gray-800">
+                  {currentQuestion.question}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Options */}
+
+                {/* <div className="grid gap-3">
+{currentQuestion.clues}
+                </div> */}
+{/* <div className="space-y-4">
+  <div>
+    <h3 className="text-sm font-bold text-gray-800 mb-2">Clues:</h3>
+    <ul className="list-decimal list-inside space-y-1 text-black-600 text-sm">
+      {currentQuestion.clues.map((clue, index) => (
+        <li key={index}>{clue}</li>
+      ))}
+    </ul>
+  </div>
+</div> */}
+
+                <div className="grid gap-3">
+                  {currentQuestion.options.map((option, index) => (
+                    <Button
+                      key={index}
+                      variant={selectedAnswer === option ? "default" : "outline"}
+                      className={`p-4 h-auto text-left justify-start ${
+                        selectedAnswer === option 
+                          ? "bg-purple-600 hover:bg-purple-700" 
+                          : "hover:bg-purple-50"
+                      }`}
+                      onClick={() => setSelectedAnswer(option)}
+                    >
+                      <span className="font-medium mr-3">{String.fromCharCode(65 + index)}.</span>
+                      {option}
+                    </Button>
+                  ))}
+                </div>
+
+                {/* Hint */}
+                {/* {showHint && (
+                  <Alert className="bg-blue-50 border-blue-200">
+                    <HelpCircle className="h-4 w-4 text-blue-600" />
+                    <AlertDescription className="text-blue-700">
+                      <strong>Hint:</strong> {currentQuestion.hint}
+                    </AlertDescription>
+                  </Alert>
+                )} */}
+
+                {/* Action Buttons */}
+                <div className="flex gap-3 pt-4">
+                  {/* <Button
+                    variant="outline"
+                    onClick={handleHint}
+                    disabled={showHint}
+                    className="flex-1"
+                  >
+                    <HelpCircle className="mr-2 h-4 w-4" />
+                    {showHint ? "Hint Shown" : "Show Hint"}
+                  </Button> */}
+                  
+                  <Button
+                    variant="outline"
+                    onClick={handleSkip}
+                    disabled={skipLoading || completingLevel}
+                    className="flex-1 text-yellow-600 border-yellow-200 hover:bg-yellow-50"
+                  >
+                    <SkipForward className="mr-2 h-4 w-4" />
+                    Skip Question
+                  </Button>
+                  
+                  <Button
+                    onClick={() => handleAnswer(selectedAnswer)}
+                    disabled={!selectedAnswer || submitLoading || completingLevel}
+                    className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+                  >
+                    Submit Answer
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </div>
+              </CardContent>
             </Card>
-        </div>
-      </main>
-    </div>
-  );
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  // If neither, show nothing (or a loading spinner if you want)
+//   return null;
 }
+
+
+

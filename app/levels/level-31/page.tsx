@@ -149,6 +149,7 @@ export default function Level31Page() {
   const [submitLoading,setSubmitLoading]=useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
   const [completionTimeMinutes, setCompletionTimeMinutes] = useState<number>(0);
+  const [completingLevel, setCompletingLevel] = useState(false);
   const [levelStats, setLevelStats] = useState({
     correct: 0,
     incorrect: 0,
@@ -303,6 +304,7 @@ export default function Level31Page() {
       setSelectedAnswer("");
       setShowHint(false);
     } else {
+          setCompletingLevel(true);
       completeLevel();
     }
   }
@@ -342,6 +344,7 @@ export default function Level31Page() {
       setSelectedAnswer("");
       setShowHint(false);
     } else {
+        setCompletingLevel(true);
       completeLevel();
     }
   }
@@ -792,7 +795,7 @@ export default function Level31Page() {
                 <Button
                   variant="outline"
                   onClick={handleSkip}
-                  disabled={skipLoading}
+                  disabled={skipLoading || completingLevel}
                   className="flex-1 text-yellow-600 border-yellow-200 hover:bg-yellow-50"
                 >
                   <SkipForward className="mr-2 h-4 w-4" />
@@ -801,7 +804,7 @@ export default function Level31Page() {
                 
                 <Button
                   onClick={() => handleAnswer(selectedAnswer)}
-                  disabled={!selectedAnswer || submitLoading}
+                  disabled={!selectedAnswer || submitLoading || completingLevel}
                   className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
                 >
                   Submit Answer
