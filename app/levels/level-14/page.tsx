@@ -7,7 +7,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { 
-  Trophy, 
   Timer, 
   CheckCircle, 
   ArrowRight,
@@ -64,7 +63,6 @@ export default function Level14Page() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [userAnswers, setUserAnswers] = useState<number[]>([]);
-  const [isCompleted, setIsCompleted] = useState(false);
   const [loading, setLoading] = useState(true);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [skipLoading, setSkipLoading] = useState(false);
@@ -92,11 +90,11 @@ export default function Level14Page() {
   const storyContent = [
     {
       title: "Ready to Enter Your Detective Era?",
-      content: "Congrats, you've cracked all rounds so far… but beware, the challenges ahead are far more difficult. Every detail will test your mind.\n\nThe Vault Opens… Observe, Decode, Conquer. Read carefully—one missed clue could cost you the case."
+      content: "Congrats, you&apos;ve cracked all rounds so far… but beware, the challenges ahead are far more difficult. Every detail will test your mind.\n\nThe Vault Opens… Observe, Decode, Conquer. Read carefully—one missed clue could cost you the case."
     },
     {
       title: "The Crime Scene",
-      content: "Detective Kael arrived at the Grayson Research Facility at 2:07 AM. The facility's advanced security system had triggered an alert: the central vault had been opened without a recorded access. On the floor lay a single microchip with the number sequence 17-4-23-2 etched into it. The air smelled faintly metallic, like overheated circuits."
+      content: "Detective Kael arrived at the Grayson Research Facility at 2:07 AM. The facility&apos;s advanced security system had triggered an alert: the central vault had been opened without a recorded access. On the floor lay a single microchip with the number sequence 17-4-23-2 etched into it. The air smelled faintly metallic, like overheated circuits."
     },
     {
       title: "The Suspects",
@@ -108,7 +106,7 @@ export default function Level14Page() {
     },
     {
       title: "The Final Clue",
-      content: "On the floor, next to the microchip, was a small folded card with a QR code. Scanning it revealed a cryptic message: \"Time is the key, but only prime minutes matter.\" The security logs showed a spike at exactly 2:13 AM, six minutes after Kael's arrival. Kael realized that the culprit had left all the clues intentionally… but why?"
+      content: "On the floor, next to the microchip, was a small folded card with a QR code. Scanning it revealed a cryptic message: \"Time is the key, but only prime minutes matter.\" The security logs showed a spike at exactly 2:13 AM, six minutes after Kael&apos;s arrival. Kael realized that the culprit had left all the clues intentionally… but why?"
     }
   ];
 
@@ -169,7 +167,7 @@ export default function Level14Page() {
       id: 8,
       type: 'Deduction',
       question: 'Why might the blinking monitor pattern be important?',
-      options: ['It encodes the sequence to open the vault', 'It\'s a distraction', 'It signals a fire alarm', 'It\'s part of the lighting test'],
+      options: ['It encodes the sequence to open the vault', 'It&apos;s a distraction', 'It signals a fire alarm', 'It&apos;s part of the lighting test'],
       correctAnswer: 0
     },
     {
@@ -380,7 +378,7 @@ export default function Level14Page() {
     const accuracy = totalQuestions > 0 ? (levelStats.correct / totalQuestions) * 100 : 0;
 
     const correctWithoutHints = levelStats.correct;
-    let baseScore = correctWithoutHints * 2000; // Higher score for brain test
+    const baseScore = correctWithoutHints * 2000; // Higher score for brain test
 
     const penalties = (levelStats.incorrect * 500) + (levelStats.skipped * 1000);
     const consecutiveBonus = Math.floor(levelStats.correct / 3) * 300;
@@ -448,8 +446,7 @@ export default function Level14Page() {
           current_level: newLevel
         })
       });
-
-      setIsCompleted(true);
+      
       setGamePhase('completed');
     } catch (error) {
       console.error('Error completing level:', error);
@@ -550,7 +547,7 @@ export default function Level14Page() {
                 <span className="font-semibold text-indigo-800">Entering Detective Mode</span>
               </div>
               <p className="text-sm text-gray-600">
-                Ready to Enter Your Detective Era? Congrats, you've cracked all rounds so far… but beware, the challenges ahead are far more difficult. Every detail will test your mind.
+                Ready to Enter Your Detective Era? Congrats, you&apos;ve cracked all rounds so far… but beware, the challenges ahead are far more difficult. Every detail will test your mind.
               </p>
               <p className="text-sm text-gray-600 mt-2">
                 The Vault Opens… Observe, Decode, Conquer. Read carefully—one missed clue could cost you the case.

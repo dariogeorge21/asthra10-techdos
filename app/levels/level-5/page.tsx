@@ -9,13 +9,9 @@ import { Progress } from '@/components/ui/progress';
 import { 
   Trophy, 
   Timer, 
-  CheckCircle, 
   ArrowRight,
   Target,
-  Lightbulb,
   SkipForward,
-  Eye,
-  EyeOff,
   HelpCircle
 } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -480,7 +476,7 @@ export default function Level5Page() {
 
     const correctWithoutHints = levelStats.correct - levelStats.hintsUsed;
     const correctWithHints = levelStats.hintsUsed;
-    let baseScore = (correctWithoutHints * 1500) + (correctWithHints * 1000);
+    const baseScore = (correctWithoutHints * 1500) + (correctWithHints * 1000);
 
     const penalties = (levelStats.incorrect * 400) + (levelStats.skipped * 750);
     const consecutiveBonus = Math.floor(levelStats.correct / 3) * 200;
