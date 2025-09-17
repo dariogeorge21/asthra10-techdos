@@ -134,7 +134,7 @@ export default function RulesModal({ open, onClose, onStartGame }: Props) {
             <ul className="list-disc pl-5 text-sm text-gray-600 space-y-1">
               <li>Focus on accuracy first - incorrect characters hurt your score</li>
               <li>Use proper typing technique with all fingers</li>
-              <li>Don't look at the keyboard - keep your eyes on the screen</li>
+              <li>Don&apos;t look at the keyboard - keep your eyes on the screen</li>
               <li>Stay calm and maintain a steady rhythm</li>
               <li>Use the spacebar to advance to the next word when ready</li>
             </ul>
@@ -148,7 +148,7 @@ export default function RulesModal({ open, onClose, onStartGame }: Props) {
             </div>
             <p className="text-sm text-red-600">
               This is the FINAL LEVEL of TechDOS. Once you start, you cannot restart or replay this challenge. 
-              Make sure you're ready and in a quiet environment before beginning!
+              Make sure you&apos;re ready and in a quiet environment before beginning!
             </p>
           </div>
 

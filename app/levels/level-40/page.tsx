@@ -158,7 +158,7 @@ export default function Level40Page() {
     // Prevent page reload/navigation
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       e.preventDefault();
-      e.returnValue = '';
+      return '';
     };
 
     window.addEventListener('beforeunload', handleBeforeUnload);
@@ -222,38 +222,13 @@ export default function Level40Page() {
     }
 
     setGameState(prev => ({ ...prev, isStarted: true }));
-    
+
     // We'll start the timer when the user types their first character
     // Focus input immediately
     setTimeout(() => inputRef.current?.focus(), 100);
   };
 
-  // End the typing test
-  const endGame = () => {
-    if (gameTimerRef.current) {
-      clearInterval(gameTimerRef.current);
-      gameTimerRef.current = null;
-    }
 
-    // Calculate final WPM based on the actual time elapsed
-    const timeElapsed = gameState.stats.startTime 
-      ? Math.min(30, (Date.now() - gameState.stats.startTime) / 1000 / 60)  // cap at 30 seconds (0.5 minutes)
-      : 0.5;  // fallback to 30 seconds if startTime is missing
-    
-    const finalWPM = Math.round((gameState.stats.correctChars / 5) / timeElapsed);
-
-    setGameState(prev => ({ 
-      ...prev, 
-      isCompleted: true,
-      stats: {
-        ...prev.stats,
-        wpm: finalWPM
-      }
-    }));
-
-    localStorage.setItem('level40_game_played', 'true');
-    setGameHasBeenPlayed(true);
-  };
 
   // Handle typing input
   const handleTyping = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -282,10 +257,12 @@ export default function Level40Page() {
               clearInterval(gameTimerRef.current);
               gameTimerRef.current = null;
             }
-            return { 
-              ...prev, 
-              timeRemaining: 0, 
-              isCompleted: true 
+            // Mark game as played when timer expires
+            localStorage.setItem('level40_game_played', 'true');
+            return {
+              ...prev,
+              timeRemaining: 0,
+              isCompleted: true
             };
           }
 
@@ -314,7 +291,7 @@ export default function Level40Page() {
         incorrectChars++;
       }
     } else if (value.length < gameState.userInput.length) {
-      // Character was deleted
+      // Character was deleted - ensure we don't go below 0
       const deletedChar = gameState.userInput[value.length];
       const expectedChar = gameState.currentText[value.length];
       if (deletedChar === expectedChar) {
@@ -322,13 +299,16 @@ export default function Level40Page() {
       } else {
         incorrectChars = Math.max(0, incorrectChars - 1);
       }
+      // Additional safety check to prevent negative values
+      correctChars = Math.max(0, correctChars);
+      incorrectChars = Math.max(0, incorrectChars);
     }
 
     const totalChars = correctChars + incorrectChars;
     const accuracy = totalChars > 0 ? Math.round((correctChars / totalChars) * 100) : 100;
 
           // If user has reached the end of current text, load the next one
-    if (value.length >= gameState.currentText.length - 1) {
+    if (value.length >= gameState.currentText.length) {
       // Move to next text in the pool
       const nextTextIndex = (gameState.currentTextIndex + 1) % TYPING_CONTENT.length;
       const nextText = TYPING_CONTENT[nextTextIndex];
@@ -462,7 +442,7 @@ export default function Level40Page() {
 
     try {
       // Update score and level
-      await fetch(`/api/teams/${teamCode}/score`, {
+      const response = await fetch(`/api/teams/${teamCode}/score`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -471,11 +451,16 @@ export default function Level40Page() {
         })
       });
 
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       setIsCompleted(true);
       toast.success("Congratulations! You've completed the final level!");
     } catch (error) {
       console.error('Error completing level:', error);
       toast.error("Failed to save progress. Please try again.");
+      // Don't set isCompleted to true if there was an error
     }
   };
 
@@ -679,7 +664,7 @@ export default function Level40Page() {
               <div className="bg-gray-50 p-6 rounded-lg">
                 <h3 className="text-lg font-semibold mb-4">Ready to Begin?</h3>
                 <p className="text-gray-600 mb-4">
-                  Click "Start Challenge" to begin the 30-second typing test.
+                  Click &quot;Start Challenge&quot; to begin the 30-second typing test.
                   Remember: This can only be played once!
                 </p>
                 <Button
