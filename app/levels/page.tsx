@@ -194,8 +194,6 @@ export default function LevelsPage() {
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-8 gap-4">
           {Array.from({ length: 40 }, (_, i) => i + 1).map((levelNumber) => {
             const status = getLevelStatus(levelNumber);
-            const isCheckpoint = [1, 5, 10, 15, 20, 25, 30, 35].includes(levelNumber);
-            
             return (
               <Card
                 key={levelNumber}
@@ -205,17 +203,12 @@ export default function LevelsPage() {
                     : status === 'current'
                     ? 'bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200 hover:border-blue-300 ring-2 ring-blue-200'
                     : 'bg-gray-50 border-gray-200 hover:border-gray-300'
-                } ${isCheckpoint ? 'ring-2 ring-yellow-300' : ''}`}
+                }`}
                 onClick={() => handleLevelClick(levelNumber)}
               >
                 <CardHeader className="pb-2">
                   <div className="flex items-center justify-between">
                     {getLevelIcon(levelNumber)}
-                    {isCheckpoint && (
-                      <Badge variant="secondary" className="text-xs bg-yellow-100 text-yellow-700">
-                        CP
-                      </Badge>
-                    )}
                   </div>
                 </CardHeader>
                 <CardContent className="pt-0">
@@ -229,7 +222,7 @@ export default function LevelsPage() {
         </div>
 
         {/* Stats Section */}
-        <div className="mt-12 grid md:grid-cols-4 gap-6">
+        {/* <div className="mt-12 grid md:grid-cols-4 gap-6">
           <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
             <CardContent className="p-6 text-center">
               <div className="text-2xl font-bold text-green-700">{team.correct_questions}</div>
@@ -257,8 +250,17 @@ export default function LevelsPage() {
               <div className="text-sm text-blue-600">Hints Used</div>
             </CardContent>
           </Card>
-        </div>
+        </div> */}
       </main>
+      <div className="container mx-auto px-4 py-8">
+        <Button 
+          variant="destructive" 
+          className="w-full"
+          onClick={() => router.push('/end-page')}
+        >
+          End Game
+        </Button>
+      </div>
     </div>
   );
 }
