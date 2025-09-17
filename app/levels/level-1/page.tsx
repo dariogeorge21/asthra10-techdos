@@ -2,25 +2,25 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Trophy, Timer, HelpCircle, SkipForward, ArrowRight, CheckCircle, Target } from "lucide-react";
+import { Trophy, Timer, SkipForward, ArrowRight, CheckCircle, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+// import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
-import { Team, isCheckpointLevel, getGameTimeRemaining, formatTimeRemaining, getGameTimerStatus } from "@/lib/supabase";
+import { Team, getGameTimeRemaining, formatTimeRemaining, getGameTimerStatus } from "@/lib/supabase";
 
 interface Question {
   id: number;
   question: string;
   options: string[];
   correct: string;
-  hint: string;
+//   hint: string;
 }
 
 /**
- * LEVEL-4 QUESTION BANK
+ * LEVEL-1 QUESTION BANK
  *
  * A diverse collection of 20 multiple-choice questions covering:
  * - Astronomy & Science (planets, natural phenomena)
@@ -35,80 +35,42 @@ interface Question {
  * - One correct answer
  * - A helpful hint that provides context without giving away the answer
  */
-const questions: Question[] = [
+const questions: Question[] =
+[
   {
-    id: 1,
-    question: "Who painted the famous portrait Mona Lisa?",
-    options: ["Leonardo da Vinci", "Michelangelo", "Raphael", "Pablo Picasso"],
-    correct: "Leonardo da Vinci",
-    hint: "This Italian Renaissance polymath was also an inventor and scientist."
+    "id": 1,
+    "question": "A farmer must take a goat, a cabbage, and a wolf across a river. How does he get all across safely?",
+    "options": ["Wolf first → cabbage → goat", "Goat first → cabbage → wolf", "Cabbage first → goat → wolf", "Goat first → wolf → cabbage"],
+    "correct": "Goat first → cabbage → wolf"
   },
   {
-    id: 2,
-    question: "Who was the first Indian astronaut to travel into space?",
-    options: ["Rakesh Sharma", "Kalpana Chawla", "Sunita Williams", "Ravish Malhotra"],
-    correct: "Rakesh Sharma",
-    hint: "He flew aboard the Soviet Soyuz T-11 in 1984."
+    "id": 2,
+    "question": "You have 12 coins; one is counterfeit (heavier or lighter). What is the minimum number of weighings needed to find it?",
+    "options": ["2", "3", "4", "5"],
+    "correct": "3"
   },
   {
-    id: 3,
-    question: "Who was India’s first female finance minister?",
-    options: ["Indira Gandhi", "Nirmala Sitharaman", "Sushma Swaraj", "Sarojini Naidu"],
-    correct: "Indira Gandhi",
-    hint: "She held the finance portfolio as additional charge in 1969."
+    "id": 3,
+    "question": "A clock shows 3:15. What is the angle between the hour and minute hands?",
+    "options": ["0°", "7.5°", "15°", "22.5°"],
+    "correct": "7.5°"
   },
   {
-    id: 4,
-    question: "Which Indian state is known as the 'Land of Five Rivers'?",
-    options: ["Punjab", "Haryana", "Rajasthan", "Gujarat"],
-    correct: "Punjab",
-    hint: "The name of this state itself comes from the Persian words for 'five waters'."
+    "id": 4,
+    "question": "A number when viewed in a mirror and rotated 180° gives a different valid number. Which number is it?",
+    "options": ["609", "808", "619", "996"],
+    "correct": "619"
   },
   {
-    id: 5,
-    question: "Which Malayalam film was India’s official entry to the Oscars in 2023?",
-    options: ["2018: Everyone is a Hero", "Jallikattu", "Kumbalangi Nights", "The Great Indian Kitchen"],
-    correct: "2018: Everyone is a Hero",
-    hint: "This film depicted Kerala's devastating floods and the resilience of its people."
-  },
-  {
-    id: 6,
-    question: "Before becoming Google, Larry Page and Sergey Brin’s search engine project was originally called what?",
-    options: ["Backrub", "Googol", "PageRank", "SearchIt"],
-    correct: "Backrub",
-    hint: "This quirky name referred to the system’s analysis of backlinks."
-  },
-  {
-    id: 7,
-    question: "Which planet’s 98-degree tilt would make the weirdest seasons if planets had them?",
-    options: ["Uranus", "Neptune", "Saturn", "Venus"],
-    correct: "Uranus",
-    hint: "This ice giant essentially rolls around the Sun on its side."
-  },
-  {
-    id: 8,
-    question: "Who wrote the science bestseller 'A Brief History of Time'?",
-    options: ["Stephen Hawking", "Carl Sagan", "Richard Feynman", "Neil deGrasse Tyson"],
-    correct: "Stephen Hawking",
-    hint: "This physicist explored black holes and the origins of the universe."
-  },
-  {
-    id: 9,
-    question: "What is the currency of Japan?",
-    options: ["Yen", "Won", "Yuan", "Ringgit"],
-    correct: "Yen",
-    hint: "Its symbol is ¥ and it’s among the most traded currencies worldwide."
-  },
-  {
-    id: 10,
-    question: "Which Indian musician composed the soundtrack for 'Roja' and gained global fame?",
-    options: ["A. R. Rahman", "Ilaiyaraaja", "M. S. Viswanathan", "Shankar–Ehsaan–Loy"],
-    correct: "A. R. Rahman",
-    hint: "This 'Mozart of Madras' went on to win Oscars and Grammys."
+    "id": 5,
+    "question": "Cryptic clue: 'Planet disturbed, ring returned (7)'. Which planet is it?",
+    "options": ["Saturn", "Mercury", "Neptune", "Uranus"],
+    "correct": "Saturn"
   }
-];
+]
 
-export default function Level25Page() {
+
+export default function Level1Page() {
   const [team, setTeam] = useState<Team | null>(null);
   const [initialTeamStats, setInitialTeamStats] = useState<{
     correct_questions: number;
@@ -152,7 +114,7 @@ export default function Level25Page() {
         hint_count: teamData.hint_count
       });
 
-      if (teamData.current_level > 25) {
+      if (teamData.current_level > 1) {
         toast.info("You've already completed this level!");
         router.push('/levels');
         return;
@@ -279,6 +241,7 @@ export default function Level25Page() {
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
       setSelectedAnswer("");
+
       setShowHint(false);
     } else {
       completeLevel();
@@ -333,12 +296,12 @@ export default function Level25Page() {
   }
   };
 
-  const handleHint = () => {
-    setShowHint(true);
-    const newStats = { ...levelStats };
-    newStats.hintsUsed++;
-    setLevelStats(newStats);
-  };
+//   const handleHint = () => {
+//     setShowHint(true);
+//     const newStats = { ...levelStats };
+//     newStats.hintsUsed++;
+//     setLevelStats(newStats);
+//   };
 
   /**
    * ENHANCED SCORING ALGORITHM
@@ -437,7 +400,7 @@ export default function Level25Page() {
 
     const scoreData = calculateScore(timeTaken);
     const newTotalScore = team.score + scoreData.totalScore;
-    const newLevel = 26;
+    const newLevel = 2;
 
     try {
       // CRITICAL FIX: Ensure final level statistics are accurately saved to database
@@ -484,16 +447,16 @@ export default function Level25Page() {
       });
 
       // Save checkpoint if this is a checkpoint level
-      if (isCheckpointLevel(1)) {
-        await fetch(`/api/teams/${teamCode}/checkpoint`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            checkpoint_score: newTotalScore,
-            checkpoint_level: 1
-          })
-        });
-      }
+      // if (isCheckpointLevel(1)) {
+      //   await fetch(`/api/teams/${teamCode}/checkpoint`, {
+      //     method: 'PUT',
+      //     headers: { 'Content-Type': 'application/json' },
+      //     body: JSON.stringify({
+      //       checkpoint_score: newTotalScore,
+      //       checkpoint_level: 1
+      //     })
+      //   });
+      // }
 
       setIsCompleted(true);
     } catch (error) {
@@ -507,7 +470,7 @@ export default function Level25Page() {
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-600 mx-auto mb-4"></div>
-          <p className="text-lg text-gray-600">Loading Level 25...</p>
+          <p className="text-lg text-gray-600">Loading Level 1...</p>
         </div>
       </div>
     );
@@ -536,7 +499,7 @@ export default function Level25Page() {
             <div className="mx-auto mb-4 w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
               <CheckCircle className="h-8 w-8 text-green-600" />
             </div>
-            <CardTitle className="text-3xl font-bold text-green-700">Level 25 Complete!</CardTitle>
+            <CardTitle className="text-3xl font-bold text-green-700">Level 1 Complete!</CardTitle>
             <div className="mt-2">
               <Badge variant="outline" className={`text-lg px-4 py-2 ${
                 scoreData.performanceRating === 'Excellent' ? 'bg-green-50 text-green-700 border-green-200' :
@@ -646,7 +609,7 @@ export default function Level25Page() {
               onClick={() => router.push('/levels')}
               className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-lg py-3"
             >
-              Continue to Level 26
+              Continue to Level 2
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </CardContent>
@@ -666,7 +629,7 @@ export default function Level25Page() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
-                Level 25
+                Level 1
               </Badge>
               <span className="text-lg font-semibold text-gray-800">{team.team_name}</span>
             </div>
@@ -730,18 +693,18 @@ export default function Level25Page() {
               </div>
 
               {/* Hint */}
-              {showHint && (
+              {/* {showHint && (
                 <Alert className="bg-blue-50 border-blue-200">
                   <HelpCircle className="h-4 w-4 text-blue-600" />
                   <AlertDescription className="text-blue-700">
                     <strong>Hint:</strong> {currentQuestion.hint}
                   </AlertDescription>
                 </Alert>
-              )}
+              )} */}
 
               {/* Action Buttons */}
               <div className="flex gap-3 pt-4">
-                <Button
+                {/* <Button
                   variant="outline"
                   onClick={handleHint}
                   disabled={showHint}
@@ -749,7 +712,7 @@ export default function Level25Page() {
                 >
                   <HelpCircle className="mr-2 h-4 w-4" />
                   {showHint ? "Hint Shown" : "Show Hint"}
-                </Button>
+                </Button> */}
                 
                 <Button
                   variant="outline"

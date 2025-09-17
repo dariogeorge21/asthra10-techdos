@@ -1,86 +1,13 @@
-/**
- * LEVEL-2 QUIZ IMPLEMENTATION - TECHDOS GAME
- *
- * OVERVIEW:
- * Level-2 represents the second stage of the TechDOS quiz game, featuring a comprehensive
- * multiple-choice question (MCQ) format designed to test advanced knowledge across various
- * domains including technology, science, mathematics, programming, and modern innovations.
- *
- * QUIZ MECHANICS:
- * - Format: Multiple Choice Questions (MCQ) with 4 options each
- * - Total Questions: 20 diverse questions covering different knowledge areas
- * - Hint System: Each question includes a helpful hint that can be revealed
- * - Timer Integration: Real-time countdown with global game timer
- * - Navigation Protection: Prevents accidental page refresh/navigation during quiz
- *
- * GAME FLOW:
- * 1. Question Selection: Questions are presented sequentially (no random order)
- * 2. Answer Selection: Players choose from 4 multiple-choice options (A, B, C, D)
- * 3. Hint Usage: Optional hints available for each question (affects scoring)
- * 4. Answer Submission: Submit selected answer or skip to next question
- * 5. Progress Tracking: Visual progress bar and question counter
- * 6. Level Completion: Automatic progression after all questions answered/skipped
- *
- * STATISTICS TRACKING:
- * - Correct Answers: Number of questions answered correctly
- * - Incorrect Answers: Number of questions answered incorrectly
- * - Skipped Questions: Number of questions skipped without answering
- * - Hints Used: Total number of hints revealed during the level
- * - Time Taken: Duration from level start to completion
- * - Consecutive Correct: Tracks streaks for bonus calculations
- *
- * SCORING ALGORITHM:
- * Base Points:
- * - Correct Answer (no hint): 1500 points
- * - Correct Answer (with hint): 1000 points
- * - Incorrect Answer: -400 points penalty
- * - Skipped Question: -750 points penalty
- *
- * Bonus Systems:
- * - Consecutive Correct Bonus: +200 points for every 3 consecutive correct answers
- * - Time Bonus (based on completion speed):
- *   * Under 1 min: +250 points
- *   * 1-1.5 min: +225 points
- *   * 1.5-2 min: +200 points
- *   * 2-2.5 min: +175 points
- *   * 2.5-3 min: +150 points
- *   * 3-3.5 min: +125 points
- *   * 3.5-4 min: +100 points
- *   * 4-4.5 min: +75 points
- *   * 4.5-5 min: +50 points
- *   * 5-5.5 min: +25 points
- *   * Over 5.5 min: No time bonus
- *
- * FINAL SCORE CALCULATION:
- * Total Score = (Base Points) + (Consecutive Bonus) + (Time Bonus)
- * Minimum Score: 0 (negative scores are clamped to zero)
- *
- * INTEGRATION FEATURES:
- * - Global Timer: Respects game-wide time limits and displays remaining time
- * - Team Management: Updates team statistics and progression status
- * - API Integration: Real-time updates to database for scores and statistics
- * - Navigation Control: Prevents data loss through page navigation protection
- * - Toast Notifications: User feedback for actions and errors
- *
- * LEVEL COMPLETION SUMMARY:
- * Upon completion, players receive detailed feedback including:
- * - Performance breakdown (correct/incorrect/skipped/hints)
- * - Time taken to complete the level
- * - Detailed scoring breakdown showing base points, bonuses, and penalties
- * - Performance rating based on accuracy and speed
- * - Clear navigation to proceed to the next level
- */
-
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Trophy, Timer, HelpCircle, SkipForward, ArrowRight, CheckCircle, Target } from "lucide-react";
+import { Trophy, Timer, SkipForward, ArrowRight, CheckCircle, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+// import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
 import { Team, getGameTimeRemaining, formatTimeRemaining, getGameTimerStatus } from "@/lib/supabase";
 
@@ -89,169 +16,62 @@ interface Question {
   question: string;
   options: string[];
   correct: string;
-  hint: string;
+//   hint: string;
 }
 
 /**
- * LEVEL-2 QUESTION BANK
+ * LEVEL-1 QUESTION BANK
  *
  * A diverse collection of 20 multiple-choice questions covering:
- * - Astronomy & Science (planets, space exploration)
- * - Indian History & Politics (leaders, achievements, firsts)
- * - Entertainment & Cinema (movies, awards, celebrities)
- * - Sports & Olympics (cricket, Olympic achievements)
- * - Geography & Culture (cities, festivals, landmarks)
- * - Literature & Awards (Nobel Prize, Booker Prize, authors)
+ * - Astronomy & Science (planets, natural phenomena)
+ * - Indian History & Politics (leaders, achievements)
+ * - Literature & Arts (authors, awards)
+ * - Sports & Entertainment (records, achievements)
+ * - Geography & Nature (locations, landmarks)
+ * - Pop Culture & Technology (viral content, innovations)
  *
  * Each question includes:
  * - 4 carefully crafted options with plausible distractors
  * - One correct answer
  * - A helpful hint that provides context without giving away the answer
  */
-const questions: Question[] = [
+const questions: Question[] =
+[
   {
-    id: 1,
-    question: "If Earth had a crazy cousin that spins on its side like a rolling ball around the Sun, which planet would that be?",
-    options: ["Uranus", "Neptune", "Saturn", "Jupiter"],
-    correct: "Uranus",
-    hint: "This ice giant planet rotates on its side at a 98-degree angle, making it appear to roll around the Sun."
+    "id": 1,
+    "question": "Country with largest proven lithium reserves (2025)?",
+    "options": ["Australia", "Chile", "Bolivia", "China"],
+    "correct": "Bolivia"
   },
   {
-    id: 2,
-    question: "Who was the first woman to become the Chief Minister of an Indian state?",
-    options: ["Sucheta Kripalani (Uttar Pradesh, 1963)", "Indira Gandhi", "Jayalalithaa", "Mamata Banerjee"],
-    correct: "Sucheta Kripalani (Uttar Pradesh, 1963)",
-    hint: "She was a freedom fighter and became the first woman Chief Minister in India, serving Uttar Pradesh from 1963 to 1967."
+    "id": 2,
+    "question": "Only metal liquid at room temperature?",
+    "options": ["Mercury", "Gallium", "Bromine", "Francium"],
+    "correct": "Mercury"
   },
   {
-    id: 3,
-    question: "The movie 'Inception' plays with the concept of dreams within dreams. Who directed it?",
-    options: ["Christopher Nolan", "Steven Spielberg", "Martin Scorsese", "Quentin Tarantino"],
-    correct: "Christopher Nolan",
-    hint: "This British-American director is known for complex, non-linear storytelling and mind-bending concepts in films like this 2010 sci-fi thriller."
+    "id": 3,
+    "question": "Year India adopted the ₹ symbol officially?",
+    "options": ["2008", "2010", "2012", "2014"],
+    "correct": "2010"
   },
   {
-    id: 4,
-    question: "Which Indian cricket captain is called 'Dada' and 'Prince of Kolkata'?",
-    options: ["Sourav Ganguly", "Sachin Tendulkar", "Rahul Dravid", "MS Dhoni"],
-    correct: "Sourav Ganguly",
-    hint: "This former Indian cricket captain from Kolkata is affectionately called 'Dada' (elder brother) and led India to many memorable victories."
+    "id": 4,
+    "question": "Fastest-growing programming language (2025 surveys)?",
+    "options": ["Python", "Rust", "Java", "PHP"],
+    "correct": "Rust"
   },
   {
-    id: 5,
-    question: "A city in Kerala is nicknamed the 'Venice of the East' because of its backwaters. Which city?",
-    options: ["Alappuzha", "Kochi", "Thiruvananthapuram", "Kozhikode"],
-    correct: "Alappuzha",
-    hint: "This coastal city is famous for its intricate network of canals, lagoons, and backwaters, earning it the nickname 'Venice of the East'."
-  },
-  {
-    id: 6,
-    question: "In FIFA World Cup history, which country has lost the most finals?",
-    options: ["Germany", "Brazil", "Argentina", "Italy"],
-    correct: "Germany",
-    hint: "Germany has reached the World Cup final 8 times but lost 4 of them, making them the country with the most final defeats in World Cup history."
-  },
-  {
-    id: 7,
-    question: "If you were looking for Mount Everest's neighbor, which mountain is the second highest in the world?",
-    options: ["K2", "Kangchenjunga", "Lhotse", "Makalu"],
-    correct: "K2",
-    hint: "Located on the China-Pakistan border, this mountain is known as the 'Savage Mountain' and is considered more challenging to climb than Everest."
-  },
-  {
-    id: 8,
-    question: "Who was the first Indian actress to receive the Padma Shri Award?",
-    options: ["Nargis Dutt", "Meena Kumari", "Madhubala", "Waheeda Rehman"],
-    correct: "Nargis Dutt",
-    hint: "This legendary actress, known for films like 'Mother India', received the Padma Shri in 1958, becoming the first Indian actress to receive this civilian honor."
-  },
-  {
-    id: 9,
-    question: "The Android operating system was originally developed by which company before Google acquired it?",
-    options: ["Android Inc.", "Microsoft", "Apple", "Samsung"],
-    correct: "Android Inc.",
-    hint: "Founded in 2003 by Andy Rubin, Rich Miner, Nick Sears, and Chris White, this company was acquired by Google in 2005 for about $50 million."
-  },
-  {
-    id: 10,
-    question: "Which Indian state is famous for the Hornbill Festival?",
-    options: ["Nagaland", "Manipur", "Mizoram", "Arunachal Pradesh"],
-    correct: "Nagaland",
-    hint: "This northeastern state celebrates the Hornbill Festival annually in December, showcasing the rich culture and traditions of the Naga tribes."
-  },
-  {
-    id: 11,
-    question: "Who was the first Indian woman to win an Olympic silver medal?",
-    options: ["P. V. Sindhu (badminton, 2016)", "Saina Nehwal", "Mary Kom", "Karnam Malleswari"],
-    correct: "P. V. Sindhu (badminton, 2016)",
-    hint: "This badminton player from Hyderabad won silver at the 2016 Rio Olympics, becoming the first Indian woman to win an Olympic silver medal."
-  },
-  {
-    id: 12,
-    question: "Who was the first Indian batsman to hit six sixes in an over in international cricket?",
-    options: ["Yuvraj Singh (2007 T20 World Cup)", "Rohit Sharma", "MS Dhoni", "Virender Sehwag"],
-    correct: "Yuvraj Singh (2007 T20 World Cup)",
-    hint: "In the 2007 T20 World Cup against England, this left-handed batsman hit Stuart Broad for six consecutive sixes in one over."
-  },
-  {
-    id: 13,
-    question: "The Nobel Prize medal features the portrait of which scientist?",
-    options: ["Alfred Nobel", "Albert Einstein", "Marie Curie", "Isaac Newton"],
-    correct: "Alfred Nobel",
-    hint: "The founder of the Nobel Prizes, this Swedish chemist and inventor of dynamite is featured on the medal that bears his name."
-  },
-  {
-    id: 14,
-    question: "Which Indian city is known as the 'City of Nawabs'?",
-    options: ["Lucknow", "Hyderabad", "Delhi", "Mysore"],
-    correct: "Lucknow",
-    hint: "The capital of Uttar Pradesh, this city was ruled by the Nawabs of Awadh and is famous for its rich culture, cuisine, and architecture."
-  },
-  {
-    id: 15,
-    question: "If music awards were planets, the 'Grammy' is Earth's biggest. Which award is considered the world's highest honor in cinema?",
-    options: ["The Oscars (Academy Awards)", "Golden Globe", "Cannes Film Festival", "BAFTA"],
-    correct: "The Oscars (Academy Awards)",
-    hint: "Presented by the Academy of Motion Picture Arts and Sciences, this is considered the most prestigious award in the film industry."
-  },
-  {
-    id: 16,
-    question: "In Kerala, which river is the longest?",
-    options: ["Periyar River", "Bharathapuzha", "Pamba River", "Chaliyar River"],
-    correct: "Periyar River",
-    hint: "This 244 km long river flows through Kerala and is the longest river in the state, originating from the Western Ghats."
-  },
-  {
-    id: 17,
-    question: "The fastest man-made object ever built is a spacecraft that 'touched the Sun.' What is its name?",
-    options: ["Parker Solar Probe", "Voyager 1", "New Horizons", "Juno"],
-    correct: "Parker Solar Probe",
-    hint: "Launched in 2018, this NASA spacecraft holds the record for the fastest human-made object, reaching speeds of up to 430,000 mph."
-  },
-  {
-    id: 18,
-    question: "Who was India's first individual Olympic gold medalist?",
-    options: ["Abhinav Bindra (2008, shooting)", "Rajyavardhan Singh Rathore", "Vijay Kumar", "Gagan Narang"],
-    correct: "Abhinav Bindra (2008, shooting)",
-    hint: "This shooter from Chandigarh won gold in the 10m Air Rifle event at the 2008 Beijing Olympics, becoming India's first individual Olympic gold medalist."
-  },
-  {
-    id: 19,
-    question: "In literature, which Indian author wrote the novel 'The White Tiger' (Booker Prize winner)?",
-    options: ["Aravind Adiga", "Salman Rushdie", "Arundhati Roy", "Vikram Seth"],
-    correct: "Aravind Adiga",
-    hint: "This Indian-Australian author won the Man Booker Prize in 2008 for his debut novel about class struggle in modern India."
-  },
-  {
-    id: 20,
-    question: "Which superhero's real name is T'Challa?",
-    options: ["Black Panther", "Black Widow", "Black Lightning", "Black Canary"],
-    correct: "Black Panther",
-    hint: "This Marvel superhero is the king of Wakanda and first appeared in Fantastic Four #52 in 1966, later getting his own series and movie."
+    "id": 5,
+    "question": "Planet with a day longer than its year?",
+    "options": ["Mercury", "Venus", "Mars", "Neptune"],
+    "correct": "Venus"
   }
-];
+]
 
-export default function Level23Page() {
+
+
+export default function Level2Page() {
   const [team, setTeam] = useState<Team | null>(null);
   const [initialTeamStats, setInitialTeamStats] = useState<{
     correct_questions: number;
@@ -266,6 +86,8 @@ export default function Level23Page() {
   const [timeRemaining, setTimeRemaining] = useState<number>(0);
   const [timerStatus, setTimerStatus] = useState<'not_started' | 'active' | 'expired'>('not_started');
   const [loading, setLoading] = useState(true);
+  const [skipLoading,setskipLoading]=useState(false);
+  const [submitLoading,setSubmitLoading]=useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
   const [completionTimeMinutes, setCompletionTimeMinutes] = useState<number>(0);
   const [levelStats, setLevelStats] = useState({
@@ -293,7 +115,7 @@ export default function Level23Page() {
         hint_count: teamData.hint_count
       });
 
-      if (teamData.current_level > 23) {
+      if (teamData.current_level > 2) {
         toast.info("You've already completed this level!");
         router.push('/levels');
         return;
@@ -383,10 +205,20 @@ export default function Level23Page() {
   };
 
   const handleAnswer = async (answer: string) => {
+
+   
     const currentQuestion = questions[currentQuestionIndex];
     const isCorrect = answer === currentQuestion.correct;
+
+     if(submitLoading){
+      return;
+    }
+
+    setSubmitLoading(true);
     
     // Update local stats
+
+    try{
     const newStats = { ...levelStats };
     if (isCorrect) {
       newStats.correct++;
@@ -414,9 +246,25 @@ export default function Level23Page() {
     } else {
       completeLevel();
     }
+  }
+
+  catch(err){
+     console.error(" API request for submit answer failed", err);
+  }
+
+  finally{
+    setSubmitLoading(false);
+  }
   };
 
   const handleSkip = async () => {
+    if(skipLoading){
+      return;
+    }
+
+    setskipLoading(true)
+
+    try{
     const newStats = { ...levelStats };
     newStats.skipped++;
     setLevelStats(newStats);
@@ -437,14 +285,23 @@ export default function Level23Page() {
     } else {
       completeLevel();
     }
+  }
+
+    catch (err) {
+      console.error(" API request for skip question failed", err);
+  }
+
+  finally{
+    setskipLoading(false);
+  }
   };
 
-  const handleHint = () => {
-    setShowHint(true);
-    const newStats = { ...levelStats };
-    newStats.hintsUsed++;
-    setLevelStats(newStats);
-  };
+//   const handleHint = () => {
+//     setShowHint(true);
+//     const newStats = { ...levelStats };
+//     newStats.hintsUsed++;
+//     setLevelStats(newStats);
+//   };
 
   /**
    * ENHANCED SCORING ALGORITHM
@@ -543,7 +400,7 @@ export default function Level23Page() {
 
     const scoreData = calculateScore(timeTaken);
     const newTotalScore = team.score + scoreData.totalScore;
-    const newLevel = 24;
+    const newLevel = 3;
 
     try {
       // CRITICAL FIX: Ensure final level statistics are accurately saved to database
@@ -589,6 +446,17 @@ export default function Level23Page() {
         })
       });
 
+      // Save checkpoint if this is a checkpoint level
+      // if (isCheckpointLevel(1)) {
+      //   await fetch(`/api/teams/${teamCode}/checkpoint`, {
+      //     method: 'PUT',
+      //     headers: { 'Content-Type': 'application/json' },
+      //     body: JSON.stringify({
+      //       checkpoint_score: newTotalScore,
+      //       checkpoint_level: 1
+      //     })
+      //   });
+      // }
 
       setIsCompleted(true);
     } catch (error) {
@@ -602,7 +470,7 @@ export default function Level23Page() {
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-600 mx-auto mb-4"></div>
-          <p className="text-lg text-gray-600">Loading Level 23...</p>
+          <p className="text-lg text-gray-600">Loading Level 2...</p>
         </div>
       </div>
     );
@@ -631,7 +499,7 @@ export default function Level23Page() {
             <div className="mx-auto mb-4 w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
               <CheckCircle className="h-8 w-8 text-green-600" />
             </div>
-            <CardTitle className="text-3xl font-bold text-green-700">Level 23 Complete!</CardTitle>
+            <CardTitle className="text-3xl font-bold text-green-700">Level 2 Complete!</CardTitle>
             <div className="mt-2">
               <Badge variant="outline" className={`text-lg px-4 py-2 ${
                 scoreData.performanceRating === 'Excellent' ? 'bg-green-50 text-green-700 border-green-200' :
@@ -741,7 +609,7 @@ export default function Level23Page() {
               onClick={() => router.push('/levels')}
               className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-lg py-3"
             >
-              Continue to Level 24
+              Continue to Level 3
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </CardContent>
@@ -825,18 +693,18 @@ export default function Level23Page() {
               </div>
 
               {/* Hint */}
-              {showHint && (
+              {/* {showHint && (
                 <Alert className="bg-blue-50 border-blue-200">
                   <HelpCircle className="h-4 w-4 text-blue-600" />
                   <AlertDescription className="text-blue-700">
                     <strong>Hint:</strong> {currentQuestion.hint}
                   </AlertDescription>
                 </Alert>
-              )}
+              )} */}
 
               {/* Action Buttons */}
               <div className="flex gap-3 pt-4">
-                <Button
+                {/* <Button
                   variant="outline"
                   onClick={handleHint}
                   disabled={showHint}
@@ -844,11 +712,12 @@ export default function Level23Page() {
                 >
                   <HelpCircle className="mr-2 h-4 w-4" />
                   {showHint ? "Hint Shown" : "Show Hint"}
-                </Button>
+                </Button> */}
                 
                 <Button
                   variant="outline"
                   onClick={handleSkip}
+                  disabled={skipLoading}
                   className="flex-1 text-yellow-600 border-yellow-200 hover:bg-yellow-50"
                 >
                   <SkipForward className="mr-2 h-4 w-4" />
@@ -857,7 +726,7 @@ export default function Level23Page() {
                 
                 <Button
                   onClick={() => handleAnswer(selectedAnswer)}
-                  disabled={!selectedAnswer}
+                  disabled={!selectedAnswer || submitLoading}
                   className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
                 >
                   Submit Answer

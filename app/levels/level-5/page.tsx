@@ -1,139 +1,261 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
-import { Trophy, Timer, HelpCircle, SkipForward, ArrowRight, CheckCircle, Target } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { toast } from "sonner";
-import { Team, isCheckpointLevel, getGameTimeRemaining, formatTimeRemaining, getGameTimerStatus } from "@/lib/supabase";
+import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { 
+  Trophy, 
+  Timer, 
+  CheckCircle, 
+  ArrowRight,
+  Target,
+  Lightbulb,
+  SkipForward,
+  Eye,
+  EyeOff,
+  HelpCircle
+} from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { toast } from 'sonner';
+import { getGameTimeRemaining, getGameTimerStatus, formatTimeRemaining } from '@/lib/supabase';
 
 interface Question {
   id: number;
   question: string;
   options: string[];
-  correct: string;
+  correctAnswer: string;
   hint: string;
+  category: string;
 }
 
-/**
- * LEVEL-4 QUESTION BANK
- *
- * A diverse collection of 20 multiple-choice questions covering:
- * - Astronomy & Science (planets, natural phenomena)
- * - Indian History & Politics (leaders, achievements)
- * - Literature & Arts (authors, awards)
- * - Sports & Entertainment (records, achievements)
- * - Geography & Nature (locations, landmarks)
- * - Pop Culture & Technology (viral content, innovations)
- *
- * Each question includes:
- * - 4 carefully crafted options with plausible distractors
- * - One correct answer
- * - A helpful hint that provides context without giving away the answer
- */
-const questions: Question[] = [
-  {
-    id: 1,
-    question: "Who painted the famous portrait Mona Lisa?",
-    options: ["Leonardo da Vinci", "Michelangelo", "Raphael", "Pablo Picasso"],
-    correct: "Leonardo da Vinci",
-    hint: "This Italian Renaissance polymath was also an inventor and scientist."
-  },
-  {
-    id: 2,
-    question: "Who was the first Indian astronaut to travel into space?",
-    options: ["Rakesh Sharma", "Kalpana Chawla", "Sunita Williams", "Ravish Malhotra"],
-    correct: "Rakesh Sharma",
-    hint: "He flew aboard the Soviet Soyuz T-11 in 1984."
-  },
-  {
-    id: 3,
-    question: "Who was India’s first female finance minister?",
-    options: ["Indira Gandhi", "Nirmala Sitharaman", "Sushma Swaraj", "Sarojini Naidu"],
-    correct: "Indira Gandhi",
-    hint: "She held the finance portfolio as additional charge in 1969."
-  },
-  {
-    id: 4,
-    question: "Which Indian state is known as the 'Land of Five Rivers'?",
-    options: ["Punjab", "Haryana", "Rajasthan", "Gujarat"],
-    correct: "Punjab",
-    hint: "The name of this state itself comes from the Persian words for 'five waters'."
-  },
-  {
-    id: 5,
-    question: "Which Malayalam film was India’s official entry to the Oscars in 2023?",
-    options: ["2018: Everyone is a Hero", "Jallikattu", "Kumbalangi Nights", "The Great Indian Kitchen"],
-    correct: "2018: Everyone is a Hero",
-    hint: "This film depicted Kerala's devastating floods and the resilience of its people."
-  },
-  {
-    id: 6,
-    question: "Before becoming Google, Larry Page and Sergey Brin’s search engine project was originally called what?",
-    options: ["Backrub", "Googol", "PageRank", "SearchIt"],
-    correct: "Backrub",
-    hint: "This quirky name referred to the system’s analysis of backlinks."
-  },
-  {
-    id: 7,
-    question: "Which planet’s 98-degree tilt would make the weirdest seasons if planets had them?",
-    options: ["Uranus", "Neptune", "Saturn", "Venus"],
-    correct: "Uranus",
-    hint: "This ice giant essentially rolls around the Sun on its side."
-  },
-  {
-    id: 8,
-    question: "Who wrote the science bestseller 'A Brief History of Time'?",
-    options: ["Stephen Hawking", "Carl Sagan", "Richard Feynman", "Neil deGrasse Tyson"],
-    correct: "Stephen Hawking",
-    hint: "This physicist explored black holes and the origins of the universe."
-  },
-  {
-    id: 9,
-    question: "What is the currency of Japan?",
-    options: ["Yen", "Won", "Yuan", "Ringgit"],
-    correct: "Yen",
-    hint: "Its symbol is ¥ and it’s among the most traded currencies worldwide."
-  },
-  {
-    id: 10,
-    question: "Which Indian musician composed the soundtrack for 'Roja' and gained global fame?",
-    options: ["A. R. Rahman", "Ilaiyaraaja", "M. S. Viswanathan", "Shankar–Ehsaan–Loy"],
-    correct: "A. R. Rahman",
-    hint: "This 'Mozart of Madras' went on to win Oscars and Grammys."
-  }
-];
+interface Team {
+  id: string;
+  name: string;
+  score: number;
+  current_level: number;
+  team_name: string;
+  team_code: string;
+  game_loaded: boolean;
+  game_start_time: string | null;
+  checkpoint_score: number;
+  checkpoint_level: number;
+  correct_questions: number;
+  incorrect_questions: number;
+  skipped_questions: number;
+  hint_count: number;
+  created_at: string;
+  updated_at: string;
+}
 
-export default function Level25Page() {
-  const [team, setTeam] = useState<Team | null>(null);
-  const [initialTeamStats, setInitialTeamStats] = useState<{
-    correct_questions: number;
-    incorrect_questions: number;
-    skipped_questions: number;
-    hint_count: number;
-  } | null>(null);
+interface TeamStats {
+  correct_questions: number;
+  incorrect_questions: number;
+  skipped_questions: number;
+  hint_count: number;
+}
+
+export default function Level5Page() {
+  const router = useRouter();
+  
+  // Game state
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [selectedAnswer, setSelectedAnswer] = useState<string>("");
+  const [selectedAnswer, setSelectedAnswer] = useState('');
   const [showHint, setShowHint] = useState(false);
-  const [levelStartTime] = useState<Date>(new Date());
-  const [timeRemaining, setTimeRemaining] = useState<number>(0);
-  const [timerStatus, setTimerStatus] = useState<'not_started' | 'active' | 'expired'>('not_started');
-  const [loading, setLoading] = useState(true);
-  const [skipLoading,setskipLoading]=useState(false);
-  const [submitLoading,setSubmitLoading]=useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
-  const [completionTimeMinutes, setCompletionTimeMinutes] = useState<number>(0);
+  const [loading, setLoading] = useState(true);
+  const [submitLoading, setSubmitLoading] = useState(false);
+  const [skipLoading, setSkipLoading] = useState(false);
+  
+  // Team and stats
+  const [team, setTeam] = useState<Team | null>(null);
   const [levelStats, setLevelStats] = useState({
     correct: 0,
     incorrect: 0,
     skipped: 0,
     hintsUsed: 0
   });
-  const router = useRouter();
+  const [initialTeamStats, setInitialTeamStats] = useState<TeamStats | null>(null);
+  
+  // Timer
+  const [timeRemaining, setTimeRemaining] = useState(0);
+  const [timerStatus, setTimerStatus] = useState<'not_started' | 'active' | 'expired'>('not_started');
+  const [levelStartTime] = useState(new Date());
+  const [completionTimeMinutes, setCompletionTimeMinutes] = useState(0);
+
+  // Questions data
+  const questions: Question[] = [
+    {
+      id: 1,
+      question: 'Who is known as the "Missile Man of India"?',
+      options: ['Dr. A. P. J. Abdul Kalam', 'Dr. Vikram Sarabhai', 'Dr. Homi Bhabha', 'Dr. C. V. Raman'],
+      correctAnswer: 'Dr. A. P. J. Abdul Kalam',
+      hint: 'This scientist later became the 11th President of India and was instrumental in India\'s missile development program.',
+      category: 'Science & Politics'
+    },
+    {
+      id: 2,
+      question: 'The Netflix series Money Heist is originally from which country?',
+      options: ['Italy', 'Mexico','Spain', 'Brazil'],
+      correctAnswer: 'Spain',
+      hint: 'This European country is famous for flamenco dancing and the running of the bulls in Pamplona.',
+      category: 'Entertainment'
+    },
+    {
+      id: 3,
+      question: 'In cricket, who was the first bowler to take 10 wickets in a single Test innings?',
+      options: ['Shane Warne', 'Muttiah Muralitharan','Jim Laker', 'Anil Kumble'],
+      correctAnswer: 'Jim Laker',
+      hint: 'This English off-spinner achieved this feat in 1956 against Australia at Old Trafford, Manchester.',
+      category: 'Sports'
+    },
+    {
+      id: 4,
+      question: 'Kerala\'s state bird, known for its striking blue and orange plumage, is?',
+      options: ['Indian Peacock', 'Kingfisher','Great Hornbill', 'Malabar Parakeet'],
+      correctAnswer: 'Great Hornbill',
+      hint: 'This large bird has a distinctive casque on top of its massive bill and is found in the Western Ghats.',
+      category: 'Nature'
+    },
+    {
+      id: 5,
+      question: 'Which is the only country that has won the FIFA World Cup on four different continents?',
+      options: ['Brazil', 'Germany', 'Argentina','None'],
+      correctAnswer: 'None',
+      hint: 'Consider where the FIFA World Cup has been hosted and which countries have claimed titles across those locations.',
+      category: 'Sports'
+    },
+    {
+      id: 6,
+      question: 'Who was the last Governor-General of independent India?',
+      options: ['Lord Mountbatten', 'Dr. Rajendra Prasad','C. Rajagopalachari','Jawaharlal Nehru'],
+      correctAnswer: 'C. Rajagopalachari',
+      hint: 'This Indian leader took over from Lord Mountbatten and served until India became a republic in 1950.',
+      category: 'History'
+    },
+    {
+      id: 7,
+      question: 'Microsoft\'s first-ever hardware product wasn\'t a console or a PC. What was it?',
+      options: ['Mouse', 'Keyboard', 'Monitor', 'Printer'],
+      correctAnswer: 'Mouse',
+      hint: 'Released in 1983, this pointing device was Microsoft\'s entry into hardware manufacturing.',
+      category: 'Technology'
+    },
+    {
+      id: 8,
+      question: 'If planets had "reverse gears," which one rotates backward compared to most others?',
+      options: ['Mars', 'Jupiter','Venus', 'Saturn'],
+      correctAnswer: 'Venus',
+      hint: 'This planet is the hottest in our solar system and rotates in the opposite direction to most other planets.',
+      category: 'Science'
+    },
+    {
+      id: 9,
+      question: 'Which Indian city is famous for its Chand Baori stepwell?',
+      options: ['Jaipur','Abhaneri', 'Udaipur', 'Jodhpur'],
+      correctAnswer: 'Abhaneri',
+      hint: 'This ancient stepwell is located in Rajasthan and has over 3,500 narrow steps arranged in perfect symmetry.',
+      category: 'Architecture'
+    },
+    {
+      id: 10,
+      question: 'The Golden Boot winner of FIFA 2022, scoring 8 goals, was?',
+      options: ['Lionel Messi', 'Harry Kane','Kylian Mbappé', 'Olivier Giroud'],
+      correctAnswer: 'Kylian Mbappé',
+      hint: 'This French striker scored a hat-trick in the final but still ended up on the losing side.',
+      category: 'Sports'
+    },
+    {
+      id: 11,
+      question: 'In Kerala, the famous hill station Munnar is located in which district?',
+      options: ['Wayanad', 'Kottayam', 'Pathanamthitta','Idukki'],
+      correctAnswer: 'Idukki',
+      hint: 'This district is known for its spice plantations and is home to the Periyar Wildlife Sanctuary.',
+      category: 'Geography'
+    },
+    {
+      id: 12,
+      question: 'Which countries are hosting FIFA 2026?',
+      options: ['US, Mexico and Canada', 'Qatar and UAE', 'Spain and Portugal', 'Argentina and Uruguay'],
+      correctAnswer: 'US, Mexico and Canada',
+      hint: 'This will be the first World Cup hosted by three countries and the first in North America since 1994.',
+      category: 'Sports'
+    },
+    {
+      id: 13,
+      question: 'Who wrote the Indian national anthem "Jana Gana Mana"?',
+      options: ['Bankim Chandra Chatterjee', 'Sarojini Naidu','Rabindranath Tagore', 'Subhas Chandra Bose'],
+      correctAnswer: 'Rabindranath Tagore',
+      hint: 'This Nobel Prize-winning poet also composed the national anthem of Bangladesh.',
+      category: 'Literature'
+    },
+    {
+      id: 14,
+      question: 'The internet\'s first viral dance challenge, the "Harlem Shake," exploded in which year?',
+      options: ['2011', '2012', '2014', '2013'],
+      correctAnswer: '2013',
+      hint: 'This dance craze happened around the same time as the rise of Vine, the short-form video platform.',
+      category: 'Internet Culture'
+    },
+    {
+      id: 15,
+      question: 'Which Mughal ruler is often called the "Engineer King" for his architectural projects?',
+      options: ['Akbar', 'Aurangzeb', 'Humayun','Shah Jahan'],
+      correctAnswer: 'Shah Jahan',
+      hint: 'This emperor built the Taj Mahal as a mausoleum for his beloved wife Mumtaz Mahal.',
+      category: 'History'
+    },
+    {
+      id: 16,
+      question: 'If the Sun disappeared, how many minutes would Earth still see sunlight?',
+      options: ['10', '7', '4', '8'],
+      correctAnswer: '8',
+      hint: 'This is the time it takes for light to travel from the Sun to Earth at the speed of light.',
+      category: 'Science'
+    },
+    {
+      id: 17,
+      question: 'Who was the first Indian to win the World Chess Championship?',
+      options: ['Viswanathan Anand', 'Garry Kasparov', 'Magnus Carlsen', 'Vladimir Kramnik'],
+      correctAnswer: 'Viswanathan Anand',
+      hint: 'Known as the "Lightning Kid," this grandmaster from Tamil Nadu held the world title five times.',
+      category: 'Sports'
+    },
+    {
+      id: 18,
+      question: 'The Malayalam film Drishyam was remade into how many languages officially?',
+      options: ['5', '3', '4', '6'],
+      correctAnswer: '4',
+      hint: 'This thriller was remade in Hindi, Tamil, Telugu, and Kannada, starring different lead actors.',
+      category: 'Entertainment'
+    },
+    {
+      id: 19,
+      question: 'Which Greek goddess was believed to have sprung fully grown from the head of Zeus?',
+      options: ['Aphrodite', 'Artemis','Athena', 'Hera'],
+      correctAnswer: 'Athena',
+      hint: 'This goddess of wisdom and warfare is the patron deity of Athens, Greece\'s capital city.',
+      category: 'Mythology'
+    },
+    {
+      id: 20,
+      question: 'Which Indian athlete is nicknamed the "Flying Sikh"?',
+      options: ['Gurbachan Singh Randhawa','Milkha Singh', 'Ajit Pal Singh', 'Balbir Singh Sr.'],
+      correctAnswer: 'Milkha Singh',
+      hint: 'This legendary sprinter\'s life story was made into a Bollywood film starring Farhan Akhtar.',
+      category: 'Sports'
+    },
+    {
+      id: 21,
+      question: 'Which Kerala river is known as the Periyar of the South?',
+      options: ['Bharathapuzha', 'Pampa River', 'Kabini River','Chaliyar River'],
+      correctAnswer: 'Chaliyar River',
+      hint: 'This river flows through Kozhikode and Malappuram districts and is important for the region\'s agriculture.',
+      category: 'Geography'
+    }
+  ];
 
   const fetchTeamData = useCallback(async (teamCode: string) => {
     try {
@@ -144,7 +266,6 @@ export default function Level25Page() {
       const teamData = await response.json();
       setTeam(teamData);
 
-      // Store initial team statistics to track level-specific changes
       setInitialTeamStats({
         correct_questions: teamData.correct_questions,
         incorrect_questions: teamData.incorrect_questions,
@@ -152,13 +273,18 @@ export default function Level25Page() {
         hint_count: teamData.hint_count
       });
 
-      if (teamData.current_level > 25) {
+      if (teamData.current_level < 5) {
+        toast.info("You need to complete previous levels first!");
+        router.push('/levels');
+        return;
+      }
+
+      if (teamData.current_level > 5) {
         toast.info("You've already completed this level!");
         router.push('/levels');
         return;
       }
 
-      // Initialize timer status
       const status = getGameTimerStatus(teamData);
       setTimerStatus(status);
       setTimeRemaining(getGameTimeRemaining(teamData));
@@ -180,14 +306,12 @@ export default function Level25Page() {
 
     fetchTeamData(teamCode);
 
-    // Prevent page reload/navigation
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       e.preventDefault();
       return (e.returnValue = '');
     };
 
     window.addEventListener('beforeunload', handleBeforeUnload);
-
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
@@ -210,8 +334,6 @@ export default function Level25Page() {
       return () => clearInterval(timer);
     }
   }, [team, timerStatus]);
-
-
 
   const getTimerDisplay = (): { text: string; className: string } => {
     switch (timerStatus) {
@@ -241,96 +363,96 @@ export default function Level25Page() {
     }
   };
 
-  const handleAnswer = async (answer: string) => {
+  const validateAnswer = (input: string, correctAnswer: string): boolean => {
+    const normalizedInput = input.toLowerCase().trim();
+    const normalizedCorrect = correctAnswer.toLowerCase().trim();
+    return normalizedInput === normalizedCorrect;
+  };
 
-   
-    const currentQuestion = questions[currentQuestionIndex];
-    const isCorrect = answer === currentQuestion.correct;
-
-     if(submitLoading){
-      return;
-    }
-
+  const handleSubmitAnswer = async () => {
+    if (!selectedAnswer.trim()) return;
+    
     setSubmitLoading(true);
+    const currentQuestion = questions[currentQuestionIndex];
+    const isCorrect = validateAnswer(selectedAnswer, currentQuestion.correctAnswer);
     
-    // Update local stats
-
-    try{
-    const newStats = { ...levelStats };
-    if (isCorrect) {
-      newStats.correct++;
-    } else {
-      newStats.incorrect++;
+    try {
+      const newStats = { ...levelStats };
+      
+      if (isCorrect) {
+        newStats.correct++;
+      } else {
+        newStats.incorrect++;
+      }
+      
+      if (showHint) {
+        newStats.hintsUsed++;
+      }
+      
+      setLevelStats(newStats);
+      
+      if (!team) return;
+      
+      const updatedStats = {
+        correct_questions: team.correct_questions + (isCorrect ? 1 : 0),
+        incorrect_questions: team.incorrect_questions + (isCorrect ? 0 : 1),
+        hint_count: team.hint_count + (showHint ? 1 : 0)
+      };
+      
+      await updateTeamStats(updatedStats);
+      
+      if (currentQuestionIndex < questions.length - 1) {
+        setCurrentQuestionIndex(currentQuestionIndex + 1);
+        setSelectedAnswer('');
+        setShowHint(false);
+      } else {
+        completeLevel();
+      }
+    } catch (err) {
+      console.error("Error submitting answer:", err);
+      toast.error("Failed to submit answer. Please try again.");
+    } finally {
+      setSubmitLoading(false);
     }
-    setLevelStats(newStats);
-
-    // Update team stats in database
-    if (!team) return;
-    
-    const updatedStats = {
-      correct_questions: team.correct_questions + (isCorrect ? 1 : 0),
-      incorrect_questions: team.incorrect_questions + (isCorrect ? 0 : 1),
-      hint_count: team.hint_count + (showHint ? 1 : 0)
-    };
-
-    await updateTeamStats(updatedStats);
-
-    // Move to next question or complete level
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
-      setSelectedAnswer("");
-      setShowHint(false);
-    } else {
-      completeLevel();
-    }
-  }
-
-  catch(err){
-     console.error(" API request for submit answer failed", err);
-  }
-
-  finally{
-    setSubmitLoading(false);
-  }
   };
 
   const handleSkip = async () => {
-    if(skipLoading){
+    if (skipLoading) {
       return;
     }
 
-    setskipLoading(true)
+    setSkipLoading(true);
 
-    try{
-    const newStats = { ...levelStats };
-    newStats.skipped++;
-    setLevelStats(newStats);
+    try {
+      const newStats = { ...levelStats };
+      newStats.skipped++;
+      if (showHint) {
+        newStats.hintsUsed++;
+      }
+      setLevelStats(newStats);
 
-    if (!team) return;
+      if (!team) return;
 
-    const updatedStats = {
-      skipped_questions: team.skipped_questions + 1,
-      hint_count: team.hint_count + (showHint ? 1 : 0)
-    };
+      const updatedStats = {
+        skipped_questions: team.skipped_questions + 1,
+        hint_count: team.hint_count + (showHint ? 1 : 0)
+      };
 
-    await updateTeamStats(updatedStats);
+      await updateTeamStats(updatedStats);
 
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
-      setSelectedAnswer("");
-      setShowHint(false);
-    } else {
-      completeLevel();
+      if (currentQuestionIndex < questions.length - 1) {
+        setCurrentQuestionIndex(currentQuestionIndex + 1);
+        setSelectedAnswer('');
+        setShowHint(false);
+      } else {
+        completeLevel();
+      }
+    } catch (err) {
+      console.error("Error skipping question:", err);
+      toast.error("Failed to skip question. Please try again.");
+    } finally {
+      setSkipLoading(false);
     }
-  }
-
-    catch (err) {
-      console.error(" API request for skip question failed", err);
-  }
-
-  finally{
-    setskipLoading(false);
-  }
   };
 
   const handleHint = () => {
@@ -340,27 +462,6 @@ export default function Level25Page() {
     setLevelStats(newStats);
   };
 
-  /**
-   * ENHANCED SCORING ALGORITHM
-   *
-   * Calculates the final score for Level-1 based on multiple factors:
-   *
-   * BASE SCORING:
-   * - Correct answers without hints: 1500 points each
-   * - Correct answers with hints: 1000 points each (500 point penalty for hint usage)
-   * - Incorrect answers: -400 points penalty each
-   * - Skipped questions: -750 points penalty each
-   *
-   * BONUS SYSTEMS:
-   * - Consecutive Correct Bonus: +200 points for every 3 consecutive correct answers
-   * - Time Bonus: Rewards fast completion with decreasing bonuses based on time taken
-   *
-   * PERFORMANCE RATING:
-   * - Excellent: 90%+ accuracy, under 3 minutes
-   * - Good: 70%+ accuracy, under 4 minutes
-   * - Average: 50%+ accuracy, under 5 minutes
-   * - Needs Improvement: Below 50% accuracy or over 5 minutes
-   */
   const calculateScore = (completionTime?: number): {
     totalScore: number;
     baseScore: number;
@@ -371,28 +472,19 @@ export default function Level25Page() {
     accuracy: number;
     performanceRating: string;
   } => {
-    // Use provided completion time if available, otherwise calculate from current time
     const timeTaken = completionTime !== undefined ? 
       completionTime : 
-      (new Date().getTime() - levelStartTime.getTime()) / 1000 / 60; // minutes
+      (new Date().getTime() - levelStartTime.getTime()) / 1000 / 60;
     const totalQuestions = levelStats.correct + levelStats.incorrect + levelStats.skipped;
     const accuracy = totalQuestions > 0 ? (levelStats.correct / totalQuestions) * 100 : 0;
 
-    // Base scoring calculation
-    const correctWithoutHints = Math.max(0, levelStats.correct - levelStats.hintsUsed);
-    const correctWithHints = Math.min(levelStats.correct, levelStats.hintsUsed);
+    const correctWithoutHints = levelStats.correct - levelStats.hintsUsed;
+    const correctWithHints = levelStats.hintsUsed;
+    let baseScore = (correctWithoutHints * 1500) + (correctWithHints * 1000);
 
-    let baseScore = 0;
-    baseScore += correctWithoutHints * 1500; // Full points for unassisted correct answers
-    baseScore += correctWithHints * 1000;    // Reduced points for hint-assisted answers
-
-    // Penalties
     const penalties = (levelStats.incorrect * 400) + (levelStats.skipped * 750);
-
-    // Consecutive correct bonus
     const consecutiveBonus = Math.floor(levelStats.correct / 3) * 200;
 
-    // Time bonus calculation
     let timeBonus = 0;
     if (timeTaken < 1) timeBonus = 250;
     else if (timeTaken < 1.5) timeBonus = 225;
@@ -403,13 +495,11 @@ export default function Level25Page() {
     else if (timeTaken < 4) timeBonus = 100;
     else if (timeTaken < 4.5) timeBonus = 75;
     else if (timeTaken < 5) timeBonus = 50;
-    else if (timeTaken < 5.5) timeBonus = 25;
 
-    // Performance rating
     let performanceRating = "Needs Improvement";
-    if (accuracy >= 90 && timeTaken < 3) performanceRating = "Excellent";
-    else if (accuracy >= 70 && timeTaken < 4) performanceRating = "Good";
-    else if (accuracy >= 50 && timeTaken < 5) performanceRating = "Average";
+    if (accuracy >= 90 && timeTaken < 2) performanceRating = "Excellent";
+    else if (accuracy >= 80 && timeTaken < 3) performanceRating = "Good";
+    else if (accuracy >= 70 && timeTaken < 4) performanceRating = "Average";
 
     const totalScore = Math.max(0, baseScore + consecutiveBonus + timeBonus - penalties);
 
@@ -431,27 +521,15 @@ export default function Level25Page() {
     const teamCode = localStorage.getItem('team_code');
     if (!teamCode) return;
 
-    // Calculate exact time taken to complete the level at this moment
-    const timeTaken = (new Date().getTime() - levelStartTime.getTime()) / 1000 / 60; // minutes
+    const timeTaken = (new Date().getTime() - levelStartTime.getTime()) / 1000 / 60;
     setCompletionTimeMinutes(timeTaken);
 
     const scoreData = calculateScore(timeTaken);
     const newTotalScore = team.score + scoreData.totalScore;
-    const newLevel = 26;
+    const newLevel = 6;
 
     try {
-      // CRITICAL FIX: Ensure final level statistics are accurately saved to database
-      //
-      // Problem: The incremental updates during gameplay might miss some statistics,
-      // especially hint counts that are shown but not immediately saved to database.
-      //
-      // Solution: At level completion, calculate the final statistics based on:
-      // - Initial team stats (captured when level started)
-      // - Local level stats (accurate count for this level)
-      // This ensures the database reflects the exact performance shown to the user.
-
       if (initialTeamStats) {
-        // Calculate the final absolute values that should be in the database
         const finalStats = {
           correct_questions: initialTeamStats.correct_questions + levelStats.correct,
           incorrect_questions: initialTeamStats.incorrect_questions + levelStats.incorrect,
@@ -459,13 +537,6 @@ export default function Level25Page() {
           hint_count: initialTeamStats.hint_count + levelStats.hintsUsed
         };
 
-        console.log('Level completion - Final stats update:', {
-          initialStats: initialTeamStats,
-          levelStats: levelStats,
-          finalStats: finalStats
-        });
-
-        // Update final statistics to ensure database accuracy
         await fetch(`/api/teams/${teamCode}/stats`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
@@ -473,7 +544,6 @@ export default function Level25Page() {
         });
       }
 
-      // Update score and level
       await fetch(`/api/teams/${teamCode}/score`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -482,18 +552,6 @@ export default function Level25Page() {
           current_level: newLevel
         })
       });
-
-      // Save checkpoint if this is a checkpoint level
-      if (isCheckpointLevel(1)) {
-        await fetch(`/api/teams/${teamCode}/checkpoint`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            checkpoint_score: newTotalScore,
-            checkpoint_level: 1
-          })
-        });
-      }
 
       setIsCompleted(true);
     } catch (error) {
@@ -504,10 +562,10 @@ export default function Level25Page() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-600 mx-auto mb-4"></div>
-          <p className="text-lg text-gray-600">Loading Level 25...</p>
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-lg text-gray-600">Loading Level 5...</p>
         </div>
       </div>
     );
@@ -515,7 +573,7 @@ export default function Level25Page() {
 
   if (!team) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
         <div className="text-center">
           <p className="text-lg text-gray-600">Failed to load team data.</p>
           <Button onClick={() => router.push('/')} className="mt-4">
@@ -530,13 +588,13 @@ export default function Level25Page() {
     const scoreData = calculateScore(completionTimeMinutes);
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-4">
         <Card className="max-w-4xl mx-auto">
           <CardHeader className="text-center">
             <div className="mx-auto mb-4 w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-              <CheckCircle className="h-8 w-8 text-green-600" />
+              <Trophy className="h-8 w-8 text-green-600" />
             </div>
-            <CardTitle className="text-3xl font-bold text-green-700">Level 25 Complete!</CardTitle>
+            <CardTitle className="text-3xl font-bold text-green-700">Level 5 Complete! 🎉</CardTitle>
             <div className="mt-2">
               <Badge variant="outline" className={`text-lg px-4 py-2 ${
                 scoreData.performanceRating === 'Excellent' ? 'bg-green-50 text-green-700 border-green-200' :
@@ -549,7 +607,6 @@ export default function Level25Page() {
             </div>
           </CardHeader>
           <CardContent className="space-y-8">
-            {/* Performance Statistics */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
               <div className="p-4 bg-green-50 rounded-lg">
                 <div className="text-2xl font-bold text-green-600">{levelStats.correct}</div>
@@ -569,12 +626,11 @@ export default function Level25Page() {
               </div>
             </div>
 
-            {/* Time and Accuracy */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="text-center p-4 bg-purple-50 rounded-lg">
                 <div className="flex items-center justify-center mb-2">
                   <Timer className="h-5 w-5 text-purple-600 mr-2" />
-                  <span className="text-lg font-semibold text-purple-700">Time Taken</span>
+                  <span className="text-lg font-semibold text-purple-700">Completion Time</span>
                 </div>
                 <div className="text-2xl font-bold text-purple-600">
                   {Math.floor(completionTimeMinutes)}:{String(Math.floor((completionTimeMinutes % 1) * 60)).padStart(2, '0')}
@@ -593,9 +649,8 @@ export default function Level25Page() {
               </div>
             </div>
 
-            {/* Detailed Score Breakdown */}
-            <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-6">
-              <h3 className="text-xl font-bold text-center text-purple-700 mb-4">Score Breakdown</h3>
+            <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-6">
+              <h3 className="text-xl font-bold text-center text-blue-700 mb-4">Score Breakdown</h3>
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="text-gray-700">Base Score (Correct Answers)</span>
@@ -621,32 +676,17 @@ export default function Level25Page() {
                 )}
                 <hr className="border-gray-300" />
                 <div className="flex justify-between items-center text-lg font-bold">
-                  <span className="text-purple-700">Total Level Score</span>
-                  <span className="text-purple-700">+{scoreData.totalScore.toLocaleString()}</span>
+                  <span className="text-blue-700">Total Score</span>
+                  <span className="text-blue-700">+{scoreData.totalScore.toLocaleString()}</span>
                 </div>
               </div>
             </div>
 
-            {/* Performance Feedback */}
-            <div className="text-center p-4 bg-gray-50 rounded-lg">
-              <h4 className="font-semibold text-gray-700 mb-2">Performance Feedback</h4>
-              <p className="text-sm text-gray-600">
-                {scoreData.performanceRating === 'Excellent' &&
-                  "Outstanding performance! You demonstrated excellent knowledge and speed. Keep up the great work!"}
-                {scoreData.performanceRating === 'Good' &&
-                  "Great job! You showed solid understanding with good accuracy and timing. Well done!"}
-                {scoreData.performanceRating === 'Average' &&
-                  "Good effort! You're on the right track. Consider reviewing topics you found challenging."}
-                {scoreData.performanceRating === 'Needs Improvement' &&
-                  "Keep practicing! Focus on accuracy and try to work more efficiently in future levels."}
-              </p>
-            </div>
-
             <Button
               onClick={() => router.push('/levels')}
-              className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-lg py-3"
+              className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-lg py-3"
             >
-              Continue to Level 26
+              Continue to Next Level
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </CardContent>
@@ -666,7 +706,7 @@ export default function Level25Page() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
-                Level 25
+                Level 5
               </Badge>
               <span className="text-lg font-semibold text-gray-800">{team.team_name}</span>
             </div>
@@ -762,7 +802,7 @@ export default function Level25Page() {
                 </Button>
                 
                 <Button
-                  onClick={() => handleAnswer(selectedAnswer)}
+                  onClick={handleSubmitAnswer}
                   disabled={!selectedAnswer || submitLoading}
                   className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
                 >

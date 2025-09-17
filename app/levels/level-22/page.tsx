@@ -45,136 +45,66 @@ const questions: Question[] = [
   },
   {
     id: 2,
-    question: "Who was India's first Deputy Prime Minister?",
-    options: ["Sardar Vallabhbhai Patel", "Jawaharlal Nehru", "Dr. Rajendra Prasad", "Maulana Abul Kalam Azad"],
-    correct: "Sardar Vallabhbhai Patel",
-    hint: "Known as the 'Iron Man of India', he was instrumental in the integration of princely states."
-  },
-  {
-    id: 3,
     question: "Who wrote the epic fantasy series 'The Lord of the Rings'?",
     options: ["J. R. R. Tolkien", "C. S. Lewis", "George R. R. Martin", "Terry Pratchett"],
     correct: "J. R. R. Tolkien",
     hint: "This Oxford professor created Middle-earth and invented several languages for his fantasy world."
   },
   {
-    id: 4,
+    id: 3,
     question: "Which tennis player is nicknamed the 'King of Clay'?",
     options: ["Rafael Nadal", "Roger Federer", "Novak Djokovic", "Andy Murray"],
     correct: "Rafael Nadal",
     hint: "This Spanish player has won the French Open a record number of times on clay courts."
   },
   {
-    id: 5,
-    question: "Which Indian state is home to Asia's largest tulip garden?",
-    options: ["Jammu and Kashmir", "Himachal Pradesh", "Uttarakhand", "Sikkim"],
-    correct: "Jammu and Kashmir",
-    hint: "This garden is located in Srinagar and blooms spectacularly during spring season."
-  },
-  {
-    id: 6,
+    id: 4,
     question: "Which country won the very first FIFA World Cup in 1930?",
     options: ["Uruguay", "Brazil", "Argentina", "Italy"],
     correct: "Uruguay",
     hint: "This South American country also hosted the inaugural tournament and defeated Argentina in the final."
   },
   {
-    id: 7,
-    question: "A planet rains diamonds because of immense pressure in its atmosphere. Which planet?",
-    options: ["Neptune", "Jupiter", "Saturn", "Uranus"],
-    correct: "Neptune",
-    hint: "This ice giant, along with Uranus, has extreme atmospheric pressure that can crystallize carbon into diamonds."
+    id: 5,
+    question: "Tesla’s humanoid robot project is called what?",
+    options: ["Optimus", "Atlas", "Sophia", "Asimo"],
+    correct: "Optimus",
+    hint: "Also known as Tesla Bot, this project was unveiled by Tesla in 2021."
   },
   {
-    id: 8,
-    question: "Who was the first Indian woman to win a medal at the Olympics?",
-    options: ["Karnam Malleswari", "P. T. Usha", "Saina Nehwal", "Mary Kom"],
-    correct: "Karnam Malleswari",
-    hint: "She won a bronze medal in weightlifting at the 2000 Sydney Olympics."
-  },
-  {
-    id: 9,
-    question: "Which footballer has the most Ballon d'Or awards?",
+    id: 6,
+    question: "Which footballer has the most Ballon d’Or awards?",
     options: ["Lionel Messi", "Cristiano Ronaldo", "Johan Cruyff", "Michel Platini"],
     correct: "Lionel Messi",
     hint: "This Argentine player has won 8 Ballon d'Or awards as of 2023, more than any other player in history."
   },
   {
-    id: 10,
+    id: 7,
     question: "Who was awarded the first Booker Prize from India?",
     options: ["Arundhati Roy", "Salman Rushdie", "R. K. Narayan", "Vikram Seth"],
     correct: "Arundhati Roy",
     hint: "She won for her novel 'The God of Small Things' in 1997, becoming the first Indian woman to win this prestigious award."
   },
   {
-    id: 11,
-    question: "The world's shortest war lasted only 38 minutes. Which countries fought it?",
-    options: ["Britain and Zanzibar", "France and Monaco", "Spain and Andorra", "Italy and San Marino"],
-    correct: "Britain and Zanzibar",
-    hint: "This 1896 conflict ended quickly when Zanzibar's palace was bombarded and the Sultan fled."
-  },
-  {
-    id: 12,
+    id: 8,
     question: "The Kaziranga National Park in Assam is famous for which animal?",
     options: ["One-horned Rhinoceros", "Bengal Tiger", "Asian Elephant", "Hoolock Gibbon"],
     correct: "One-horned Rhinoceros",
     hint: "This UNESCO World Heritage Site hosts two-thirds of the world's population of this endangered species."
   },
   {
-    id: 13,
+    id: 9,
     question: "The first video on YouTube to cross 1 billion views was which song?",
     options: ["Gangnam Style", "Baby by Justin Bieber", "Despacito", "See You Again"],
     correct: "Gangnam Style",
     hint: "This 2012 K-pop hit by Psy became a global phenomenon and broke YouTube's view counter."
   },
   {
-    id: 14,
-    question: "A lake in India changes color from green to pink depending on the season. Which lake?",
-    options: ["Lonar Lake, Maharashtra", "Dal Lake, Kashmir", "Chilika Lake, Odisha", "Vembanad Lake, Kerala"],
-    correct: "Lonar Lake, Maharashtra",
-    hint: "This crater lake's color changes due to algae and salt-loving microorganisms that thrive in different seasons."
-  },
-  {
-    id: 15,
+    id: 10,
     question: "Which Indian poet is popularly known as the Nightingale of India?",
     options: ["Sarojini Naidu", "Kamala Das", "Mahadevi Varma", "Amrita Pritam"],
     correct: "Sarojini Naidu",
     hint: "She was also a freedom fighter and the first woman to become the President of the Indian National Congress."
-  },
-  {
-    id: 16,
-    question: "The Grammy Award trophy is shaped like what musical instrument?",
-    options: ["Gramophone", "Violin", "Piano", "Trumpet"],
-    correct: "Gramophone",
-    hint: "This vintage music player gives the Grammy Awards their name and iconic trophy design."
-  },
-  {
-    id: 17,
-    question: "Which author created the character Sherlock Holmes?",
-    options: ["Sir Arthur Conan Doyle", "Agatha Christie", "Edgar Allan Poe", "Raymond Chandler"],
-    correct: "Sir Arthur Conan Doyle",
-    hint: "This British physician turned author wrote four novels and 56 short stories featuring the famous detective."
-  },
-  {
-    id: 18,
-    question: "Lionel Messi finally lifted the FIFA World Cup in 2022. Which stadium hosted the final?",
-    options: ["Lusail Stadium, Qatar", "Al Bayt Stadium, Qatar", "Stadium 974, Qatar", "Al Thumama Stadium, Qatar"],
-    correct: "Lusail Stadium, Qatar",
-    hint: "This 80,000-capacity stadium was the largest venue of the 2022 World Cup and hosted both the opening match and final."
-  },
-  {
-    id: 19,
-    question: "Which Indian state is the largest producer of mangoes?",
-    options: ["Uttar Pradesh", "Andhra Pradesh", "Maharashtra", "Karnataka"],
-    correct: "Uttar Pradesh",
-    hint: "This northern state produces famous varieties like Dasheri and Chausa, contributing about 23% of India's total mango production."
-  },
-  {
-    id: 20,
-    question: "The Malayalam novel 'Chemmeen', which won the Jnanpith Award, was written by?",
-    options: ["Thakazhi Sivasankara Pillai", "M. T. Vasudevan Nair", "O. V. Vijayan", "Vaikom Muhammad Basheer"],
-    correct: "Thakazhi Sivasankara Pillai",
-    hint: "This 1956 novel about forbidden love was later adapted into an acclaimed film and won India's highest literary honor."
   }
 ];
 
