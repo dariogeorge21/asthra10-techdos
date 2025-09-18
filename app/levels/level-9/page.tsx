@@ -76,9 +76,9 @@ const questions: KeyboardQuestion[] = [
   },
   {
     id: 5,
-    riddle: "You want to look smarter instantly. Shortcut to zoom in? And to zoom out?",
+    riddle: "You want to look smarter instantly. Shortcut to zoom in? ",
     correctAnswer: "Ctrl + +",
-    hint: "This shortcut increases the zoom level in most applications. Use Ctrl + - to zoom out."
+    hint: "This shortcut increases the zoom level in most applications."
   },
   {
     id: 6,
