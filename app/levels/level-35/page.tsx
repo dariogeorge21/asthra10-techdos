@@ -65,7 +65,7 @@ const questions: Question[] =[
   { id: 9, question: '/levels/level-35/img9.jpeg',  correct: "Vatican City",  
   options: ["Liechtenstein", "Luxembourg", "Vatican City", "Malta"]  },
   { id: 10, question: '/levels/level-35/img10.jpeg', correct: "South Korea",  
-  options: ["Soth Korea", "Indonesian", "Mongolia", "Japan"]}
+  options: ["South Korea", "Indonesian", "Mongolia", "Japan"]}
 
 
 ]
@@ -99,7 +99,7 @@ export default function Level35Page() {
     skipped: 0,
     // hintsUsed: 0
   });
-  const [answer, setAnswer] = useState("");
+  const [, setAnswer] = useState("");
 
   const router = useRouter();
 
