@@ -129,6 +129,16 @@ export default function Level11Page() {
   const [submitLoading, setSubmitLoading] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
   const [completionTimeMinutes, setCompletionTimeMinutes] = useState<number>(0);
+  const [completionScoreData, setCompletionScoreData] = useState<{
+    totalScore: number;
+    baseScore: number;
+    timeBonus: number;
+    consecutiveBonus: number;
+    penalties: number;
+    timeTaken: number;
+    accuracy: number;
+    performanceRating: string;
+  } | null>(null);
   const [levelStats, setLevelStats] = useState({
     correct: 0,
     incorrect: 0,
@@ -380,6 +390,8 @@ export default function Level11Page() {
     setCompletionTimeMinutes(timeTaken);
 
     const scoreData = calculateScore(timeTaken);
+    // Store the calculated score data for consistent display
+    setCompletionScoreData(scoreData);
     const newTotalScore = team.score + scoreData.totalScore;
     const newLevel = 12;
 
@@ -536,8 +548,10 @@ export default function Level11Page() {
     );
   }
 
-  if (isCompleted) {
-    const scoreData = calculateScore(completionTimeMinutes);
+  if (isCompleted && completionScoreData) {
+    // Use the stored score data that was calculated during level completion
+    // This ensures the displayed score exactly matches what was sent to the API
+    const scoreData = completionScoreData;
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center p-4">
@@ -602,30 +616,30 @@ export default function Level11Page() {
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="text-gray-700">Base Score (Correct Answers)</span>
-                  <span className="font-semibold text-green-600">+{scoreData.baseScore.toLocaleString()}</span>
+                  <span className="font-semibold text-green-600">+{scoreData.baseScore}</span>
                 </div>
                 {scoreData.consecutiveBonus > 0 && (
                   <div className="flex justify-between items-center">
                     <span className="text-gray-700">Consecutive Correct Bonus</span>
-                    <span className="font-semibold text-blue-600">+{scoreData.consecutiveBonus.toLocaleString()}</span>
+                    <span className="font-semibold text-blue-600">+{scoreData.consecutiveBonus}</span>
                   </div>
                 )}
                 {scoreData.timeBonus > 0 && (
                   <div className="flex justify-between items-center">
                     <span className="text-gray-700">Speed Bonus</span>
-                    <span className="font-semibold text-yellow-600">+{scoreData.timeBonus.toLocaleString()}</span>
+                    <span className="font-semibold text-yellow-600">+{scoreData.timeBonus}</span>
                   </div>
                 )}
                 {scoreData.penalties > 0 && (
                   <div className="flex justify-between items-center">
                     <span className="text-gray-700">Penalties (Wrong/Skipped)</span>
-                    <span className="font-semibold text-red-600">-{scoreData.penalties.toLocaleString()}</span>
+                    <span className="font-semibold text-red-600">-{scoreData.penalties}</span>
                   </div>
                 )}
                 <hr className="border-gray-300" />
                 <div className="flex justify-between items-center text-lg font-bold">
                   <span className="text-purple-700">Total Level Score</span>
-                  <span className="text-purple-700">+{scoreData.totalScore.toLocaleString()}</span>
+                  <span className="text-purple-700">+{scoreData.totalScore}</span>
                 </div>
               </div>
             </div>

@@ -78,6 +78,16 @@ export default function Level12Page() {
   const [timerStatus, setTimerStatus] = useState<'not_started' | 'active' | 'expired'>('not_started');
   const [levelStartTime] = useState(new Date());
   const [completionTimeMinutes, setCompletionTimeMinutes] = useState(0);
+  const [completionScoreData, setCompletionScoreData] = useState<{
+    totalScore: number;
+    baseScore: number;
+    timeBonus: number;
+    consecutiveBonus: number;
+    penalties: number;
+    timeTaken: number;
+    accuracy: number;
+    performanceRating: string;
+  } | null>(null);
 
   // Image puzzles data
   const puzzles: ImagePuzzle[] = [
@@ -342,6 +352,8 @@ export default function Level12Page() {
     setCompletionTimeMinutes(timeTaken);
 
     const scoreData = calculateScore(timeTaken);
+    // Store the calculated score data for consistent display
+    setCompletionScoreData(scoreData);
     const newTotalScore = team.score + scoreData.totalScore;
     const newLevel = 13;
 
@@ -476,8 +488,21 @@ export default function Level12Page() {
     );
   }
 
-  if (isCompleted) {
-    const scoreData = calculateScore(completionTimeMinutes);
+  // Fallback: if level is completed but score data is not yet available
+  if (isCompleted && !completionScoreData) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-lg text-gray-600">Calculating final score...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (isCompleted && completionScoreData) {
+    // Use the stored score data that was calculated during level completion
+    // This ensures the displayed score exactly matches what was sent to the API
+    const scoreData = completionScoreData;
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex items-center justify-center p-4">
