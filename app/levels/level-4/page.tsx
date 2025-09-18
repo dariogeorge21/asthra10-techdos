@@ -35,9 +35,67 @@ interface Question {
  * - One correct answer
  * - A helpful hint that provides context without giving away the answer
  */
-const questions: Question[] =
-[
-  
+const questions: Question[] = [
+  {
+    id: 1,
+    question: `Scientist – Invention/Discovery\n\nMatch correctly:\n\nA) Alexander Fleming\nB) Thomas Edison\nC) James Watt\nD) Galileo Galilei\nE) Alfred Nobel\n\n1. Steam Engine\n2. Dynamite\n3. Penicillin\n4. Telescope\n5. Electric Bulb` +
+      "\n\nOptions:\n\na) A–2, B–3, C–4, D–1, E–5\nb) A–5, B–1, C–2, D–3, E–4\nc) A–3, B–5, C–1, D–4, E–2\nd) A–4, B–2, C–5, D–1, E–3",
+    options: [
+      "A–2, B–3, C–4, D–1, E–5",
+      "A–5, B–1, C–2, D–3, E–4",
+      "A–3, B–5, C–1, D–4, E–2",
+      "A–4, B–2, C–5, D–1, E–3"
+    ],
+    correct: "A–3, B–5, C–1, D–4, E–2"
+  },
+  {
+    id: 2,
+    question: `Author – Book\n\nA) J.K. Rowling\nB) George Orwell\nC) Charles Dickens\nD) Leo Tolstoy\nE) Jane Austen\n\n1. Pride and Prejudice\n2. War and Peace\n3. 1984\n4. Harry Potter\n5. Oliver Twist` +
+      "\n\nOptions:\n\na) A–4, B–3, C–5, D–2, E–1\nb) A–5, B–2, C–4, D–3, E–1\nc) A–1, B–4, C–3, D–5, E–2\nd) A–3, B–1, C–2, D–4, E–5",
+    options: [
+      "A–4, B–3, C–5, D–2, E–1",
+      "A–5, B–2, C–4, D–3, E–1",
+      "A–1, B–4, C–3, D–5, E–2",
+      "A–3, B–1, C–2, D–4, E–5"
+    ],
+    correct: "A–4, B–3, C–5, D–2, E–1"
+  },
+  {
+    id: 3,
+    question: `Country – Currency\n\nA) Japan\nB) USA\nC) UK\nD) Russia\nE) India\n\n1. Dollar\n2. Pound Sterling\n3. Rupee\n4. Yen\n5. Ruble` +
+      "\n\nOptions:\n\na) A–3, B–2, C–1, D–4, E–5\nb) A–2, B–3, C–4, D–1, E–5\nc) A–5, B–4, C–3, D–2, E–1\nd) A–4, B–1, C–2, D–5, E–3",
+    options: [
+      "A–3, B–2, C–1, D–4, E–5",
+      "A–2, B–3, C–4, D–1, E–5",
+      "A–5, B–4, C–3, D–2, E–1",
+      "A–4, B–1, C–2, D–5, E–3"
+    ],
+    correct: "A–4, B–1, C–2, D–5, E–3"
+  },
+  {
+    id: 4,
+    question: `Sports Personality – Sport\n\nA) Lionel Messi\nB) Serena Williams\nC) Usain Bolt\nD) Michael Phelps\nE) Sachin Tendulkar\n\n1. Cricket\n2. Swimming\n3. Tennis\n4. Athletics (Sprinting)\n5. Football` +
+      "\n\nOptions:\n\na) A–1, B–5, C–2, D–4, E–3\nb) A–5, B–3, C–4, D–2, E–1\nc) A–2, B–4, C–5, D–3, E–1\nd) A–3, B–1, C–2, D–5, E–4",
+    options: [
+      "A–1, B–5, C–2, D–4, E–3",
+      "A–5, B–3, C–4, D–2, E–1",
+      "A–2, B–4, C–5, D–3, E–1",
+      "A–3, B–1, C–2, D–5, E–4"
+    ],
+    correct: "A–5, B–3, C–4, D–2, E–1"
+  },
+  {
+    id: 5,
+    question: `Inventor – Invention\n\nA) Alexander Graham Bell\nB) Wright Brothers\nC) Tim Berners-Lee\nD) Johannes Gutenberg\nE) Charles Babbage\n\n1. Computer (concept)\n2. World Wide Web\n3. Airplane\n4. Printing Press\n5. Telephone` +
+      "\n\nOptions:\n\na) A–5, B–3, C–2, D–4, E-1\nb) A–4, B–5, C–1, D–2, E–3\nc) A–1, B–2, C–3, D–5, E–4\nd) A–3, B–4, C–5, D–2, E–1",
+    options: [
+      "A–5, B–3, C–2, D–4, E–1",
+      "A–4, B–5, C–1, D–2, E–3",
+      "A–1, B–2, C–3, D–5, E–4",
+      "A–3, B–4, C–5, D–2, E–1"
+    ],
+    correct: "A–5, B–3, C–2, D–4, E–1"
+  }
 ]
 
 
