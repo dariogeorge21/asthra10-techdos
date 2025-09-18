@@ -1,0 +1,35 @@
+LEVEL 32 VIDEO PLACEHOLDER
+
+This file serves as a placeholder for the Level 32 video file.
+
+REQUIRED VIDEO FILE:
+- Filename: level32-video.mp4 (or level32-video.webm)
+- Location: /public/level32-video.mp4
+- Format: MP4 or WebM
+- Requirements:
+  * Silent/audioless video
+  * Contains the following elements that will be tested:
+    1. The word "Google" appears first on screen
+    2. 12 clocks appear in the video
+    3. "Manorama news" channel is shown
+    4. Actress "Kalpana" gives a speech
+    5. A dog named "Snoopy" is shown
+
+IMPLEMENTATION NOTES:
+- The video should be engaging and contain various visual elements
+- Duration should be reasonable (2-5 minutes recommended)
+- Quality should be good enough to see details clearly
+- File size should be optimized for web delivery
+
+TO COMPLETE THE IMPLEMENTATION:
+1. Add the actual video file as /public/level32-video.mp4
+2. Ensure the video contains all the elements mentioned in the questions
+3. Test the video playback in the level interface
+4. Verify that all questions can be answered based on the video content
+
+The VideoModal component is already configured to handle:
+- Video loading and error states
+- Play/pause controls (no seeking allowed)
+- One-time viewing restriction
+- Silent playback enforcement
+- Completion detection and transition to questions
