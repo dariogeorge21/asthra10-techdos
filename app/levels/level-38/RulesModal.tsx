@@ -108,7 +108,7 @@ export default function RulesModal({ open, onClose }: Props) {
             <ul className="list-disc pl-5 text-sm text-gray-600 space-y-1">
               <li><strong>Select a Cell:</strong> Click on any empty (white) cell to select it</li>
               <li><strong>Enter Numbers:</strong> Use the virtual number keyboard (1-9) to fill cells</li>
-              <li><strong>Clear Mistakes:</strong> Use the "Clear Cell" button to remove numbers</li>
+              <li><strong>Clear Mistakes:</strong> Use the &quot;Clear Cell&quot; button to remove numbers</li>
               <li><strong>Visual Feedback:</strong> Conflicts are highlighted in red automatically</li>
               <li><strong>Pre-filled Cells:</strong> Gray cells cannot be modified (puzzle clues)</li>
             </ul>
@@ -155,10 +155,10 @@ export default function RulesModal({ open, onClose }: Props) {
             </h4>
 
             <ul className="list-disc pl-5 text-sm text-gray-600 space-y-1">
-              <li>Select any empty cell and click "Get Hint" for the correct number</li>
+              <li>Select any empty cell and click &quot;Get Hint&quot; for the correct number</li>
               <li>Each hint costs 100 points from your final score</li>
               <li>Hints automatically fill the selected cell with the correct answer</li>
-              <li>Use hints strategically when you're completely stuck</li>
+              <li>Use hints strategically when you&apos;re completely stuck</li>
               <li>Try to solve as much as possible without hints for maximum score</li>
             </ul>
           </section>

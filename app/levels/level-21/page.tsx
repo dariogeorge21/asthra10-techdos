@@ -122,8 +122,8 @@ export default function Level21Page() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswer, setUserAnswer] = useState("");
   const [showHint, setShowHint] = useState(false);
-  const [score, setScore] = useState(0);
-  const [answeredQuestions, setAnsweredQuestions] = useState<number[]>([]);
+  const [score, setScore] = useState(0); // eslint-disable-line @typescript-eslint/no-unused-vars
+  const [answeredQuestions, setAnsweredQuestions] = useState<number[]>([]); // eslint-disable-line @typescript-eslint/no-unused-vars
   const [isCompleted, setIsCompleted] = useState(false);
   const [usedButtons, setUsedButtons] = useState<{[key: number]: {hint: boolean, submit: boolean, skip: boolean}}>({});
   const [timeRemaining, setTimeRemaining] = useState<number>(0);

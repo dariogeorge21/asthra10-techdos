@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Trophy, Timer, Grid3X3, CheckCircle, Target, Lightbulb, Hash, SkipForward } from "lucide-react";
+import { Trophy, Timer, Grid3X3, CheckCircle, Lightbulb, Hash, SkipForward } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -657,7 +657,7 @@ export default function Level38Page() {
                     <li>• Use the number keyboard to fill cells</li>
                     <li>• Each row, column, and 3×3 box must contain digits 1-9</li>
                     <li>• Red cells indicate conflicts</li>
-                    <li>• Use hints if you're stuck</li>
+                    <li>• Use hints if you&apos;re stuck</li>
                   </ul>
                 </CardContent>
               </Card>

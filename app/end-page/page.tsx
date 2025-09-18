@@ -2,13 +2,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import Link from 'next/link';
-import { ExternalLink, Sparkles, Trophy, Users, Heart } from 'lucide-react';
+import { Sparkles, Trophy, Users, Heart } from 'lucide-react';
 import { FaLinkedin } from 'react-icons/fa';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import QRCode from 'qrcode';
 
 // Confetti component
@@ -91,7 +90,7 @@ const QRModal = ({ isOpen, onClose, linkedinUrl, name }: {
             Connect with {name}
           </DialogTitle>
           <DialogDescription className="text-center">
-            Scan the QR code below to visit {name}'s LinkedIn profile
+            Scan the QR code below to visit {name}&apos;s LinkedIn profile
           </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col items-center space-y-4 p-4">
