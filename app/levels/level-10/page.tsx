@@ -52,146 +52,16 @@ interface EmojiPuzzle {
  * 20 diverse emoji puzzles covering various categories
  */
 const puzzles: EmojiPuzzle[] = [
-  {
-    id: 1,
-    emojis: "📱🍏",
-    answer: "iphone",
-    hint: "A popular smartphone made by Apple",
-    category: "Tech"
-  },
-  {
-    id: 2,
-    emojis: "🦁👑",
-    answer: "the lion king",
-    hint: "Disney animated movie about a young lion prince",
-    category: "Movie"
-  },
-  {
-    id: 3,
-    emojis: "📚⚡👓",
-    answer: "harry potter",
-    hint: "Famous wizard boy with a lightning scar",
-    category: "Book/Movie"
-  },
-  {
-    id: 4,
-    emojis: "🛒📦",
-    answer: "amazon",
-    hint: "World's largest online shopping platform",
-    category: "Tech"
-  },
-  {
-    id: 5,
-    emojis: "🏎️💨🏁",
-    answer: "formula 1",
-    hint: "The pinnacle of motorsport racing",
-    category: "Sport"
-  },
-  {
-    id: 6,
-    emojis: "🚢🧊💔",
-    answer: "titanic",
-    hint: "Famous movie about a ship that sank in 1912",
-    category: "Movie"
-  },
-  {
-    id: 7,
-    emojis: "☕💻",
-    answer: "java",
-    hint: "Popular programming language, also a type of coffee",
-    category: "Programming Language"
-  },
-  {
-    id: 8,
-    emojis: "🧙‍♂️🧝‍♀️💍🔥",
-    answer: "lord of the rings",
-    hint: "Epic fantasy trilogy about a ring of power",
-    category: "Book/Movie"
-  },
-  {
-    id: 9,
-    emojis: "🚗⚡🔋",
-    answer: "tesla",
-    hint: "Electric car company founded by Elon Musk",
-    category: "Car Company"
-  },
-  {
-    id: 10,
-    emojis: "🎩🐇✨",
-    answer: "alice in wonderland",
-    hint: "Story about a girl who falls down a rabbit hole",
-    category: "Book/Movie"
-  },
-  {
-    id: 11,
-    emojis: "🐼🥋",
-    answer: "kung fu panda",
-    hint: "Animated movie about a panda who learns martial arts",
-    category: "Movie"
-  },
-  {
-    id: 12,
-    emojis: "👓🌐",
-    answer: "google glass",
-    hint: "Wearable computer glasses by Google",
-    category: "Tech Gadget"
-  },
-  {
-    id: 13,
-    emojis: "🚀🌕👨‍🚀",
-    answer: "apollo 11",
-    hint: "First manned mission to land on the moon",
-    category: "Space Mission"
-  },
-  {
-    id: 14,
-    emojis: "👸❄️⛄🎶",
-    answer: "frozen",
-    hint: "Disney movie with the song 'Let It Go'",
-    category: "Movie"
-  },
-  {
-    id: 15,
-    emojis: "🦸‍♂️🦸‍♀️🛡️",
-    answer: "avengers",
-    hint: "Marvel superhero team that saves the world",
-    category: "Movie/Comics"
-  },
-  {
-    id: 16,
-    emojis: "🧠🤖",
-    answer: "artificial intelligence",
-    hint: "Technology that enables machines to think like humans",
-    category: "Tech"
-  },
-  {
-    id: 17,
-    emojis: "🦇🏙️🤵",
-    answer: "the dark knight",
-    hint: "Dark Knight superhero who protects Gotham City",
-    category: "Movie"
-  },
-  {
-    id: 18,
-    emojis: "🐉🏰⚔️👑",
-    answer: "game of thrones",
-    hint: "Epic fantasy series about the Iron Throne",
-    category: "Series/Books"
-  },
-  {
-    id: 19,
-    emojis: "🕵️‍♂️🔎🧩👒",
-    answer: "sherlock holmes",
-    hint: "Famous detective who lives on Baker Street",
-    category: "Book/Movie/Series"
-  },
-  {
-    id: 20,
-    emojis: "🧑‍🚀🌌📺",
-    answer: "interstellar",
-    hint: "Sci-fi movie about space travel and time dilation",
-    category: "Movie"
-  }
+  { id: 1, emojis: "📱🍏", answer: "iPhone", hint: "Popular smartphone by a major fruit-named company.", category: "Tech" },
+  { id: 2, emojis: "🦁👑", answer: "The Lion King", hint: "A classic Disney movie about a young royal.", category: "Movie" },
+  { id: 3, emojis: "🛒📦", answer: "Amazon", hint: "E-commerce giant and cloud provider.", category: "Tech" },
+  { id: 4, emojis: "🏎️💨🏁", answer: "Formula 1", hint: "Top-tier international single-seater motorsport.", category: "Sport" },
+  { id: 5, emojis: "☕💻", answer: "Java", hint: "A programming language named after a beverage.", category: "Programming" },
+  { id: 6, emojis: "🚗⚡🔋", answer: "Tesla", hint: "Electric vehicle company led by Elon Musk.", category: "Tech" },
+  { id: 7, emojis: "🧑‍🚀🌌📺", answer: "Interstellar", hint: "Christopher Nolan sci-fi film exploring space and time.", category: "Movie" },
+  { id: 8, emojis: "🚀🌕👨‍🚀", answer: "Apollo 11", hint: "First crewed mission to land on the Moon.", category: "Space" },
+  { id: 9, emojis: "👸❄️⛄🎶", answer: "Frozen", hint: "Disney animated film with an iconic icy soundtrack.", category: "Movie" },
+  { id: 10, emojis: "🧠🤖", answer: "Artificial Intelligence", hint: "Field focused on machines that simulate human thinking.", category: "Tech" }
 ];
 
 export default function Level10Page() {
