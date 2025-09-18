@@ -35,37 +35,61 @@ interface Question {
  * - One correct answer
  * - A helpful hint that provides context without giving away the answer
  */
-const questions: Question[] =
-[
+const questions: Question[] = [
   {
-    "id": 1,
-    "question": "Country with largest proven lithium reserves (2025)?",
-    "options": ["Australia", "Chile", "Bolivia", "China"],
-    "correct": "Bolivia"
+    id: 1,
+    question: "Moitheenee aaa cheriya spanner inghottedukk ippo sheriyaakkitharaam",
+    options: [
+      "Vellimoonga",
+      "Sanmanassullavark Samadhanam",
+      "Vellanakalude Nadu",
+      "Pattanapravesham"
+    ],
+    correct: "Vellanakalude Nadu"
   },
   {
-    "id": 2,
-    "question": "Only metal liquid at room temperature?",
-    "options": ["Mercury", "Gallium", "Bromine", "Francium"],
-    "correct": "Mercury"
+    id: 2,
+    question: "Thomaskuttiiiii\nvittoodaaaaaaaa",
+    options: [
+      "In HariharNagar",
+      "God Father",
+      "Ramji Rao Speaking",
+      "Chandralekha"
+    ],
+    correct: "In HariharNagar"
   },
   {
-    "id": 3,
-    "question": "Year India adopted the ₹ symbol officially?",
-    "options": ["2008", "2010", "2012", "2014"],
-    "correct": "2010"
+    id: 3,
+    question: "Mothalaaliii janka jaka jaka",
+    options: [
+      "Thenkashipattanam",
+      "Punjabi House",
+      "Ee Parakkum Thalika",
+      "Pulival Kalynam"
+    ],
+    correct: "Punjabi House"
   },
   {
-    "id": 4,
-    "question": "Fastest-growing programming language (2025 surveys)?",
-    "options": ["Python", "Rust", "Java", "PHP"],
-    "correct": "Rust"
+    id: 4,
+    question: "Ithente puthan Rayban glass ithu chavitti pottichal ninte kaalu njan vettum",
+    options: [
+      "Rajamanickyam",
+      "GreatFather",
+      "Devasuram",
+      "Spadikam"
+    ],
+    correct: "Spadikam"
   },
   {
-    "id": 5,
-    "question": "Planet with a day longer than its year?",
-    "options": ["Mercury", "Venus", "Mars", "Neptune"],
-    "correct": "Venus"
+    id: 5,
+    question: "Kathi thazhe ideda ninte achanada parayunne kathi thazhe ideda",
+    options: [
+      "Kireedam",
+      "Chenkol",
+      "Dasharatham",
+      "Bharatham"
+    ],
+    correct: "Kireedam"
   }
 ]
 
