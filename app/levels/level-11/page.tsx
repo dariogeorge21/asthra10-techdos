@@ -212,6 +212,7 @@ export default function Level11Page() {
 
         if (status === 'expired' && timerStatus !== 'expired') {
           toast.error("Time's up! The game has ended.");
+          router.push('/levels');
         }
       }, 1000);
 
@@ -362,9 +363,16 @@ export default function Level11Page() {
     else if (timeTaken < 5.5) timeBonus = 25;
 
     let performanceRating = "Needs Improvement";
-    if (accuracy >= 90 && timeTaken < 3) performanceRating = "Excellent";
-    else if (accuracy >= 70 && timeTaken < 4) performanceRating = "Good";
-    else if (accuracy >= 50 && timeTaken < 5) performanceRating = "Average";
+    if (accuracy >= 90) {
+      if (timeTaken < 3) performanceRating = "Excellent";
+      else if (timeTaken < 5) performanceRating = "Good";
+      else performanceRating = "Average";
+    } else if (accuracy >= 70) {
+      if (timeTaken < 4) performanceRating = "Good";
+      else performanceRating = "Average";
+    } else if (accuracy >= 50 && timeTaken < 5) {
+      performanceRating = "Average";
+    }
 
     const totalScore = Math.max(0, baseScore + consecutiveBonus + timeBonus - penalties);
 

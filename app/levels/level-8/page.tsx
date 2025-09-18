@@ -196,6 +196,8 @@ export default function Level8Page() {
   const [timeRemaining, setTimeRemaining] = useState<number>(0);
   const [timerStatus, setTimerStatus] = useState<'not_started' | 'active' | 'expired'>('not_started');
   const [loading, setLoading] = useState(true);
+  const [skipLoading, setSkipLoading] = useState(false);
+  const [submitLoading, setSubmitLoading] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
   const [completionTimeMinutes, setCompletionTimeMinutes] = useState<number>(0);
   const [completionScoreData, setCompletionScoreData] = useState<{
@@ -285,6 +287,7 @@ export default function Level8Page() {
 
         if (status === 'expired' && timerStatus !== 'expired') {
           toast.error("Time's up! The game has ended.");
+          router.push('/levels');
         }
       }, 1000);
 
@@ -323,70 +326,94 @@ export default function Level8Page() {
   };
 
   const handleAnswer = async (answer: string) => {
-    // Fallback: if level is completed but score data is not yet available
-  if (isCompleted && !completionScoreData) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-lg text-gray-600">Calculating final score...</p>
-        </div>
-      </div>
-    );
-  }
-
-  const currentQuestion = questions[currentQuestionIndex];
-    const isCorrect = answer === currentQuestion.correct;
-    
-    // Update local stats
-    const newStats = { ...levelStats };
-    if (isCorrect) {
-      newStats.correct++;
-    } else {
-      newStats.incorrect++;
+    if (submitLoading) {
+      return;
     }
-    setLevelStats(newStats);
 
-    // Update team stats in database
-    if (!team) return;
-    
-    const updatedStats = {
-      correct_questions: team.correct_questions + (isCorrect ? 1 : 0),
-      incorrect_questions: team.incorrect_questions + (isCorrect ? 0 : 1),
-      hint_count: team.hint_count + (showHint ? 1 : 0)
-    };
+    setSubmitLoading(true);
 
-    await updateTeamStats(updatedStats);
+    try {
+      // Fallback: if level is completed but score data is not yet available
+      if (isCompleted && !completionScoreData) {
+        return (
+          <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center">
+            <div className="text-center">
+              <p className="text-lg text-gray-600">Calculating final score...</p>
+            </div>
+          </div>
+        );
+      }
 
-    // Move to next question or complete level
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
-      setSelectedAnswer("");
-      setShowHint(false);
-    } else {
-      completeLevel();
+      const currentQuestion = questions[currentQuestionIndex];
+      const isCorrect = answer === currentQuestion.correct;
+
+      // Update local stats
+      const newStats = { ...levelStats };
+      if (isCorrect) {
+        newStats.correct++;
+      } else {
+        newStats.incorrect++;
+      }
+      setLevelStats(newStats);
+
+      // Update team stats in database
+      if (!team) return;
+
+      const updatedStats = {
+        correct_questions: team.correct_questions + (isCorrect ? 1 : 0),
+        incorrect_questions: team.incorrect_questions + (isCorrect ? 0 : 1),
+        hint_count: team.hint_count + (showHint ? 1 : 0)
+      };
+
+      await updateTeamStats(updatedStats);
+
+      // Move to next question or complete level
+      if (currentQuestionIndex < questions.length - 1) {
+        setCurrentQuestionIndex(currentQuestionIndex + 1);
+        setSelectedAnswer("");
+        setShowHint(false);
+      } else {
+        completeLevel();
+      }
+    } catch (err) {
+      console.error("API request for submit answer failed", err);
+    } finally {
+      setSubmitLoading(false);
     }
   };
 
   const handleSkip = async () => {
-    const newStats = { ...levelStats };
-    newStats.skipped++;
-    setLevelStats(newStats);
+    if (skipLoading) {
+      return;
+    }
 
-    if (!team) return;
+    setSkipLoading(true);
 
-    const updatedStats = {
-      skipped_questions: team.skipped_questions + 1,
-      hint_count: team.hint_count + (showHint ? 1 : 0)
-    };
+    try {
+      const newStats = { ...levelStats };
+      newStats.skipped++;
+      setLevelStats(newStats);
 
-    await updateTeamStats(updatedStats);
+      if (!team) return;
 
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
-      setSelectedAnswer("");
-      setShowHint(false);
-    } else {
-      completeLevel();
+      const updatedStats = {
+        skipped_questions: team.skipped_questions + 1,
+        hint_count: team.hint_count + (showHint ? 1 : 0)
+      };
+
+      await updateTeamStats(updatedStats);
+
+      if (currentQuestionIndex < questions.length - 1) {
+        setCurrentQuestionIndex(currentQuestionIndex + 1);
+        setSelectedAnswer("");
+        setShowHint(false);
+      } else {
+        completeLevel();
+      }
+    } catch (err) {
+      console.error("API request for skip question failed", err);
+    } finally {
+      setSkipLoading(false);
     }
   };
 
@@ -464,9 +491,16 @@ export default function Level8Page() {
 
     // Performance rating
     let performanceRating = "Needs Improvement";
-    if (accuracy >= 90 && timeTaken < 3) performanceRating = "Excellent";
-    else if (accuracy >= 70 && timeTaken < 4) performanceRating = "Good";
-    else if (accuracy >= 50 && timeTaken < 5) performanceRating = "Average";
+    if (accuracy >= 90) {
+      if (timeTaken < 3) performanceRating = "Excellent";
+      else if (timeTaken < 5) performanceRating = "Good";
+      else performanceRating = "Average";
+    } else if (accuracy >= 70) {
+      if (timeTaken < 4) performanceRating = "Good";
+      else performanceRating = "Average";
+    } else if (accuracy >= 50 && timeTaken < 5) {
+      performanceRating = "Average";
+    }
 
     const totalScore = Math.max(0, baseScore + consecutiveBonus + timeBonus - penalties);
 
@@ -747,7 +781,7 @@ export default function Level8Page() {
           <div className="mb-8">
             <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
               <span>Question {currentQuestionIndex + 1} of {questions.length}</span>
-              <span>{Math.round(progress)}% Complete</span>
+              {/* <span>{Math.round(progress)}% Complete</span> */}
             </div>
             <Progress value={progress} className="h-2" />
           </div>
@@ -804,19 +838,30 @@ export default function Level8Page() {
                 <Button
                   variant="outline"
                   onClick={handleSkip}
+                  disabled={skipLoading}
                   className="flex-1 text-yellow-600 border-yellow-200 hover:bg-yellow-50"
                 >
-                  <SkipForward className="mr-2 h-4 w-4" />
+                  {skipLoading ? (
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-yellow-600 mr-2"></div>
+                  ) : (
+                    <SkipForward className="mr-2 h-4 w-4" />
+                  )}
                   Skip Question
                 </Button>
-                
+
                 <Button
                   onClick={() => handleAnswer(selectedAnswer)}
-                  disabled={!selectedAnswer}
+                  disabled={!selectedAnswer || submitLoading}
                   className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
                 >
-                  Submit Answer
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                  {submitLoading ? (
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  ) : (
+                    <>
+                      Submit Answer
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </>
+                  )}
                 </Button>
               </div>
             </CardContent>

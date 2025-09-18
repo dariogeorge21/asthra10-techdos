@@ -254,6 +254,7 @@ export default function Level18Page() {
 
         if (status === 'expired' && timerStatus !== 'expired') {
           toast.error("Time's up! The game has ended.");
+          router.push('/levels');
         }
       }, 1000);
 
@@ -762,7 +763,7 @@ export default function Level18Page() {
           <div className="mb-8">
             <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
               <span>Question {currentQuestionIndex + 1} of {questions.length}</span>
-              <span>{Math.round(progress)}% Complete</span>
+              {/* <span>{Math.round(progress)}% Complete</span> */}
             </div>
             <Progress value={progress} className="h-2" />
           </div>

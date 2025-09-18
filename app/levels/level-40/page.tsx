@@ -183,6 +183,7 @@ export default function Level40Page() {
 
         if (status === 'expired' && timerStatus !== 'expired') {
           toast.error("Time's up! The game has ended.");
+          router.push('/levels');
         }
       }, 1000);
 

@@ -122,6 +122,7 @@ export default function Level38Page() {
 
         if (status === 'expired' && timerStatus !== 'expired') {
           toast.error("Time's up! The game has ended.");
+          router.push('/levels');
         }
       }, 1000);
 
