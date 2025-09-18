@@ -67,7 +67,7 @@ const questions: Question[] = [
       "June",
       "Qalb"
     ],
-    correct: "Qalb"
+    correct: "Oru Adar Love"
   },
   {
     id: 4,
