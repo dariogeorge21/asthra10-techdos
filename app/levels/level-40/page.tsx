@@ -110,14 +110,7 @@ export default function Level40Page() {
   const gameTimerRef = useRef<NodeJS.Timeout | null>(null);
   const router = useRouter();
 
-  // Check if game has been played before
-  useEffect(() => {
-    const hasPlayed = localStorage.getItem('level40_game_played');
-    if (hasPlayed === 'true') {
-      setGameHasBeenPlayed(true);
-      setGameState(prev => ({ ...prev, isCompleted: true }));
-    }
-  }, []);
+  // (removed persisted 'played' check) -- gameHasBeenPlayed remains in-memory only
 
   const fetchTeamData = useCallback(async (teamCode: string) => {
     try {
@@ -259,8 +252,6 @@ export default function Level40Page() {
               clearInterval(gameTimerRef.current);
               gameTimerRef.current = null;
             }
-            // Mark game as played when timer expires
-            localStorage.setItem('level40_game_played', 'true');
             return {
               ...prev,
               timeRemaining: 0,
