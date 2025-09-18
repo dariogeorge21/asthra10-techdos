@@ -96,171 +96,68 @@ export default function Level5Page() {
   const questions: Question[] = [
     {
       id: 1,
-      question: 'Who is known as the "Missile Man of India"?',
-      options: ['Dr. A. P. J. Abdul Kalam', 'Dr. Vikram Sarabhai', 'Dr. Homi Bhabha', 'Dr. C. V. Raman'],
-      correctAnswer: 'Dr. A. P. J. Abdul Kalam',
-      hint: 'This scientist later became the 11th President of India and was instrumental in India\'s missile development program.',
-      category: 'Science & Politics'
+      question: "Clues:\n- Amazon\n- Flipkart\n- eBay",
+      options: [
+        "Social Media",
+        "Online Shopping / E-commerce",
+        "Delivery Companies",
+        "Banking Services"
+      ],
+      correctAnswer: "Online Shopping / E-commerce",
+      hint: "These are all platforms where you can buy products online.",
+      category: "General"
     },
     {
       id: 2,
-      question: 'The Netflix series Money Heist is originally from which country?',
-      options: ['Italy', 'Mexico','Spain', 'Brazil'],
-      correctAnswer: 'Spain',
-      hint: 'This European country is famous for flamenco dancing and the running of the bulls in Pamplona.',
-      category: 'Entertainment'
+      question: "Clues:\n- Oxygen\n- Lungs\n- Breathing",
+      options: [
+        "Photosynthesis",
+        "Respiration",
+        "Circulation",
+        "Digestion"
+      ],
+      correctAnswer: "Respiration",
+      hint: "This process is essential for taking in oxygen and releasing carbon dioxide.",
+      category: "Biology"
     },
     {
       id: 3,
-      question: 'In cricket, who was the first bowler to take 10 wickets in a single Test innings?',
-      options: ['Shane Warne', 'Muttiah Muralitharan','Jim Laker', 'Anil Kumble'],
-      correctAnswer: 'Jim Laker',
-      hint: 'This English off-spinner achieved this feat in 1956 against Australia at Old Trafford, Manchester.',
-      category: 'Sports'
+      question: "Clues:\n- Mickey Mouse\n- Disneyland\n- Pixar",
+      options: [
+        "Cartoon Network",
+        "Marvel",
+        "Disney",
+        "Warner Bros."
+      ],
+      correctAnswer: "Disney",
+      hint: "This company is famous for its animated movies and theme parks.",
+      category: "Entertainment"
     },
     {
       id: 4,
-      question: 'Kerala\'s state bird, known for its striking blue and orange plumage, is?',
-      options: ['Indian Peacock', 'Kingfisher','Great Hornbill', 'Malabar Parakeet'],
-      correctAnswer: 'Great Hornbill',
-      hint: 'This large bird has a distinctive casque on top of its massive bill and is found in the Western Ghats.',
-      category: 'Nature'
+      question: "Clues:\n- Mercury\n- Venus\n- Mars",
+      options: [
+        "Stars",
+        "Planets",
+        "Satellites",
+        "Galaxies"
+      ],
+      correctAnswer: "Planets",
+      hint: "These are celestial bodies that orbit the Sun.",
+      category: "Astronomy"
     },
     {
       id: 5,
-      question: 'Which is the only country that has won the FIFA World Cup on four different continents?',
-      options: ['Brazil', 'Germany', 'Argentina','None'],
-      correctAnswer: 'None',
-      hint: 'Consider where the FIFA World Cup has been hosted and which countries have claimed titles across those locations.',
-      category: 'Sports'
-    },
-    {
-      id: 6,
-      question: 'Who was the last Governor-General of independent India?',
-      options: ['Lord Mountbatten', 'Dr. Rajendra Prasad','C. Rajagopalachari','Jawaharlal Nehru'],
-      correctAnswer: 'C. Rajagopalachari',
-      hint: 'This Indian leader took over from Lord Mountbatten and served until India became a republic in 1950.',
-      category: 'History'
-    },
-    {
-      id: 7,
-      question: 'Microsoft\'s first-ever hardware product wasn\'t a console or a PC. What was it?',
-      options: ['Mouse', 'Keyboard', 'Monitor', 'Printer'],
-      correctAnswer: 'Mouse',
-      hint: 'Released in 1983, this pointing device was Microsoft\'s entry into hardware manufacturing.',
-      category: 'Technology'
-    },
-    {
-      id: 8,
-      question: 'If planets had "reverse gears," which one rotates backward compared to most others?',
-      options: ['Mars', 'Jupiter','Venus', 'Saturn'],
-      correctAnswer: 'Venus',
-      hint: 'This planet is the hottest in our solar system and rotates in the opposite direction to most other planets.',
-      category: 'Science'
-    },
-    {
-      id: 9,
-      question: 'Which Indian city is famous for its Chand Baori stepwell?',
-      options: ['Jaipur','Abhaneri', 'Udaipur', 'Jodhpur'],
-      correctAnswer: 'Abhaneri',
-      hint: 'This ancient stepwell is located in Rajasthan and has over 3,500 narrow steps arranged in perfect symmetry.',
-      category: 'Architecture'
-    },
-    {
-      id: 10,
-      question: 'The Golden Boot winner of FIFA 2022, scoring 8 goals, was?',
-      options: ['Lionel Messi', 'Harry Kane','Kylian Mbappé', 'Olivier Giroud'],
-      correctAnswer: 'Kylian Mbappé',
-      hint: 'This French striker scored a hat-trick in the final but still ended up on the losing side.',
-      category: 'Sports'
-    },
-    {
-      id: 11,
-      question: 'In Kerala, the famous hill station Munnar is located in which district?',
-      options: ['Wayanad', 'Kottayam', 'Pathanamthitta','Idukki'],
-      correctAnswer: 'Idukki',
-      hint: 'This district is known for its spice plantations and is home to the Periyar Wildlife Sanctuary.',
-      category: 'Geography'
-    },
-    {
-      id: 12,
-      question: 'Which countries are hosting FIFA 2026?',
-      options: ['US, Mexico and Canada', 'Qatar and UAE', 'Spain and Portugal', 'Argentina and Uruguay'],
-      correctAnswer: 'US, Mexico and Canada',
-      hint: 'This will be the first World Cup hosted by three countries and the first in North America since 1994.',
-      category: 'Sports'
-    },
-    {
-      id: 13,
-      question: 'Who wrote the Indian national anthem "Jana Gana Mana"?',
-      options: ['Bankim Chandra Chatterjee', 'Sarojini Naidu','Rabindranath Tagore', 'Subhas Chandra Bose'],
-      correctAnswer: 'Rabindranath Tagore',
-      hint: 'This Nobel Prize-winning poet also composed the national anthem of Bangladesh.',
-      category: 'Literature'
-    },
-    {
-      id: 14,
-      question: 'The internet\'s first viral dance challenge, the "Harlem Shake," exploded in which year?',
-      options: ['2011', '2012', '2014', '2013'],
-      correctAnswer: '2013',
-      hint: 'This dance craze happened around the same time as the rise of Vine, the short-form video platform.',
-      category: 'Internet Culture'
-    },
-    {
-      id: 15,
-      question: 'Which Mughal ruler is often called the "Engineer King" for his architectural projects?',
-      options: ['Akbar', 'Aurangzeb', 'Humayun','Shah Jahan'],
-      correctAnswer: 'Shah Jahan',
-      hint: 'This emperor built the Taj Mahal as a mausoleum for his beloved wife Mumtaz Mahal.',
-      category: 'History'
-    },
-    {
-      id: 16,
-      question: 'If the Sun disappeared, how many minutes would Earth still see sunlight?',
-      options: ['10', '7', '4', '8'],
-      correctAnswer: '8',
-      hint: 'This is the time it takes for light to travel from the Sun to Earth at the speed of light.',
-      category: 'Science'
-    },
-    {
-      id: 17,
-      question: 'Who was the first Indian to win the World Chess Championship?',
-      options: ['Viswanathan Anand', 'Garry Kasparov', 'Magnus Carlsen', 'Vladimir Kramnik'],
-      correctAnswer: 'Viswanathan Anand',
-      hint: 'Known as the "Lightning Kid," this grandmaster from Tamil Nadu held the world title five times.',
-      category: 'Sports'
-    },
-    {
-      id: 18,
-      question: 'The Malayalam film Drishyam was remade into how many languages officially?',
-      options: ['5', '3', '4', '6'],
-      correctAnswer: '4',
-      hint: 'This thriller was remade in Hindi, Tamil, Telugu, and Kannada, starring different lead actors.',
-      category: 'Entertainment'
-    },
-    {
-      id: 19,
-      question: 'Which Greek goddess was believed to have sprung fully grown from the head of Zeus?',
-      options: ['Aphrodite', 'Artemis','Athena', 'Hera'],
-      correctAnswer: 'Athena',
-      hint: 'This goddess of wisdom and warfare is the patron deity of Athens, Greece\'s capital city.',
-      category: 'Mythology'
-    },
-    {
-      id: 20,
-      question: 'Which Indian athlete is nicknamed the "Flying Sikh"?',
-      options: ['Gurbachan Singh Randhawa','Milkha Singh', 'Ajit Pal Singh', 'Balbir Singh Sr.'],
-      correctAnswer: 'Milkha Singh',
-      hint: 'This legendary sprinter\'s life story was made into a Bollywood film starring Farhan Akhtar.',
-      category: 'Sports'
-    },
-    {
-      id: 21,
-      question: 'Which Kerala river is known as the Periyar of the South?',
-      options: ['Bharathapuzha', 'Pampa River', 'Kabini River','Chaliyar River'],
-      correctAnswer: 'Chaliyar River',
-      hint: 'This river flows through Kozhikode and Malappuram districts and is important for the region\'s agriculture.',
-      category: 'Geography'
+      question: "Clues:\n- Google\n- Yahoo\n- Bing",
+      options: [
+        "Social Networks",
+        "Operating Systems",
+        "Search Engines",
+        "Programming Languages"
+      ],
+      correctAnswer: "Search Engines",
+      hint: "These help you find information on the internet.",
+      category: "Technology"
     }
   ];
 

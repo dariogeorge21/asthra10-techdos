@@ -112,98 +112,70 @@ const questions: Question[] = [
     question: "How many months have 28 days?",
     options: ["1", "6", "12", "Depends on leap year"],
     correct: "12",
-    hint: "Think about the minimum number of days each month has, not just February."
+    hint: "Every month has at least 28 days."
   },
   {
     id: 2,
     question: "Which country has the most pyramids in the world?",
     options: ["Egypt", "Sudan", "Mexico", "Peru"],
     correct: "Sudan",
-    hint: "While Egypt is famous for its pyramids, another African country actually has more of them."
+    hint: "It's not Egypt."
   },
   {
     id: 3,
-    question: "What's the only food that never spoils?",
+    question: "What’s the only food that never spoils?",
     options: ["Salt", "Rice", "Honey", "Sugar"],
     correct: "Honey",
-    hint: "This sweet substance has been found in ancient Egyptian tombs and was still edible after thousands of years."
+    hint: "Archaeologists found jars of this still edible after thousands of years."
   },
   {
     id: 4,
-    question: "If you're running a race and pass the person in 2nd place, what place are you in?",
+    question: "If you’re running a race and pass the person in 2nd place, what place are you in?",
     options: ["1st", "2nd", "3rd", "Last"],
     correct: "2nd",
-    hint: "Think carefully about what happens when you pass someone who is in second place."
+    hint: "You take their position."
   },
   {
     id: 5,
     question: "Which animal is known to cause the most human deaths annually?",
     options: ["Lion", "Snake", "Mosquito", "Shark"],
     correct: "Mosquito",
-    hint: "This tiny creature is dangerous not because of its size, but because of the diseases it can transmit."
+    hint: "It spreads diseases like malaria and dengue."
   },
   {
     id: 6,
     question: "The national animal of Scotland is:",
     options: ["Lion", "Dragon", "Unicorn", "Stag"],
     correct: "Unicorn",
-    hint: "Scotland chose a mythical creature as its national animal, symbolizing purity and power."
+    hint: "It’s a mythical creature."
   },
   {
     id: 7,
-    question: "What's the capital of Australia?",
+    question: "What’s the capital of Australia?",
     options: ["Sydney", "Melbourne", "Canberra", "Perth"],
     correct: "Canberra",
-    hint: "It's not the largest or most famous city, but a purpose-built capital city."
+    hint: "It’s a planned city between two major rivals."
   },
   {
     id: 8,
     question: "If you have a bowl with 6 apples and you take away 4, how many do you have?",
     options: ["2", "4", "6", "0"],
     correct: "4",
-    hint: "Focus on what the question is actually asking - how many do YOU have?"
+    hint: "You now possess the ones you took."
   },
   {
     id: 9,
     question: "What begins with 'e', ends with 'e', but only has one letter?",
     options: ["Ewe", "Envelope", "Eye", "Eerie"],
     correct: "Envelope",
-    hint: "Think about what this object contains, not the letters that spell its name."
+    hint: "Think of mail."
   },
   {
     id: 10,
     question: "Which country is both in Europe and Asia?",
     options: ["Russia", "Turkey", "Kazakhstan", "All of the above"],
     correct: "All of the above",
-    hint: "Several countries span across both continents, not just one."
-  },
-  {
-    id: 11,
-    question: "Which planet has the most moons?",
-    options: ["Jupiter", "Saturn", "Neptune", "Uranus"],
-    correct: "Saturn",
-    hint: "Recent discoveries have changed the moon count, and this planet recently overtook Jupiter."
-  },
-  {
-    id: 12,
-    question: "If you write all the numbers from 1 to 100, how many times does the digit '9' appear?",
-    options: ["10", "19", "20", "21"],
-    correct: "20",
-    hint: "Count both the ones place and the tens place occurrences of the digit 9."
-  },
-  {
-    id: 13,
-    question: "How many bones are in the human body?",
-    options: ["206", "205", "Depends on age", "208"],
-    correct: "Depends on age",
-    hint: "Babies are born with more bones than adults because some bones fuse together as we grow."
-  },
-  {
-    id: 14,
-    question: "What invention lets you look right through a wall?",
-    options: ["Window", "X-ray", "Mirror", "Glasses"],
-    correct: "Window",
-    hint: "Sometimes the simplest answer is the correct one. Think about everyday objects."
+    hint: "All three span two continents."
   }
 ];
 
