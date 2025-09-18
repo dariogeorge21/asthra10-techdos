@@ -148,6 +148,7 @@ export default function Level33Page() {
   const [skipLoading, setSkipLoading] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [hintLoading, setHintLoading] = useState(false);
+  const [flashState, setFlashState] = useState<'correct' | 'incorrect' | null>(null);
   const [isCompleted, setIsCompleted] = useState(false);
   const [completionTimeMinutes, setCompletionTimeMinutes] = useState<number>(0);
   const [completionScoreData, setCompletionScoreData] = useState<{
@@ -245,6 +246,16 @@ export default function Level33Page() {
     }
   }, [team, timerStatus]);
 
+  // Auto-clear flash state after short animation
+  useEffect(() => {
+    if (flashState) {
+      const timer = setTimeout(() => {
+        setFlashState(null);
+      }, 800);
+      return () => clearTimeout(timer);
+    }
+  }, [flashState]);
+
   const getTimerDisplay = (): { text: string; className: string } => {
     switch (timerStatus) {
       case 'not_started':
@@ -287,6 +298,9 @@ export default function Level33Page() {
 
   const currentQuestion = questions[currentQuestionIndex];
     const isCorrect = answer === currentQuestion.correct;
+
+    // Trigger flash effect for visual feedback
+    setFlashState(isCorrect ? 'correct' : 'incorrect');
 
     if (submitLoading) {
       return;
@@ -660,8 +674,22 @@ export default function Level33Page() {
   const currentQuestion = questions[currentQuestionIndex];
   const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
 
+  // Flash effect component
+  const FlashEffect = () => {
+    if (!flashState) return null;
+    return (
+      <div
+        className={`fixed inset-0 z-50 pointer-events-none animate-flash ${
+          flashState === 'correct' ? 'bg-green-500/30' : 'bg-red-500/30'
+        }`}
+      />
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
+      <FlashEffect />
+
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-sm border-b border-purple-200">
         <div className="container mx-auto px-4 py-4">

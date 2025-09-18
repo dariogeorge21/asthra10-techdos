@@ -125,6 +125,7 @@ export default function Level26Page() {
   const [loading, setLoading] = useState(true);
   const [skipLoading,setskipLoading]=useState(false);
   const [submitLoading,setSubmitLoading]=useState(false);
+  const [flashState, setFlashState] = useState<'correct' | 'incorrect' | null>(null);
   const [isCompleted, setIsCompleted] = useState(false);
   const [completionTimeMinutes, setCompletionTimeMinutes] = useState<number>(0);
   const [completionScoreData, setCompletionScoreData] = useState<{
@@ -222,7 +223,13 @@ export default function Level26Page() {
     }
   }, [team, timerStatus]);
 
-
+  // Auto-clear flash state after short animation
+  useEffect(() => {
+    if (flashState) {
+      const t = setTimeout(() => setFlashState(null), 800);
+      return () => clearTimeout(t);
+    }
+  }, [flashState]);
 
   const getTimerDisplay = (): { text: string; className: string } => {
     switch (timerStatus) {
@@ -254,7 +261,6 @@ export default function Level26Page() {
 
   const handleAnswer = async (answer: string) => {
 
-   
     // Fallback: if level is completed but score data is not yet available
   if (isCompleted && !completionScoreData) {
     return (
@@ -269,7 +275,10 @@ export default function Level26Page() {
   const currentQuestion = questions[currentQuestionIndex];
     const isCorrect = answer === currentQuestion.correct;
 
-     if(submitLoading){
+    // Trigger flash effect for visual feedback
+    setFlashState(isCorrect ? 'correct' : 'incorrect');
+
+    if(submitLoading){
       return;
     }
 
@@ -526,38 +535,49 @@ export default function Level26Page() {
     }
   };
 
+  // Flash effect component
+  const FlashEffect = () => {
+    if (!flashState) return null;
+    return (
+      <div className={`fixed inset-0 z-50 pointer-events-none animate-flash ${flashState === 'correct' ? 'bg-green-500/30' : 'bg-red-500/30'}`} />
+    );
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-600 mx-auto mb-4"></div>
-          <p className="text-lg text-gray-600">Loading Level 26...</p>
-        </div>
-      </div>
-    );
-  }
+        <FlashEffect />
+         <div className="text-center">
+           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-600 mx-auto mb-4"></div>
+           <p className="text-lg text-gray-600">Loading Level 26...</p>
+         </div>
+       </div>
+     );
+   }
+ 
+   if (!team) {
+     return (
+       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center">
+        <FlashEffect />
+         <div className="text-center">
+           <p className="text-lg text-gray-600">Failed to load team data.</p>
+           <Button onClick={() => router.push('/')} className="mt-4">
+             Return to Home
+           </Button>
+         </div>
+       </div>
+     );
+   }
+ 
+   if (isCompleted && completionScoreData) {
+     // Use the stored score data that was calculated during level completion
+     // This ensures the displayed score exactly matches what was sent to the API
+     const scoreData = completionScoreData;
 
-  if (!team) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-lg text-gray-600">Failed to load team data.</p>
-          <Button onClick={() => router.push('/')} className="mt-4">
-            Return to Home
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
-  if (isCompleted && completionScoreData) {
-    // Use the stored score data that was calculated during level completion
-    // This ensures the displayed score exactly matches what was sent to the API
-    const scoreData = completionScoreData;
-
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center p-4">
-        <Card className="max-w-4xl mx-auto">
+     return (
+       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center p-4">
+        <FlashEffect />
+         <Card className="max-w-4xl mx-auto">
           <CardHeader className="text-center">
             <div className="mx-auto mb-4 w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
               <CheckCircle className="h-8 w-8 text-green-600" />
@@ -678,104 +698,105 @@ export default function Level26Page() {
           </CardContent>
         </Card>
       </div>
-    );
-  }
+     );
+   }
 
-  const currentQuestion = questions[currentQuestionIndex];
-  const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+   const currentQuestion = questions[currentQuestionIndex];
+   const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-sm border-b border-purple-200">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
-                Level 26
-              </Badge>
-              <span className="text-lg font-semibold text-gray-800">{team.team_name}</span>
-            </div>
-            
-            <div className="flex items-center space-x-6">
-              <div className="flex items-center space-x-2">
-                <Trophy className="h-5 w-5 text-yellow-600" />
-                <span className="text-lg font-semibold text-gray-800">
-                  {team.score.toLocaleString()} pts
-                </span>
-              </div>
-              
-              <div className="flex items-center space-x-2">
-                <Timer className={`h-5 w-5 ${timerStatus === 'not_started' ? 'text-gray-500' : 'text-red-600'}`} />
-                <span className={`text-lg font-mono font-semibold ${getTimerDisplay().className}`}>
-                  {getTimerDisplay().text}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
+   return (
+     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
+      <FlashEffect />
+       {/* Header */}
+       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-sm border-b border-purple-200">
+         <div className="container mx-auto px-4 py-4">
+           <div className="flex items-center justify-between">
+             <div className="flex items-center space-x-4">
+               <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
+                 Level 26
+               </Badge>
+               <span className="text-lg font-semibold text-gray-800">{team.team_name}</span>
+             </div>
+             
+             <div className="flex items-center space-x-6">
+               <div className="flex items-center space-x-2">
+                 <Trophy className="h-5 w-5 text-yellow-600" />
+                 <span className="text-lg font-semibold text-gray-800">
+                   {team.score.toLocaleString()} pts
+                 </span>
+               </div>
+               
+               <div className="flex items-center space-x-2">
+                 <Timer className={`h-5 w-5 ${timerStatus === 'not_started' ? 'text-gray-500' : 'text-red-600'}`} />
+                 <span className={`text-lg font-mono font-semibold ${getTimerDisplay().className}`}>
+                   {getTimerDisplay().text}
+                 </span>
+               </div>
+             </div>
+           </div>
+         </div>
+       </header>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-          {/* Progress */}
-          <div className="mb-8">
-            <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
-              <span>Question {currentQuestionIndex + 1} of {questions.length}</span>
-              {/* <span>{Math.round(progress)}% Complete</span> */}
-            </div>
-            <Progress value={progress} className="h-2" />
-          </div>
+       {/* Main Content */}
+       <main className="container mx-auto px-4 py-8">
+         <div className="max-w-4xl mx-auto">
+           {/* Progress */}
+           <div className="mb-8">
+             <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
+               <span>Question {currentQuestionIndex + 1} of {questions.length}</span>
+               {/* <span>{Math.round(progress)}% Complete</span> */}
+             </div>
+             <Progress value={progress} className="h-2" />
+           </div>
 
-          {/* Question Card */}
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle className="text-2xl text-center text-gray-800">
-                {currentQuestion.question}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {/* Options */}
-              <div className="grid gap-3">
-                {currentQuestion.options.map((option, index) => (
-                  <Button
-                    key={index}
-                    variant={selectedAnswer === option ? "default" : "outline"}
-                    className={`p-4 h-auto text-left justify-start ${
-                      selectedAnswer === option 
-                        ? "bg-purple-600 hover:bg-purple-700" 
-                        : "hover:bg-purple-50"
-                    }`}
-                    onClick={() => setSelectedAnswer(option)}
-                  >
-                    <span className="font-medium mr-3">{String.fromCharCode(65 + index)}.</span>
-                    {option}
-                  </Button>
-                ))}
-              </div>
+           {/* Question Card */}
+           <Card className="mb-8">
+             <CardHeader>
+               <CardTitle className="text-2xl text-center text-gray-800">
+                 {currentQuestion.question}
+               </CardTitle>
+             </CardHeader>
+             <CardContent className="space-y-4">
+               {/* Options */}
+               <div className="grid gap-3">
+                 {currentQuestion.options.map((option, index) => (
+                   <Button
+                     key={index}
+                     variant={selectedAnswer === option ? "default" : "outline"}
+                     className={`p-4 h-auto text-left justify-start ${
+                       selectedAnswer === option 
+                         ? "bg-purple-600 hover:bg-purple-700" 
+                         : "hover:bg-purple-50"
+                     }`}
+                     onClick={() => setSelectedAnswer(option)}
+                   >
+                     <span className="font-medium mr-3">{String.fromCharCode(65 + index)}.</span>
+                     {option}
+                   </Button>
+                 ))}
+               </div>
 
-              {/* Hint */}
-              {showHint && (
-                <Alert className="bg-blue-50 border-blue-200">
-                  <HelpCircle className="h-4 w-4 text-blue-600" />
-                  <AlertDescription className="text-blue-700">
-                    <strong>Hint:</strong> {currentQuestion.hint}
-                  </AlertDescription>
-                </Alert>
-              )}
+               {/* Hint */}
+               {showHint && (
+                 <Alert className="bg-blue-50 border-blue-200">
+                   <HelpCircle className="h-4 w-4 text-blue-600" />
+                   <AlertDescription className="text-blue-700">
+                     <strong>Hint:</strong> {currentQuestion.hint}
+                   </AlertDescription>
+                 </Alert>
+               )}
 
-              {/* Action Buttons */}
-              <div className="flex gap-3 pt-4">
-                <Button
-                  variant="outline"
-                  onClick={handleHint}
-                  disabled={showHint}
-                  className="flex-1"
-                >
-                  <HelpCircle className="mr-2 h-4 w-4" />
-                  {showHint ? "Hint Shown" : "Show Hint"}
-                </Button>
+               {/* Action Buttons */}
+               <div className="flex gap-3 pt-4">
+                 <Button
+                   variant="outline"
+                   onClick={handleHint}
+                   disabled={showHint}
+                   className="flex-1"
+                 >
+                   <HelpCircle className="mr-2 h-4 w-4" />
+                   {showHint ? "Hint Shown" : "Show Hint"}
+                 </Button>
                 
                 <Button
                   variant="outline"
@@ -795,11 +816,11 @@ export default function Level26Page() {
                   Submit Answer
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </main>
-    </div>
-  );
+               </div>
+             </CardContent>
+           </Card>
+         </div>
+       </main>
+     </div>
+   );
 }

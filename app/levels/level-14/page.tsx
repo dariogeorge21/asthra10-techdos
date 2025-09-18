@@ -66,6 +66,7 @@ export default function Level14Page() {
   const [loading, setLoading] = useState(true);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [skipLoading, setSkipLoading] = useState(false);
+  const [flashState, setFlashState] = useState<'correct' | 'incorrect' | null>(null);
   
   // Intro popup (bottom-right) progress for 30s
   const [showIntroPopup, setShowIntroPopup] = useState(true);
@@ -100,11 +101,11 @@ export default function Level14Page() {
   const storyContent = [
     {
       title: "Ready to Enter Your Detective Era?",
-      content: "Congrats, you&apos;ve cracked all rounds so far… but beware, the challenges ahead are far more difficult. Every detail will test your mind.\n\nThe Vault Opens… Observe, Decode, Conquer. Read carefully—one missed clue could cost you the case."
+      content: "Congrats, you have cracked all rounds so far… but beware, the challenges ahead are far more difficult. Every detail will test your mind.\n\nThe Vault Opens… Observe, Decode, Conquer. Read carefully—one missed clue could cost you the case."
     },
     {
       title: "The Crime Scene",
-      content: "Detective Kael arrived at the Grayson Research Facility at 2:07 AM. The facility&apos;s advanced security system had triggered an alert: the central vault had been opened without a recorded access. On the floor lay a single microchip with the number sequence 17-4-23-2 etched into it. The air smelled faintly metallic, like overheated circuits."
+      content: "Detective Kael arrived at the Grayson Research Facility at 2:07 AM. The facility has advanced security system had triggered an alert: the central vault had been opened without a recorded access. On the floor lay a single microchip with the number sequence 17-4-23-2 etched into it. The air smelled faintly metallic, like overheated circuits."
     },
     {
       title: "The Suspects",
@@ -116,7 +117,7 @@ export default function Level14Page() {
     },
     {
       title: "The Final Clue",
-      content: "On the floor, next to the microchip, was a small folded card with a QR code. Scanning it revealed a cryptic message: \"Time is the key, but only prime minutes matter.\" The security logs showed a spike at exactly 2:13 AM, six minutes after Kael&apos;s arrival. Kael realized that the culprit had left all the clues intentionally… but why?"
+      content: "On the floor, next to the microchip, was a small folded card with a QR code. Scanning it revealed a cryptic message: \"Time is the key, but only prime minutes matter.\" The security logs showed a spike at exactly 2:13 AM, six minutes after the arrival of Kael. Kael realized that the culprit had left all the clues intentionally… but why?"
     }
   ];
 
@@ -177,7 +178,7 @@ export default function Level14Page() {
       id: 8,
       type: 'Deduction',
       question: 'Why might the blinking monitor pattern be important?',
-      options: ['It encodes the sequence to open the vault', 'It&apos;s a distraction', 'It signals a fire alarm', 'It&apos;s part of the lighting test'],
+      options: ['It encodes the sequence to open the vault', 'It is a distraction', 'It signals a fire alarm', 'It is a part of the lighting test'],
       correctAnswer: 0
     },
     {
@@ -292,6 +293,14 @@ export default function Level14Page() {
     }
   }, [team, timerStatus]);
 
+  // Auto-clear flash state after short animation
+  useEffect(() => {
+    if (flashState) {
+      const t = setTimeout(() => setFlashState(null), 800);
+      return () => clearTimeout(t);
+    }
+  }, [flashState]);
+
   const getTimerDisplay = (): { text: string; className: string } => {
     switch (timerStatus) {
       case 'not_started':
@@ -323,6 +332,9 @@ export default function Level14Page() {
     setSubmitLoading(true);
     const currentQuestion = questions[currentQuestionIndex];
     const isCorrect = selectedAnswer === currentQuestion.correctAnswer;
+    
+    // Trigger flash effect for visual feedback
+    setFlashState(isCorrect ? 'correct' : 'incorrect');
     
     try {
       const newAnswers = [...userAnswers, selectedAnswer];
@@ -474,9 +486,21 @@ export default function Level14Page() {
     }
   };
 
+  // Flash effect component
+  const FlashEffect = () => {
+    if (!flashState) return null;
+    return (
+      <div
+        className={`fixed inset-0 z-50 pointer-events-none animate-flash ${
+          flashState === 'correct' ? 'bg-green-500/30' : 'bg-red-500/30'
+        }`} />
+    );
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 flex items-center justify-center">
+        <FlashEffect />
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-indigo-600 mx-auto mb-4"></div>
           <p className="text-lg text-gray-600">Loading Level 14...</p>
@@ -488,6 +512,7 @@ export default function Level14Page() {
   if (!team) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 flex items-center justify-center">
+        <FlashEffect />
         <div className="text-center">
           <p className="text-lg text-gray-600">Failed to load team data.</p>
           <Button onClick={() => router.push('/')} className="mt-4">
@@ -507,6 +532,7 @@ export default function Level14Page() {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 p-4">
+        <FlashEffect />
         <div className="max-w-4xl mx-auto">
           <div className="mb-6">
             <div className="flex items-center justify-between mb-4">
@@ -567,7 +593,7 @@ export default function Level14Page() {
                 <span className="font-semibold text-indigo-800">Entering Detective Mode</span>
               </div>
               <p className="text-sm text-gray-600">
-                Ready to Enter Your Detective Era? Congrats, you&apos;ve cracked all rounds so far… but beware, the challenges ahead are far more difficult. Every detail will test your mind.
+                Ready to Enter Your Detective Era? Congrats, you have cracked all rounds so far… but beware, the challenges ahead are far more difficult. Every detail will test your mind.
               </p>
               <p className="text-sm text-gray-600 mt-2">
                 The Vault Opens… Observe, Decode, Conquer. Read carefully—one missed clue could cost you the case.
@@ -595,6 +621,7 @@ export default function Level14Page() {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 p-4">
+        <FlashEffect />
         <div className="max-w-4xl mx-auto">
           <div className="mb-6">
             <div className="flex items-center justify-between mb-4">
@@ -698,6 +725,7 @@ export default function Level14Page() {
   if (gamePhase === 'completed' && !completionScoreData) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center">
+        <FlashEffect />
         <div className="text-center">
           <p className="text-lg text-gray-600">Calculating final score...</p>
         </div>
@@ -713,6 +741,7 @@ export default function Level14Page() {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 flex items-center justify-center p-4">
+        <FlashEffect />
         <Card className="max-w-4xl mx-auto">
           <CardHeader className="text-center">
             <div className="mx-auto mb-4 w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">

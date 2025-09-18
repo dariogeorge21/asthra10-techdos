@@ -98,6 +98,7 @@ export default function Level15Page() {
   const [loading, setLoading] = useState(true);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [skipLoading, setSkipLoading] = useState(false);
+  const [flashState, setFlashState] = useState<'correct' | 'incorrect' | null>(null);
   const [isCompleted, setIsCompleted] = useState(false);
   const [completionTimeMinutes, setCompletionTimeMinutes] = useState<number>(0);
   const [levelStats, setLevelStats] = useState({
@@ -181,6 +182,14 @@ export default function Level15Page() {
     }
   }, [team, timerStatus]);
 
+  // Auto-clear flash state after short animation
+  useEffect(() => {
+    if (flashState) {
+      const t = setTimeout(() => setFlashState(null), 800);
+      return () => clearTimeout(t);
+    }
+  }, [flashState]);
+
   const getTimerDisplay = (): { text: string; className: string } => {
     switch (timerStatus) {
       case 'not_started':
@@ -254,6 +263,9 @@ export default function Level15Page() {
     try {
       const isCorrect = validateAnswer();
       
+      // Trigger flash effect for visual feedback
+      setFlashState(isCorrect ? 'correct' : 'incorrect');
+
       const newStats = { ...levelStats };
       if (isCorrect) {
         newStats.correct++;
@@ -418,9 +430,21 @@ export default function Level15Page() {
     }
   };
 
+  // Flash effect component
+  const FlashEffect = () => {
+    if (!flashState) return null;
+    return (
+      <div
+        className={`fixed inset-0 z-50 pointer-events-none animate-flash ${
+          flashState === 'correct' ? 'bg-green-500/30' : 'bg-red-500/30'
+        }`} />
+    );
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center">
+        <FlashEffect />
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-600 mx-auto mb-4"></div>
           <p className="text-lg text-gray-600">Loading Level 15...</p>
@@ -432,6 +456,7 @@ export default function Level15Page() {
   if (!team) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center">
+        <FlashEffect />
         <div className="text-center">
           <p className="text-lg text-gray-600">Failed to load team data.</p>
           <Button onClick={() => router.push('/')} className="mt-4">
@@ -447,6 +472,7 @@ export default function Level15Page() {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center p-4">
+        <FlashEffect />
         <Card className="max-w-4xl mx-auto">
           <CardHeader className="text-center">
             <div className="mx-auto mb-4 w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
@@ -513,6 +539,7 @@ export default function Level15Page() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
+      <FlashEffect />
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-sm border-b border-purple-200">
         <div className="container mx-auto px-4 py-4">

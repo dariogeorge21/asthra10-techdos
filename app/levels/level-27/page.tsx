@@ -175,6 +175,7 @@ export default function Level27Page() {
   const [loading, setLoading] = useState(true);
   const [skipLoading,setskipLoading]=useState(false);
   const [submitLoading,setSubmitLoading]=useState(false);
+  const [flashState, setFlashState] = useState<'correct' | 'incorrect' | null>(null);
   const [isCompleted, setIsCompleted] = useState(false);
   const [completionTimeMinutes, setCompletionTimeMinutes] = useState<number>(0);
   const [completionScoreData, setCompletionScoreData] = useState<{
@@ -281,7 +282,27 @@ export default function Level27Page() {
     }
   }, [team, timerStatus]);
 
+  // Auto-clear flash state after short animation
+  useEffect(() => {
+    if (flashState) {
+      const timer = setTimeout(() => {
+        setFlashState(null);
+      }, 800);
+      return () => clearTimeout(timer);
+    }
+  }, [flashState]);
 
+  // Flash effect component
+  const FlashEffect = () => {
+    if (!flashState) return null;
+    return (
+      <div
+        className={`fixed inset-0 z-50 pointer-events-none animate-flash ${
+          flashState === 'correct' ? 'bg-green-500/30' : 'bg-red-500/30'
+        }`}
+      />
+    );
+  };
 
   const getTimerDisplay = (): { text: string; className: string } => {
     switch (timerStatus) {
@@ -327,6 +348,9 @@ export default function Level27Page() {
 
   const currentQuestion = questions[currentQuestionIndex];
     const isCorrect = answer === currentQuestion.correct;
+
+    // Trigger flash effect for visual feedback
+    setFlashState(isCorrect ? 'correct' : 'incorrect');
 
      if(submitLoading){
       return;
@@ -745,6 +769,7 @@ export default function Level27Page() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
+      <FlashEffect />
       {/* Rules Modal */}
       <RulesModal
         open={showRules && !isCompleted}

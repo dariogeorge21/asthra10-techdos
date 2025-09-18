@@ -87,7 +87,7 @@ const puzzles: WordPuzzle[] = [
   },
   {
     id: 7,
-    scrambledWord: "SPWAHATT",
+    scrambledWord: "SPPWAHATT",
     correctWord: "whatsapp",
     category: "Technology"
   },

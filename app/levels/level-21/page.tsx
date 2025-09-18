@@ -330,6 +330,14 @@ export default function Level21Page() {
     }
   }, [team, timerStatus]);
 
+  // Auto-clear flash state after short animation
+  useEffect(() => {
+    if (flashState) {
+      const t = setTimeout(() => setFlashState(null), 800);
+      return () => clearTimeout(t);
+    }
+  }, [flashState]);
+
   // Check answer validity
   const isAnswerCorrect = (answer: string): boolean => {
     const normalizedAnswer = answer.toLowerCase().trim();
@@ -364,7 +372,7 @@ export default function Level21Page() {
       setUsedButtons(prev => ({
         ...prev,
         [currentQuestion.id]: { ...prev[currentQuestion.id], submit: true }
-      }));
+    }));
 
       const isCorrect = isAnswerCorrect(userAnswer);
       
@@ -541,9 +549,22 @@ export default function Level21Page() {
     }
   };
 
+  // Flash effect component
+  const FlashEffect = () => {
+    if (!flashState) return null;
+    return (
+      <div
+        className={`fixed inset-0 z-50 pointer-events-none animate-flash ${
+          flashState === 'correct' ? 'bg-green-500/30' : 'bg-red-500/30'
+        }`}
+      />
+    );
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex items-center justify-center">
+        <FlashEffect />
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Loading Level 21...</p>
@@ -555,6 +576,7 @@ export default function Level21Page() {
   if (timerStatus === 'expired') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex items-center justify-center p-4">
+        <FlashEffect />
         <Card className="max-w-2xl mx-auto text-center">
           <CardHeader>
             <CardTitle className="text-2xl text-red-600">Game Time Expired</CardTitle>
@@ -576,6 +598,7 @@ export default function Level21Page() {
   if (isCompleted && !completionScoreData) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center">
+        <FlashEffect />
         <div className="text-center">
           <p className="text-lg text-gray-600">Calculating final score...</p>
         </div>
@@ -591,6 +614,7 @@ export default function Level21Page() {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex items-center justify-center p-4">
+        <FlashEffect />
         <Card className="max-w-4xl mx-auto">
           <CardHeader className="text-center">
             <div className="mx-auto mb-4 w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
@@ -723,178 +747,182 @@ export default function Level21Page() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
-      {/* Header */}
-      <header className="bg-white/80 backdrop-blur-sm border-b border-blue-100 sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="bg-blue-100 rounded-full p-3">
-                <Eye className="h-6 w-6 text-blue-600" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-800">Level 21 - Brand Logo Recognition</h1>
-                <p className="text-gray-600">Identify the famous brand logos</p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-4">
-              {/* Global Timer */}
-              <div className="flex items-center gap-2 bg-blue-50 px-3 py-2 rounded-lg">
-                <Timer className="h-4 w-4 text-blue-600" />
-                <span className="text-sm font-medium text-blue-600">
-                  {formatTimeRemaining(timeRemaining)}
-                </span>
+      <FlashEffect />
+      {/* <RulesModal open={false} onClose={() => {}} /> */}
+      <div className={`transition-opacity duration-300`}>
+        {/* Header */}
+        <header className="bg-white/80 backdrop-blur-sm border-b border-blue-100 sticky top-0 z-10">
+          <div className="container mx-auto px-4 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="bg-blue-100 rounded-full p-3">
+                  <Eye className="h-6 w-6 text-blue-600" />
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-800">Level 21 - Brand Logo Recognition</h1>
+                  <p className="text-gray-600">Identify the famous brand logos</p>
+                </div>
               </div>
 
-              {/* Team Score */}
-              {team && (
-                <div className="flex items-center gap-2 bg-purple-50 px-3 py-2 rounded-lg">
-                  <Trophy className="h-4 w-4 text-purple-600" />
-                  <span className="text-sm font-medium text-purple-600">
-                    {team.score.toLocaleString()} pts
+              <div className="flex items-center gap-4">
+                {/* Global Timer */}
+                <div className="flex items-center gap-2 bg-blue-50 px-3 py-2 rounded-lg">
+                  <Timer className="h-4 w-4 text-blue-600" />
+                  <span className="text-sm font-medium text-blue-600">
+                    {formatTimeRemaining(timeRemaining)}
                   </span>
                 </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </header>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto space-y-6">
-          {/* Progress */}
-          <div className="flex items-center justify-center mb-6">
-            <div className="flex items-center gap-2">
-              <Target className="h-5 w-5 text-blue-600" />
-              <span className="text-lg font-semibold text-gray-800">
-                Question {currentQuestionIndex + 1} of {questions.length}
-              </span>
-            </div>
-          </div>
-
-          <Progress value={((currentQuestionIndex + 1) / questions.length) * 100} className="h-2" />
-
-          {/* Question Card */}
-          <Card className="p-8">
-            <CardContent className="space-y-6">
-              {/* Logo Display */}
-              <div className="text-center">
-                <div className="bg-white p-8 rounded-lg shadow-inner border-2 border-gray-100 inline-block">
-                  <img
-                    src={currentQuestion.logoImage}
-                    alt="Brand Logo"
-                    className="max-w-xs max-h-48 object-contain mx-auto"
-                    onError={(e) => {
-                      // Fallback for missing images
-                      e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='100' viewBox='0 0 200 100'%3E%3Crect width='200' height='100' fill='%23f3f4f6'/%3E%3Ctext x='100' y='50' text-anchor='middle' dy='0.3em' font-family='Arial' font-size='14' fill='%236b7280'%3ELogo Image%3C/text%3E%3C/svg%3E";
-                    }}
-                  />
-                </div>
-              </div>
-
-              {/* Question */}
-              <div className="text-center">
-                <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                  What brand does this logo represent?
-                </h2>
-                <p className="text-gray-600">
-                  Type the brand name using the virtual keyboard below
-                </p>
-              </div>
-
-              {/* Answer Input */}
-              <div className="space-y-4">
-                <div className="relative">
-                  <Input
-                    ref={inputRef}
-                    type="text"
-                    value={userAnswer}
-                    onChange={(e) => setUserAnswer(e.target.value)}
-                    placeholder="Enter brand name..."
-                    className="text-center text-xl py-4 border-2 border-blue-200 focus:border-blue-500"
-                    maxLength={50}
-                  />
-                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-400">
-                    {userAnswer.length}/50
-                  </div>
-                </div>
-
-                {/* Virtual Keyboard */}
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <div className="flex items-center gap-2 mb-3">
-                    <KeyboardIcon className="h-4 w-4 text-gray-600" />
-                    <span className="text-sm text-gray-600">Virtual Keyboard</span>
-                  </div>
-                  <Keyboard
-                    layout={keyboardLayout}
-                    onKeyPress={handleKeyPress}
-                    className="max-w-2xl mx-auto"
-                  />
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="space-y-3">
-                {/* Hint Section */}
-                {!showHint ? (
-                  <Button
-                    variant="outline"
-                    onClick={handleHint}
-                    disabled={usedButtons[currentQuestion.id]?.hint}
-                    className="w-full border-yellow-200 text-yellow-700 hover:bg-yellow-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <Lightbulb className="h-4 w-4 mr-2" />
-                    {usedButtons[currentQuestion.id]?.hint ? "Hint Used" : "Show Hint"}
-                  </Button>
-                ) : (
-                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Lightbulb className="h-4 w-4 text-yellow-600" />
-                      <span className="font-medium text-yellow-700">Hint</span>
-                    </div>
-                    <p className="text-yellow-700">{currentQuestion.hint}</p>
+                {/* Team Score */}
+                {team && (
+                  <div className="flex items-center gap-2 bg-purple-50 px-3 py-2 rounded-lg">
+                    <Trophy className="h-4 w-4 text-purple-600" />
+                    <span className="text-sm font-medium text-purple-600">
+                      {team.score.toLocaleString()} pts
+                    </span>
                   </div>
                 )}
-
-                {/* Submit Button */}
-                <Button
-                  onClick={handleSubmitAnswer}
-                  disabled={!userAnswer.trim() || usedButtons[currentQuestion.id]?.submit || submitLoading}
-                  className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white py-4 text-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {submitLoading ? (
-                    <>
-                      <div className="animate-spin h-4 w-4 mr-2 border-2 border-white rounded-full border-t-transparent"></div>
-                      Submitting...
-                    </>
-                  ) : usedButtons[currentQuestion.id]?.submit ? "Answer Submitted" : "Submit Answer"}
-                </Button>
-
-                {/* Skip Button */}
-                <Button
-                  variant="outline"
-                  onClick={handleSkip}
-                  disabled={usedButtons[currentQuestion.id]?.skip || skipLoading}
-                  className="w-full border-red-200 text-red-600 hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {skipLoading ? (
-                    <>
-                      <div className="animate-spin h-4 w-4 mr-2 border-2 border-red-600 rounded-full border-t-transparent"></div>
-                      Skipping...
-                    </>
-                  ) : (
-                    <>
-                      <SkipForward className="h-4 w-4 mr-2" />
-                      {usedButtons[currentQuestion.id]?.skip ? "Question Skipped" : "Skip Question"}
-                    </>
-                  )}
-                </Button>
               </div>
-            </CardContent>
-          </Card>
-        </div>
-      </main>
+            </div>
+          </div>
+        </header>
+
+        {/* Main Content */}
+        <main className="container mx-auto px-4 py-8">
+          <div className="max-w-4xl mx-auto space-y-6">
+            {/* Progress */}
+            <div className="flex items-center justify-center mb-6">
+              <div className="flex items-center gap-2">
+                <Target className="h-5 w-5 text-blue-600" />
+                <span className="text-lg font-semibold text-gray-800">
+                  Question {currentQuestionIndex + 1} of {questions.length}
+                </span>
+              </div>
+            </div>
+
+            <Progress value={((currentQuestionIndex + 1) / questions.length) * 100} className="h-2" />
+
+            {/* Question Card */}
+            <Card className="p-8">
+              <CardContent className="space-y-6">
+                {/* Logo Display */}
+                <div className="text-center">
+                  <div className="bg-white p-8 rounded-lg shadow-inner border-2 border-gray-100 inline-block">
+                    <img
+                      src={currentQuestion.logoImage}
+                      alt="Brand Logo"
+                      className="max-w-xs max-h-48 object-contain mx-auto"
+                      onError={(e) => {
+                        // Fallback for missing images
+                        e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='100' viewBox='0 0 200 100'%3E%3Crect width='200' height='100' fill='%23f3f4f6'/%3E%3Ctext x='100' y='50' text-anchor='middle' dy='0.3em' font-family='Arial' font-size='14' fill='%236b7280'%3ELogo Image%3C/text%3E%3C/svg%3E";
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {/* Question */}
+                <div className="text-center">
+                  <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                    What brand does this logo represent?
+                  </h2>
+                  <p className="text-gray-600">
+                    Type the brand name using the virtual keyboard below
+                  </p>
+                </div>
+
+                {/* Answer Input */}
+                <div className="space-y-4">
+                  <div className="relative">
+                    <Input
+                      ref={inputRef}
+                      type="text"
+                      value={userAnswer}
+                      onChange={(e) => setUserAnswer(e.target.value)}
+                      placeholder="Enter brand name..."
+                      className="text-center text-xl py-4 border-2 border-blue-200 focus:border-blue-500"
+                      maxLength={50}
+                    />
+                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-400">
+                      {userAnswer.length}/50
+                    </div>
+                  </div>
+
+                  {/* Virtual Keyboard */}
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <div className="flex items-center gap-2 mb-3">
+                      <KeyboardIcon className="h-4 w-4 text-gray-600" />
+                      <span className="text-sm text-gray-600">Virtual Keyboard</span>
+                    </div>
+                    <Keyboard
+                      layout={keyboardLayout}
+                      onKeyPress={handleKeyPress}
+                      className="max-w-2xl mx-auto"
+                    />
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="space-y-3">
+                  {/* Hint Section */}
+                  {!showHint ? (
+                    <Button
+                      variant="outline"
+                      onClick={handleHint}
+                      disabled={usedButtons[currentQuestion.id]?.hint}
+                      className="w-full border-yellow-200 text-yellow-700 hover:bg-yellow-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <Lightbulb className="h-4 w-4 mr-2" />
+                      {usedButtons[currentQuestion.id]?.hint ? "Hint Used" : "Show Hint"}
+                    </Button>
+                  ) : (
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Lightbulb className="h-4 w-4 text-yellow-600" />
+                        <span className="font-medium text-yellow-700">Hint</span>
+                      </div>
+                      <p className="text-yellow-700">{currentQuestion.hint}</p>
+                    </div>
+                  )}
+
+                  {/* Submit Button */}
+                  <Button
+                    onClick={handleSubmitAnswer}
+                    disabled={!userAnswer.trim() || usedButtons[currentQuestion.id]?.submit || submitLoading}
+                    className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white py-4 text-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {submitLoading ? (
+                      <>
+                        <div className="animate-spin h-4 w-4 mr-2 border-2 border-white rounded-full border-t-transparent"></div>
+                        Submitting...
+                      </>
+                    ) : usedButtons[currentQuestion.id]?.submit ? "Answer Submitted" : "Submit Answer"}
+                  </Button>
+
+                  {/* Skip Button */}
+                  <Button
+                    variant="outline"
+                    onClick={handleSkip}
+                    disabled={usedButtons[currentQuestion.id]?.skip || skipLoading}
+                    className="w-full border-red-200 text-red-600 hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {skipLoading ? (
+                      <>
+                        <div className="animate-spin h-4 w-4 mr-2 border-2 border-red-600 rounded-full border-t-transparent"></div>
+                        Skipping...
+                      </>
+                    ) : (
+                      <>
+                        <SkipForward className="h-4 w-4 mr-2" />
+                        {usedButtons[currentQuestion.id]?.skip ? "Question Skipped" : "Skip Question"}
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </main>
+      </div>
     </div>
   );
 }
