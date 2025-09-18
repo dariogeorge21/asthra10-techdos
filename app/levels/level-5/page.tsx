@@ -64,6 +64,7 @@ export default function Level5Page() {
   const [loading, setLoading] = useState(true);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [skipLoading, setSkipLoading] = useState(false);
+  const [flashState, setFlashState] = useState<'correct' | 'incorrect' | null>(null);
   
   // Team and stats
   const [team, setTeam] = useState<Team | null>(null);
@@ -342,6 +343,16 @@ export default function Level5Page() {
     }
   }, [team, timerStatus]);
 
+  // Add useEffect to reset flash state after animation
+  useEffect(() => {
+    if (flashState) {
+      const timer = setTimeout(() => {
+        setFlashState(null);
+      }, 800);
+      return () => clearTimeout(timer);
+    }
+  }, [flashState]);
+
   const getTimerDisplay = (): { text: string; className: string } => {
     switch (timerStatus) {
       case 'not_started':
@@ -382,6 +393,9 @@ export default function Level5Page() {
     setSubmitLoading(true);
     const currentQuestion = questions[currentQuestionIndex];
     const isCorrect = validateAnswer(selectedAnswer, currentQuestion.correctAnswer);
+    
+    // Trigger flash effect for visual feedback
+    setFlashState(isCorrect ? 'correct' : 'incorrect');
     
     try {
       const newStats = { ...levelStats };
@@ -576,6 +590,32 @@ export default function Level5Page() {
     }
   };
 
+  // Create a Flash Effect Component
+  const FlashEffect = () => {
+    if (!flashState) return null;
+    
+    return (
+      <div 
+        className={`fixed inset-0 z-50 pointer-events-none animate-flash ${
+          flashState === 'correct' 
+            ? 'bg-green-500/30' 
+            : 'bg-red-500/30'
+        }`} 
+      />
+    );
+  };
+
+  // Fallback: if level is completed but score data is not yet available
+  if (isCompleted && !completionScoreData) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-lg text-gray-600">Calculating final score...</p>
+        </div>
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
@@ -729,6 +769,9 @@ export default function Level5Page() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
+      {/* Flash Effect */}
+      <FlashEffect />
+      
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-sm border-b border-purple-200">
         <div className="container mx-auto px-4 py-4">

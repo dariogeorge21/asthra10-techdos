@@ -62,6 +62,7 @@ export default function Level12Page() {
   const [isCompleted, setIsCompleted] = useState(false);
   const [loading, setLoading] = useState(true);
   const [submitLoading, setSubmitLoading] = useState(false);
+  const [flashState, setFlashState] = useState<'correct' | 'incorrect' | null>(null);
   const [skipLoading, setSkipLoading] = useState(false);
 
   // Team and stats
@@ -248,7 +249,10 @@ export default function Level12Page() {
     
     setSubmitLoading(true);
     const isCorrect = userAnswer.toUpperCase().trim() === currentPuzzle.answer.toUpperCase();
-    
+
+    // Trigger flash effect for visual feedback
+    setFlashState(isCorrect ? 'correct' : 'incorrect');
+
     try {
       if (isCorrect) {
         setLevelStats(prev => ({ ...prev, correct: prev.correct + 1 }));
@@ -415,6 +419,16 @@ export default function Level12Page() {
       return () => clearInterval(timer);
     }
   }, [team, timerStatus, completeLevel]);
+
+  // Add useEffect to reset flash state after animation
+  useEffect(() => {
+    if (flashState) {
+      const timer = setTimeout(() => {
+        setFlashState(null);
+      }, 800);
+      return () => clearTimeout(timer);
+    }
+  }, [flashState]);
 
   const DisplayKeyboard = () => {
     const currentPuzzle = puzzles[currentPuzzleIndex];
@@ -615,12 +629,28 @@ export default function Level12Page() {
     );
   }
 
+  // Create a Flash Effect Component
+  const FlashEffect = () => {
+    if (!flashState) return null;
+
+    return (
+      <div
+        className={`fixed inset-0 z-50 pointer-events-none animate-flash ${
+          flashState === 'correct'
+            ? 'bg-green-500/30'
+            : 'bg-red-500/30'
+        }`}
+      />
+    );
+  };
+
   const currentPuzzle = puzzles[currentPuzzleIndex];
   const progress = ((currentPuzzleIndex + 1) / puzzles.length) * 100;
   const timerDisplay = getTimerDisplay();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 p-4">
+      <FlashEffect />
       <div className="max-w-4xl mx-auto">
         <div className="mb-6">
           <div className="flex items-center justify-between mb-4">

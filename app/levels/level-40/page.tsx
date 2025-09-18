@@ -102,6 +102,7 @@ export default function Level40Page() {
   const [timeRemaining, setTimeRemaining] = useState<number>(0);
   const [timerStatus, setTimerStatus] = useState<'not_started' | 'active' | 'expired'>('not_started');
   const [isCompleted, setIsCompleted] = useState(false);
+  const [flashState, setFlashState] = useState<'correct' | 'incorrect' | null>(null);
 
   const [gameHasBeenPlayed, setGameHasBeenPlayed] = useState(false);
 

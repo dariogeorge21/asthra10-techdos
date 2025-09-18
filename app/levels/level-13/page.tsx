@@ -122,6 +122,7 @@ export default function Level13Page() {
   const [loading, setLoading] = useState(true);
   const [skipLoading,setskipLoading]=useState(false);
   const [submitLoading,setSubmitLoading]=useState(false);
+  const [flashState, setFlashState] = useState<'correct' | 'incorrect' | null>(null);
   const [isCompleted, setIsCompleted] = useState(false);
   const [completingLevel, setCompletingLevel] = useState(false);
   const [completionTimeMinutes, setCompletionTimeMinutes] = useState<number>(0);

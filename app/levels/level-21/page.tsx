@@ -131,6 +131,7 @@ export default function Level21Page() {
   const [levelStartTime] = useState<Date>(new Date());
   const [skipLoading, setSkipLoading] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
+  const [flashState, setFlashState] = useState<'correct' | 'incorrect' | null>(null);
   const [completionTimeMinutes, setCompletionTimeMinutes] = useState<number>(0);
   const [completionScoreData, setCompletionScoreData] = useState<{
     totalScore: number;

@@ -2,13 +2,211 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, Trophy, Users, Heart } from 'lucide-react';
+import { Sparkles, Trophy, Users, Heart, MessageSquare, Star } from 'lucide-react';
 import { FaLinkedin } from 'react-icons/fa';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import Image from 'next/image';
 import QRCode from 'qrcode';
+
+// Helper function to get profile image path
+const getProfileImagePath = (name: string) => {
+  const firstName = name.split(' ')[0].toLowerCase();
+  return `/profile/${firstName}.jpeg`;
+};
+
+// Profile Image Component with fallback
+const ProfileImage = ({
+  name,
+  size = 'large',
+  className = ''
+}: {
+  name: string;
+  size?: 'large' | 'small';
+  className?: string;
+}) => {
+  const [imageError, setImageError] = useState(false);
+  const sizeClasses = size === 'large'
+    ? 'w-32 h-32 text-3xl ring-4'
+    : 'w-20 h-20 text-xl ring-2';
+  const gradientClasses = size === 'large'
+    ? 'from-[#6B2EFF] to-[#00D4FF]'
+    : 'from-[#FF5C7A] to-[#FFD24C]';
+
+  if (imageError) {
+    return (
+      <div className={`${sizeClasses} bg-gradient-to-br ${gradientClasses} rounded-full flex items-center justify-center text-white font-bold shadow-lg ring-white/30 ${className}`}>
+        {name.split(' ').map(n => n[0]).join('')}
+      </div>
+    );
+  }
+
+  return (
+    <div className={`${sizeClasses} rounded-full shadow-lg ring-white/30 overflow-hidden relative ${className}`}>
+      <Image
+        src={getProfileImagePath(name)}
+        alt={`${name} profile`}
+        fill
+        className="object-cover"
+        onError={() => setImageError(true)}
+      />
+    </div>
+  );
+};
+
+// Feedback Form Component
+const FeedbackForm = () => {
+  const [feedback, setFeedback] = useState({
+    name: '',
+    email: '',
+    rating: 0,
+    experience: '',
+    suggestions: ''
+  });
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Here you would typically send the feedback to your backend
+    console.log('Feedback submitted:', feedback);
+    setIsSubmitted(true);
+    setTimeout(() => setIsSubmitted(false), 3000);
+  };
+
+  const handleRatingClick = (rating: number) => {
+    setFeedback(prev => ({ ...prev, rating }));
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 1.1 }}
+      className="mb-12"
+    >
+      <Card className="backdrop-blur-lg bg-white/70 border-0 shadow-lg rounded-xl overflow-hidden">
+        <CardContent className="p-8">
+          <div className="text-center mb-6">
+            <h3 className="text-2xl font-bold text-gray-800 mb-2 flex items-center justify-center">
+              <MessageSquare className="w-6 h-6 mr-2 text-[#6B2EFF]" />
+              Share Your TechDOS Experience
+            </h3>
+            <p className="text-gray-600">
+              Help us improve by sharing your feedback about the TechDOS game experience
+            </p>
+          </div>
+
+          {isSubmitted ? (
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="text-center py-8"
+            >
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Heart className="w-8 h-8 text-green-600" />
+              </div>
+              <h4 className="text-xl font-bold text-green-600 mb-2">Thank You!</h4>
+              <p className="text-gray-600">Your feedback has been submitted successfully.</p>
+            </motion.div>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Your Name
+                  </label>
+                  <Input
+                    type="text"
+                    value={feedback.name}
+                    onChange={(e) => setFeedback(prev => ({ ...prev, name: e.target.value }))}
+                    placeholder="Enter your name"
+                    className="w-full"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Email Address
+                  </label>
+                  <Input
+                    type="email"
+                    value={feedback.email}
+                    onChange={(e) => setFeedback(prev => ({ ...prev, email: e.target.value }))}
+                    placeholder="Enter your email"
+                    className="w-full"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Rate Your Experience
+                </label>
+                <div className="flex gap-2">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() => handleRatingClick(star)}
+                      className="transition-colors"
+                    >
+                      <Star
+                        className={`w-8 h-8 ${
+                          star <= feedback.rating
+                            ? 'text-yellow-400 fill-yellow-400'
+                            : 'text-gray-300'
+                        }`}
+                      />
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  How was your experience?
+                </label>
+                <Textarea
+                  value={feedback.experience}
+                  onChange={(e) => setFeedback(prev => ({ ...prev, experience: e.target.value }))}
+                  placeholder="Tell us about your experience with TechDOS..."
+                  className="w-full h-24"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Suggestions for Improvement
+                </label>
+                <Textarea
+                  value={feedback.suggestions}
+                  onChange={(e) => setFeedback(prev => ({ ...prev, suggestions: e.target.value }))}
+                  placeholder="Any suggestions to make TechDOS even better?"
+                  className="w-full h-20"
+                />
+              </div>
+
+              <div className="flex justify-center">
+                <Button
+                  type="submit"
+                  className="bg-gradient-to-r from-[#6B2EFF] to-[#00D4FF] hover:opacity-90 transition-opacity px-8 py-2"
+                >
+                  Submit Feedback
+                </Button>
+              </div>
+            </form>
+          )}
+        </CardContent>
+      </Card>
+    </motion.div>
+  );
+};
 
 // Confetti component
 const Confetti = () => {
@@ -138,18 +336,19 @@ const QRModal = ({ isOpen, onClose, linkedinUrl, name }: {
 
 export default function EndPage() {
   const [selectedQR, setSelectedQR] = useState<{ url: string; name: string } | null>(null);
+  const [qrCodes, setQrCodes] = useState<{ [key: string]: string }>({});
 
   // Team coordinators with LinkedIn URLs
   const teamCoordinators = [
     {
       name: "Dario George",
-      role: "Coordinator",
+      role: "   Technical-Coordinator",
       avatar: "/api/placeholder/60/60",
       linkedinUrl: "https://www.linkedin.com/in/dario-george/"
     },
     {
       name: "Tippu Sahib",
-      role: "Coordinator",
+      role: "Non-Technical Coordinator",
       avatar: "/api/placeholder/60/60",
       linkedinUrl: "https://www.linkedin.com/in/tippu-sahib/"
     }
@@ -169,7 +368,7 @@ export default function EndPage() {
     },
     {
       name: 'Annlia Jose',
-      role: 'Developer',
+      role: 'Designer',
       linkedinUrl: 'https://www.linkedin.com/in/annlia-jose/'
     },
     {
@@ -179,7 +378,7 @@ export default function EndPage() {
     },
     {
       name: 'Selin Emla',
-      role: 'Designer',
+      role: 'Developer',
       linkedinUrl: 'https://www.linkedin.com/in/selin-emla/'
     },
     {
@@ -188,21 +387,40 @@ export default function EndPage() {
       linkedinUrl: 'https://www.linkedin.com/in/daiji-kuriakose/'
     },
     {
-      name: 'Alan Biju',
-      role: 'Developer',
-      linkedinUrl: 'https://www.linkedin.com/in/alan-biju/'
-    },
-    {
       name: 'Stivance K',
       role: 'Designer',
       linkedinUrl: 'https://www.linkedin.com/in/stivance-k/'
     },
     {
       name: 'Aibin Babu',
-      role: 'Developer',
+      role: 'Designer',
       linkedinUrl: 'https://www.linkedin.com/in/aibin-babu/'
     }
   ];
+
+  // Generate QR codes for all LinkedIn URLs
+  useEffect(() => {
+    const generateQRCodes = async () => {
+      const allPeople = [...teamCoordinators, ...teamMembers];
+      const qrCodePromises = allPeople.map(async (person) => {
+        const qrCodeUrl = await QRCode.toDataURL(person.linkedinUrl, {
+          width: 80,
+          margin: 1,
+          color: {
+            dark: '#0077B5',
+            light: '#FFFFFF'
+          }
+        });
+        return { [person.linkedinUrl]: qrCodeUrl };
+      });
+
+      const qrCodeResults = await Promise.all(qrCodePromises);
+      const qrCodeMap = qrCodeResults.reduce((acc, curr) => ({ ...acc, ...curr }), {});
+      setQrCodes(qrCodeMap);
+    };
+
+    generateQRCodes();
+  }, []);
 
   const handleQRClick = (linkedinUrl: string, name: string) => {
     setSelectedQR({ url: linkedinUrl, name });
@@ -294,9 +512,7 @@ export default function EndPage() {
                         <CardContent className="p-8">
                           <div className="flex flex-col md:flex-row items-center gap-8">
                             {/* Profile Photo */}
-                            <div className="w-32 h-32 bg-gradient-to-br from-[#6B2EFF] to-[#00D4FF] rounded-full flex items-center justify-center text-white text-3xl font-bold shadow-lg ring-4 ring-white/30">
-                              {coordinator.name.split(' ').map(n => n[0]).join('')}
-                            </div>
+                            <ProfileImage name={coordinator.name} size="large" />
                             
                             {/* Details */}
                             <div className="flex-1 text-center md:text-left">
@@ -307,25 +523,24 @@ export default function EndPage() {
                               <p className="text-sm text-gray-500 mb-4 max-w-md">
                                 Thank you for your leadership and guidance throughout the TechDOS project.
                               </p>
-                              <Button 
-                                onClick={() => handleQRClick(coordinator.linkedinUrl, coordinator.name)}
-                                className="text-sm bg-gradient-to-r from-[#6B2EFF] to-[#00D4FF] hover:opacity-90 transition-opacity"
-                                size="sm"
-                              >
-                                <FaLinkedin className="w-4 h-4 mr-2" />
-                                Connect on LinkedIn
-                              </Button>
                             </div>
-                            
-                            {/* QR Code Preview */}
-                            <div 
-                              className="w-24 h-24 bg-white rounded-lg shadow-md cursor-pointer hover:shadow-lg transition-shadow flex flex-col items-center justify-center p-2"
+
+                            {/* QR Code */}
+                            <div
+                              className="w-24 h-24 bg-white rounded-lg shadow-md cursor-pointer hover:shadow-lg transition-shadow flex items-center justify-center p-2"
                               onClick={() => handleQRClick(coordinator.linkedinUrl, coordinator.name)}
                             >
-                              <div className="w-full h-full border border-gray-200 rounded grid place-items-center">
-                                <FaLinkedin className="w-8 h-8 text-[#0077B5]" />
-                              </div>
-                              <span className="text-[10px] text-gray-500 mt-1">Scan for LinkedIn</span>
+                              {qrCodes[coordinator.linkedinUrl] ? (
+                                <img
+                                  src={qrCodes[coordinator.linkedinUrl]}
+                                  alt={`QR code for ${coordinator.name}'s LinkedIn`}
+                                  className="w-full h-full object-contain rounded"
+                                />
+                              ) : (
+                                <div className="w-full h-full border border-gray-200 rounded grid place-items-center">
+                                  <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
+                                </div>
+                              )}
                             </div>
                           </div>
                         </CardContent>
@@ -335,8 +550,13 @@ export default function EndPage() {
                 </div>
               </div>
 
-              
+
             </motion.div>
+
+            {/* Feedback Form Section */}
+            <div className="lg:col-span-2">
+              <FeedbackForm />
+            </div>
 
             {/* Right Column - TechDOS Team */}
             <motion.div
@@ -369,9 +589,7 @@ export default function EndPage() {
                         <CardContent className="p-6">
                           <div className="flex flex-col sm:flex-row items-center gap-4">
                             {/* Profile Photo */}
-                            <div className="w-20 h-20 bg-gradient-to-br from-[#FF5C7A] to-[#FFD24C] rounded-full flex items-center justify-center text-white text-xl font-bold shadow-md ring-2 ring-white/30">
-                              {member.name.split(' ').map(n => n[0]).join('')}
-                            </div>
+                            <ProfileImage name={member.name} size="small" />
                             
                             {/* Details */}
                             <div className="flex-1 text-center sm:text-left">
@@ -382,26 +600,24 @@ export default function EndPage() {
                               <p className="text-xs text-gray-500 mb-3 max-w-md">
                                 A dedicated team member who contributed to the success of the TechDOS project with creativity and technical expertise.
                               </p>
-                              <Button 
-                                onClick={() => handleQRClick(member.linkedinUrl, member.name)}
-                                variant="outline"
-                                className="text-sm border-[#FF5C7A]/30 text-[#FF5C7A] hover:bg-[#FF5C7A]/10"
-                                size="sm"
-                              >
-                                <FaLinkedin className="w-4 h-4 mr-2" />
-                                Connect on LinkedIn
-                              </Button>
                             </div>
-                            
-                            {/* QR Code Preview */}
-                            <div 
-                              className="w-20 h-20 bg-white rounded-lg shadow-sm cursor-pointer hover:shadow transition-shadow flex flex-col items-center justify-center p-2"
+
+                            {/* QR Code */}
+                            <div
+                              className="w-20 h-20 bg-white rounded-lg shadow-sm cursor-pointer hover:shadow transition-shadow flex items-center justify-center p-2"
                               onClick={() => handleQRClick(member.linkedinUrl, member.name)}
                             >
-                              <div className="w-full h-full border border-gray-200 rounded grid place-items-center">
-                                <FaLinkedin className="w-6 h-6 text-[#0077B5]" />
-                              </div>
-                              <span className="text-[9px] text-gray-500 mt-1">Scan for LinkedIn</span>
+                              {qrCodes[member.linkedinUrl] ? (
+                                <img
+                                  src={qrCodes[member.linkedinUrl]}
+                                  alt={`QR code for ${member.name}'s LinkedIn`}
+                                  className="w-full h-full object-contain rounded"
+                                />
+                              ) : (
+                                <div className="w-full h-full border border-gray-200 rounded grid place-items-center">
+                                  <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
+                                </div>
+                              )}
                             </div>
                           </div>
                         </CardContent>
