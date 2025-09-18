@@ -65,7 +65,24 @@ export default function Level38Page() {
   const [timeRemaining, setTimeRemaining] = useState<number>(0);
   const [timerStatus, setTimerStatus] = useState<'not_started' | 'active' | 'expired'>('not_started');
   const [isLevelCompleted, setIsLevelCompleted] = useState(false);
+  const [levelStats, setLevelStats] = useState({
+    correct: 0,
+    incorrect: 0,
+    skipped: 0,
+    // hintsUsed: 0
+  });
+  const [completionScoreData, setCompletionScoreData] = useState<{
+    totalScore: number;
+    baseScore: number;
+    timeBonus: number;
+    consecutiveBonus: number;
+    penalties: number;
+    timeTaken: number; // minutes
+    accuracy: number;
+    performanceRating: string;
+  } | null>(null);
   const [flashState, setFlashState] = useState<'correct' | 'incorrect' | null>(null);
+  const [, setAnswer] = useState("");
 
   const router = useRouter();
 
@@ -337,83 +354,79 @@ export default function Level38Page() {
     if (!teamCode) return;
 
     // Calculate score
-    const timeElapsed = (Date.now() - gameState.startTime) / 1000; // in seconds
-    const baseScore = 1000;
-    const timeBonus = Math.max(0, 500 - Math.floor(timeElapsed / 60) * 50); // Lose 50 points per minute
-    const hintPenalty = gameState.hintsUsed * 100;
-    const movesPenalty = Math.max(0, (gameState.moves - 50) * 5); // Penalty for excessive moves
+      const timeElapsedSeconds = (Date.now() - gameState.startTime) / 1000; // seconds
+      const baseScore = 1000;
+      const timeBonus = Math.max(0, 500 - Math.floor(timeElapsedSeconds / 60) * 50);
+      const hintPenalty = gameState.hintsUsed * 100;
+      const movesPenalty = Math.max(0, (gameState.moves - 50) * 5);
 
-    const finalScore = Math.max(100, baseScore + timeBonus - hintPenalty - movesPenalty);
+      const finalScore = Math.max(100, baseScore + timeBonus - hintPenalty - movesPenalty);
 
-    const newTotalScore = team.score + finalScore;
-    const newLevel = Math.max(team.current_level, 39);
+      // Prepare score data for display
+      const scoreData = {
+        totalScore: finalScore,
+        baseScore,
+        timeBonus,
+        consecutiveBonus: 0,
+        penalties: hintPenalty + movesPenalty,
+        timeTaken: timeElapsedSeconds / 60, // minutes
+        accuracy: 100, // Sudoku full completion
+        performanceRating: finalScore >= 1400 ? 'Excellent' : finalScore >= 1200 ? 'Great' : finalScore >= 1000 ? 'Good' : 'Needs Improvement'
+      };
 
-    try {
-      const response = await fetch(`/api/teams/${teamCode}/score`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          score: newTotalScore,
-          current_level: newLevel
-        })
-      });
+      // Store the calculated score data for consistent display
+      setCompletionScoreData(scoreData);
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      const newTotalScore = team.score + scoreData.totalScore;
+      const newLevel = Math.max(team.current_level, 39);
+
+      try {
+        const response = await fetch(`/api/teams/${teamCode}/score`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            score: newTotalScore,
+            current_level: newLevel
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        setIsLevelCompleted(true);
+        setGameState(prev => ({
+          ...prev,
+          isCompleted: true,
+          endTime: Date.now() // Freeze the end time
+        }));
+        toast.success("Level 38 completed! Excellent Sudoku skills!");
+      } catch (error) {
+        console.error('Error completing level:', error);
+        toast.error("Failed to save progress. Please try again.");
       }
+    };
 
-      setIsLevelCompleted(true);
-      setGameState(prev => ({
-        ...prev,
-        isCompleted: true,
-        endTime: Date.now() // Freeze the end time
-      }));
-      toast.success("Level 38 completed! Excellent Sudoku skills!");
-    } catch (error) {
-      console.error('Error completing level:', error);
-      toast.error("Failed to save progress. Please try again.");
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading Level 38...</p>
+    // Fallback while final score is being prepared
+    if (isLevelCompleted && !completionScoreData) {
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 flex items-center justify-center">
+          <div className="text-center">
+            <p className="text-lg text-gray-600">Calculating final score...</p>
+          </div>
         </div>
-      </div>
-    );
-  }
+      );
+    }
 
-  if (timerStatus === 'expired') {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 flex items-center justify-center p-4">
-        <Card className="max-w-2xl mx-auto text-center">
-          <CardHeader>
-            <CardTitle className="text-2xl text-red-600">Game Time Expired</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-gray-600 mb-4">
-              The overall game time has expired. You can no longer play levels.
-            </p>
-            <Button onClick={() => router.push('/levels')} className="bg-indigo-600 hover:bg-indigo-700">
-              Return to Levels
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  // Level completion screen
   if (isLevelCompleted) {
-    const timeElapsed = gameState.startTime ? (Date.now() - gameState.startTime) / 1000 : 0;
-    const baseScore = 1000;
-    const timeBonus = Math.max(0, 500 - Math.floor(timeElapsed / 60) * 50);
-    const hintPenalty = gameState.hintsUsed * 100;
-    const movesPenalty = Math.max(0, (gameState.moves - 50) * 5);
-    const finalScore = Math.max(100, baseScore + timeBonus - hintPenalty - movesPenalty);
+    // Use stored score data calculated at completion
+    const scoreData = completionScoreData as NonNullable<typeof completionScoreData>;
+    // Compute frozen elapsed time (seconds) using stored start and end times if available
+    const frozenTimeSeconds = (gameState.startTime && gameState.endTime)
+      ? Math.max(0, Math.floor((gameState.endTime - gameState.startTime) / 1000))
+      : Math.max(0, Math.floor((scoreData.timeTaken || 0) * 60));
+    const frozenMinutes = Math.floor(frozenTimeSeconds / 60);
+    const frozenSeconds = String(frozenTimeSeconds % 60).padStart(2, '0');
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 flex items-center justify-center p-4">
@@ -434,7 +447,7 @@ export default function Level38Page() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="text-center p-4 bg-blue-50 rounded-lg">
                 <div className="text-sm text-blue-600 font-medium mb-1">Time</div>
-                <div className="text-2xl font-bold text-blue-600">{Math.floor(timeElapsed / 60)}:{(timeElapsed % 60).toFixed(0).padStart(2, '0')}</div>
+                <div className="text-2xl font-bold text-blue-600">{frozenMinutes}:{frozenSeconds}</div>
                 <div className="text-xs text-blue-500 mt-1">Minutes:Seconds</div>
               </div>
 
@@ -452,7 +465,7 @@ export default function Level38Page() {
 
               <div className="text-center p-4 bg-green-50 rounded-lg">
                 <div className="text-sm text-green-600 font-medium mb-1">Final Score</div>
-                <div className="text-2xl font-bold text-green-600">{finalScore}</div>
+                <div className="text-2xl font-bold text-green-600">{scoreData.totalScore}</div>
                 <div className="text-xs text-green-500 mt-1">Total Points</div>
               </div>
             </div>
@@ -463,25 +476,36 @@ export default function Level38Page() {
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span>Base Score (Completion)</span>
-                  <span className="font-medium">{baseScore}</span>
+                  <span className="font-medium">{scoreData.baseScore}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Time Bonus ({Math.floor(timeElapsed / 60)} minutes)</span>
-                  <span className="font-medium">+{timeBonus}</span>
+                  <span>Time Bonus</span>
+                  <span className="font-medium">+{scoreData.timeBonus}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Hint Penalty ({gameState.hintsUsed} hints × 100)</span>
-                  <span className="font-medium">-{hintPenalty}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Moves Penalty ({Math.max(0, gameState.moves - 50)} excess moves × 5)</span>
-                  <span className="font-medium">-{movesPenalty}</span>
+                  <span>Hint+Moves Penalties</span>
+                  <span className="font-medium">-{scoreData.penalties}</span>
                 </div>
                 <div className="border-t pt-2 flex justify-between font-bold">
                   <span>Total Score</span>
-                  <span>{finalScore}</span>
+                  <span>{scoreData.totalScore}</span>
                 </div>
               </div>
+            </div>
+
+            {/* Performance Feedback */}
+            <div className="text-center p-4 bg-gray-50 rounded-lg">
+              <h4 className="font-semibold text-gray-700 mb-2">Performance Feedback</h4>
+              <p className="text-sm text-gray-600">
+                {scoreData.performanceRating === 'Excellent' &&
+                  "Outstanding performance! You demonstrated excellent logic and speed. Keep up the great work!"}
+                {scoreData.performanceRating === 'Great' &&
+                  "Great job! You showed solid understanding with good accuracy and timing. Well done!"}
+                {scoreData.performanceRating === 'Good' &&
+                  "Good effort! You're on the right track. Consider reviewing techniques you found challenging."}
+                {scoreData.performanceRating === 'Needs Improvement' &&
+                  "Keep practicing! Focus on accuracy and try to work more efficiently in future levels."}
+              </p>
             </div>
 
             {/* Action Button */}
@@ -659,7 +683,7 @@ export default function Level38Page() {
                     <li>• Use the number keyboard to fill cells</li>
                     <li>• Each row, column, and 3×3 box must contain digits 1-9</li>
                     <li>• Red cells indicate conflicts</li>
-                    <li>• Use hints if you&apos;re stuck</li>
+                    <li>• Use hints if you are stuck</li>
                   </ul>
                 </CardContent>
               </Card>
