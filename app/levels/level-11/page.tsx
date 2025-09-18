@@ -108,66 +108,6 @@ const puzzles: WordPuzzle[] = [
     scrambledWord: "ACMENI",
     correctWord: "cinema",
     category: "Technology"
-  },
-  {
-    id: 11,
-    scrambledWord: "PHSRNEAMTO",
-    correctWord: "smartphone",
-    category: "Technology"
-  },
-  {
-    id: 12,
-    scrambledWord: "CIEITFNCSI",
-    correctWord: "scientific",
-    category: "Technology"
-  },
-  {
-    id: 13,
-    scrambledWord: "RESREV",
-    correctWord: "server",
-    category: "Technology"
-  },
-  {
-    id: 14,
-    scrambledWord: "CFSOMTIRO",
-    correctWord: "microsoft",
-    category: "Technology"
-  },
-  {
-    id: 15,
-    scrambledWord: "PECSILNAA",
-    correctWord: "appliance",
-    category: "Technology"
-  },
-  {
-    id: 16,
-    scrambledWord: "NOHTEGYLOCT",
-    correctWord: "technology",
-    category: "Technology"
-  },
-  {
-    id: 17,
-    scrambledWord: "MOGRALTIH",
-    correctWord: "algorithm",
-    category: "Technology"
-  },
-  {
-    id: 18,
-    scrambledWord: "NONNAVOTII",
-    correctWord: "innovation",
-    category: "Technology"
-  },
-  {
-    id: 19,
-    scrambledWord: "FILARTAICI",
-    correctWord: "artificial",
-    category: "Technology"
-  },
-  {
-    id: 20,
-    scrambledWord: "NOGAZTOIARNI",
-    correctWord: "organization",
-    category: "Technology"
   }
 ];
 
@@ -505,7 +445,7 @@ export default function Level11Page() {
       }
       
       // Only allow letters and spaces
-      const cleanValue = newValue.replace(/[^a-zA-Z\s]/g, '');
+      const cleanValue = newValue.replace(/[^aA-zZ\s]/g, '');
       
       // Check maximum length
       if (cleanValue.length > currentPuzzle.correctWord.length) {
