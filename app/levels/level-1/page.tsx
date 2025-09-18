@@ -35,37 +35,61 @@ interface Question {
  * - One correct answer
  * - A helpful hint that provides context without giving away the answer
  */
-const questions: Question[] =
-[
+const questions: Question[] = [
   {
-    "id": 1,
-    "question": "A farmer must take a goat, a cabbage, and a wolf across a river. How does he get all across safely?",
-    "options": ["Wolf first → cabbage → goat", "Goat first → cabbage → wolf", "Cabbage first → goat → wolf", "Goat first → wolf → cabbage"],
-    "correct": "Goat first → cabbage → wolf"
+    id: 1,
+    question: "Mother-in-law baked all the cakes all alone Those were for her son-in-law",
+    options: [
+      "ABCD",
+      "The Great Indian Kitchen",
+      "Ustad Hotel",
+      "Kammath and Kammath"
+    ],
+    correct: "Ustad Hotel"
   },
   {
-    "id": 2,
-    "question": "You have 12 coins; one is counterfeit (heavier or lighter). What is the minimum number of weighings needed to find it?",
-    "options": ["2", "3", "4", "5"],
-    "correct": "3"
+    id: 2,
+    question: "Don't hit me uncle I will not become good Till the time I'm under the ground I will not be good",
+    options: [
+      "Love action Drama",
+      "Oru Vadakkan Selfie",
+      "Ohm Shanthi Oshana",
+      "Honey Beeeeee"
+    ],
+    correct: "Oru Vadakkan Selfie"
   },
   {
-    "id": 3,
-    "question": "A clock shows 3:15. What is the angle between the hour and minute hands?",
-    "options": ["0°", "7.5°", "15°", "22.5°"],
-    "correct": "7.5°"
+    id: 3,
+    question: "A woman like the pearl flower Her highness- Khadeja Beebi In the holy city of Macca She lived like a Queen",
+    options: [
+      "Oru Adar Love",
+      "Watermelon Days",
+      "June",
+      "Qalb"
+    ],
+    correct: "Qalb"
   },
   {
-    "id": 4,
-    "question": "A number when viewed in a mirror and rotated 180° gives a different valid number. Which number is it?",
-    "options": ["609", "808", "619", "996"],
-    "correct": "619"
+    id: 4,
+    question: "Hey girl,what is in the corner of your eyes?\nWhat are you searching for?\nWhy does the heart singing on its own?\nWhat is it humming softly?",
+    options: [
+      "Anugraheethan Anand",
+      "Anugraheethan Antony",
+      "Anugraheethan Joseph",
+      "Anugraheethan Jude"
+    ],
+    correct: "Anugraheethan Antony"
   },
   {
-    "id": 5,
-    "question": "Cryptic clue: 'Planet disturbed, ring returned (7)'. Which planet is it?",
-    "options": ["Saturn", "Mercury", "Neptune", "Uranus"],
-    "correct": "Saturn"
+    id: 5,
+    question: "O benefactor of the country, O golden son, O great one, O one who is the sun, the moon,  O one who preserves time, O one who destroys it, O one who has come to us as our eyes.",
+    options: [
+      "Thallumala",
+      "RDX",
+      "Avesham",
+      "Aaravam"
+    ],
+    correct: "Avesham"
   }
 ]
 
