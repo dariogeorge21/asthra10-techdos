@@ -37,36 +37,7 @@ interface Question {
  */
 const questions: Question[] =
 [
-  {
-    "id": 1,
-    "question": "Heisenberg uncertainty principle says you cannot simultaneously know:",
-    "options": ["Charge & mass of a particle", "Position & momentum with exact precision", "Speed & energy", "Spin & charge"],
-    "correct": "Position & momentum with exact precision"
-  },
-  {
-    "id": 2,
-    "question": "Why does salt melt ice faster?",
-    "options": ["Generates heat", "Lowers freezing point", "Absorbs cold", "Reflects sunlight"],
-    "correct": "Lowers freezing point"
-  },
-  {
-    "id": 3,
-    "question": "Which vitamin is synthesized in the skin when exposed to sunlight?",
-    "options": ["Vitamin A", "Vitamin B12", "Vitamin D", "Vitamin K"],
-    "correct": "Vitamin D"
-  },
-  {
-    "id": 4,
-    "question": "Which gas do plants release during photosynthesis?",
-    "options": ["Carbon dioxide", "Oxygen", "Nitrogen", "Hydrogen"],
-    "correct": "Oxygen"
-  },
-  {
-    "id": 5,
-    "question": "What is the chemical symbol for gold?",
-    "options": ["Ag", "Au", "Gd", "Go"],
-    "correct": "Au"
-  }
+  
 ]
 
 

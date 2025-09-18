@@ -35,42 +35,60 @@ interface Question {
  * - One correct answer
  * - A helpful hint that provides context without giving away the answer
  */
-const questions: Question[] =
-[
+const questions: Question[] = [
   {
-    "id": 1,
-    "question": "Simplify √50 + √18.",
-    "options": ["10√2", "8√2", "7√2", "9√2"],
-    "correct": "8√2"
+    id: 1,
+    question: "What is the capital of France?",
+    options: [
+      "Berlin",
+      "Madrid",
+      "Paris",
+      "Rome"
+    ],
+    correct: "Paris"
   },
   {
-    "id": 2,
-    "question": "For a binary number divisible by 4, last two bits must be:",
-    "options": ["00", "01", "10", "11"],
-    "correct": "00"
+    id: 2,
+    question: "Water boils at 100°C at sea level. True or False?",
+    options: [
+      "True",
+      "False"
+    ],
+    correct: "True"
   },
   {
-    "id": 3,
-    "question": "Decimal 255 in hexadecimal is:",
-    "options": ["FE", "FF", "1F", "F0"],
-    "correct": "FF"
+    id: 3,
+    question: "If 5 pencils cost $10, how much do 8 pencils cost?",
+    options: [
+      "$14",
+      "$16",
+      "$18",
+      "$20"
+    ],
+    correct: "$16"
   },
   {
-    "id": 4,
-    "question": "32-bit address space, 4-KB pages. How many page table entries are required?",
-    "options": ["1 million", "1,048,576", "4,096", "65,536"],
-    "correct": "1,048,576"
+    id: 4,
+    question: "Which of the following is a synonym of “happy”?",
+    options: [
+      "Sad",
+      "Joyful",
+      "Angry",
+      "Tired"
+    ],
+    correct: "Joyful"
   },
-  
   {
-    "id": 5,
-    "question": "What is the binary equivalent of the decimal number 5?",
-    "options": ["101", "110", "111", "100"],
-    "correct": "101"
+    id: 5,
+    question: "Which of the following is NOT a programming language?",
+    options: [
+      "Python",
+      "Java",
+      "HTML",
+      "C++"
+    ],
+    correct: "HTML"
   }
-
-
-
 ]
 
 
