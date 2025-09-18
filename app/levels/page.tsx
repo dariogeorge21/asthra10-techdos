@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Clock, Trophy, Lock, CheckCircle, Play, Timer, AlertCircle } from "lucide-react";
+import { Clock, Trophy, Lock, CheckCircle, Play, Timer, AlertCircle, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -156,6 +156,16 @@ export default function LevelsPage() {
             </div>
             
             <div className="flex items-center space-x-6">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => router.push('/leaderboard')}
+                className="bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200 hover:from-purple-100 hover:to-pink-100"
+              >
+                <Users className="mr-2 h-4 w-4" />
+                Leaderboard
+              </Button>
+
               <div className="text-right">
                 <div className="flex items-center space-x-2">
                   <Trophy className="h-5 w-5 text-yellow-600" />
@@ -164,7 +174,7 @@ export default function LevelsPage() {
                   </span>
                 </div>
               </div>
-              
+
               <div className="text-right">
                 <div className="flex items-center space-x-2">
                   <Timer className={`h-5 w-5 ${timerStatus === 'not_started' ? 'text-gray-500' : 'text-red-600'}`} />

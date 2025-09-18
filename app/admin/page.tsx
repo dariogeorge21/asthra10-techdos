@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 
-import { Shield, Users, Trash2, Plus, Eye, LogOut, Edit } from "lucide-react";
+import { Shield, Users, Trash2, Plus, Eye, LogOut, Edit, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -272,14 +272,24 @@ export default function AdminPage() {
                 Admin Panel
               </span>
             </div>
-            <Button 
-              variant="outline" 
-              onClick={handleLogout}
-              className="text-red-600 border-red-200 hover:bg-red-50"
-            >
-              <LogOut className="mr-2 h-4 w-4" />
-              Logout
-            </Button>
+            <div className="flex items-center space-x-3">
+              <Button
+                variant="outline"
+                onClick={() => window.open('/leaderboard', '_blank')}
+                className="bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200 hover:from-purple-100 hover:to-pink-100"
+              >
+                <Trophy className="mr-2 h-4 w-4" />
+                Leaderboard
+              </Button>
+              <Button
+                variant="outline"
+                onClick={handleLogout}
+                className="text-red-600 border-red-200 hover:bg-red-50"
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                Logout
+              </Button>
+            </div>
           </div>
         </div>
       </header>
