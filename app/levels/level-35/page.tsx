@@ -99,6 +99,16 @@ export default function Level35Page() {
     skipped: 0,
     // hintsUsed: 0
   });
+  const [completionScoreData, setCompletionScoreData] = useState<{
+    totalScore: number;
+    baseScore: number;
+    timeBonus: number;
+    consecutiveBonus: number;
+    penalties: number;
+    timeTaken: number;
+    accuracy: number;
+    performanceRating: string;
+  } | null>(null);
   const [flashState, setFlashState] = useState<'correct' | 'incorrect' | null>(null);
   const [, setAnswer] = useState("");
 
@@ -460,6 +470,8 @@ export default function Level35Page() {
       setCompletionTimeMinutes(timeTaken);
 
       const scoreData = calculateScore(timeTaken);
+      // Store the calculated score data for consistent display
+      setCompletionScoreData(scoreData);
       const newTotalScore = team.score + scoreData.totalScore;
       const newLevel = 36;
 
@@ -550,8 +562,21 @@ export default function Level35Page() {
       );
     }
 
+    // Fallback while final score is being prepared
+    if (isCompleted && !completionScoreData) {
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center">
+          <div className="text-center">
+            <p className="text-lg text-gray-600">Calculating final score...</p>
+          </div>
+        </div>
+      );
+    }
+
     if (isCompleted) {
-      const scoreData = calculateScore(completionTimeMinutes);
+      // Use the stored score data that was calculated during level completion
+      // This ensures the displayed score exactly matches what was sent to the API
+      const scoreData = completionScoreData as NonNullable<typeof completionScoreData>;
 
       return (
         <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center p-4">
