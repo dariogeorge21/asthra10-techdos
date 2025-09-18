@@ -156,7 +156,7 @@ export default function LevelsPage() {
             </div>
             
             <div className="flex items-center space-x-6">
-              <Button
+              {/* <Button
                 variant="outline"
                 size="sm"
                 onClick={() => router.push('/leaderboard')}
@@ -164,7 +164,7 @@ export default function LevelsPage() {
               >
                 <Users className="mr-2 h-4 w-4" />
                 Leaderboard
-              </Button>
+              </Button> */}
 
               <div className="text-right">
                 <div className="flex items-center space-x-2">
