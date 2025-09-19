@@ -2,21 +2,26 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, Trophy, Users, Heart, MessageSquare, Star } from 'lucide-react';
+import { Sparkles, Trophy, Users, Heart, MessageSquare, QrCode, ExternalLink } from 'lucide-react';
 import { FaLinkedin } from 'react-icons/fa';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import Image from 'next/image';
 import QRCode from 'qrcode';
 
 // Helper function to get profile image path
 const getProfileImagePath = (name: string) => {
+  // Handle special cases for faculty coordinators
+  if (name.includes("Chintu Maria Thomas")) {
+    return `/end-page/chintu.jpeg`;
+  }
+  if (name.includes("Renju Renjith")) {
+    return `/end-page/renju.jpeg`;
+  }
+
   const firstName = name.split(' ')[0].toLowerCase();
-  return `/profile/${firstName}.jpeg`;
+  return `/end-page/${firstName}.jpeg`;
 };
 
 // Profile Image Component with fallback
@@ -58,155 +63,223 @@ const ProfileImage = ({
   );
 };
 
-// Feedback Form Component
-const FeedbackForm = () => {
-  const [feedback, setFeedback] = useState({
-    name: '',
-    email: '',
-    rating: 0,
-    experience: '',
-    suggestions: ''
-  });
-  const [isSubmitted, setIsSubmitted] = useState(false);
+// QR Code Section Component
+const QRCodeSection = () => {
+  const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
+  const feedbackFormUrl = 'https://forms.google.com/your-feedback-form-url'; // Replace with actual form URL
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Here you would typically send the feedback to your backend
-    console.log('Feedback submitted:', feedback);
-    setIsSubmitted(true);
-    setTimeout(() => setIsSubmitted(false), 3000);
-  };
-
-  const handleRatingClick = (rating: number) => {
-    setFeedback(prev => ({ ...prev, rating }));
-  };
+  useEffect(() => {
+    QRCode.toDataURL(feedbackFormUrl, {
+      width: 200,
+      margin: 2,
+      color: {
+        dark: '#6B2EFF',
+        light: '#FFFFFF'
+      }
+    }).then(setQrCodeUrl);
+  }, []);
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 1.1 }}
+      transition={{ delay: 0.8 }}
       className="mb-12"
     >
       <Card className="backdrop-blur-lg bg-white/70 border-0 shadow-lg rounded-xl overflow-hidden">
-        <CardContent className="p-8">
-          <div className="text-center mb-6">
+        <CardContent className="p-8 text-center">
+          <div className="mb-6">
             <h3 className="text-2xl font-bold text-gray-800 mb-2 flex items-center justify-center">
-              <MessageSquare className="w-6 h-6 mr-2 text-[#6B2EFF]" />
-              Share Your TechDOS Experience
+              <QrCode className="w-6 h-6 mr-2 text-[#6B2EFF]" />
+              Share Your Feedback
             </h3>
             <p className="text-gray-600">
-              Help us improve by sharing your feedback about the TechDOS game experience
+              Scan the QR code below to fill out our feedback form and help us improve TechDOS
             </p>
           </div>
 
-          {isSubmitted ? (
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              className="text-center py-8"
+          <div className="flex flex-col items-center space-y-4">
+            {qrCodeUrl && (
+              <motion.div
+                className="relative p-4 bg-white rounded-xl shadow-lg"
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: "spring", stiffness: 300, delay: 0.3 }}
+              >
+                <img
+                  src={qrCodeUrl}
+                  alt="Feedback form QR code"
+                  className="w-48 h-48 border-2 border-purple-100 rounded-lg"
+                />
+                <div className="absolute -top-3 -right-3 bg-[#6B2EFF] p-2 rounded-full shadow-md">
+                  <MessageSquare className="w-5 h-5 text-white" />
+                </div>
+              </motion.div>
+            )}
+
+            <div className="text-sm text-gray-600 max-w-md">
+              <p className="mb-2">
+                <strong>How to submit feedback:</strong>
+              </p>
+              <ol className="text-left space-y-1">
+                <li>1. Scan the QR code with your phone camera</li>
+                <li>2. Fill out the feedback form</li>
+                <li>3. Submit your responses</li>
+                <li>4. Help us make TechDOS even better!</li>
+              </ol>
+            </div>
+
+            <Button
+              onClick={() => window.open(feedbackFormUrl, '_blank')}
+              className="bg-gradient-to-r from-[#6B2EFF] to-[#00D4FF] hover:opacity-90 transition-opacity px-6 py-2"
             >
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Heart className="w-8 h-8 text-green-600" />
-              </div>
-              <h4 className="text-xl font-bold text-green-600 mb-2">Thank You!</h4>
-              <p className="text-gray-600">Your feedback has been submitted successfully.</p>
-            </motion.div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Your Name
-                  </label>
-                  <Input
-                    type="text"
-                    value={feedback.name}
-                    onChange={(e) => setFeedback(prev => ({ ...prev, name: e.target.value }))}
-                    placeholder="Enter your name"
-                    className="w-full"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Email Address
-                  </label>
-                  <Input
-                    type="email"
-                    value={feedback.email}
-                    onChange={(e) => setFeedback(prev => ({ ...prev, email: e.target.value }))}
-                    placeholder="Enter your email"
-                    className="w-full"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Rate Your Experience
-                </label>
-                <div className="flex gap-2">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <button
-                      key={star}
-                      type="button"
-                      onClick={() => handleRatingClick(star)}
-                      className="transition-colors"
-                    >
-                      <Star
-                        className={`w-8 h-8 ${
-                          star <= feedback.rating
-                            ? 'text-yellow-400 fill-yellow-400'
-                            : 'text-gray-300'
-                        }`}
-                      />
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  How was your experience?
-                </label>
-                <Textarea
-                  value={feedback.experience}
-                  onChange={(e) => setFeedback(prev => ({ ...prev, experience: e.target.value }))}
-                  placeholder="Tell us about your experience with TechDOS..."
-                  className="w-full h-24"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Suggestions for Improvement
-                </label>
-                <Textarea
-                  value={feedback.suggestions}
-                  onChange={(e) => setFeedback(prev => ({ ...prev, suggestions: e.target.value }))}
-                  placeholder="Any suggestions to make TechDOS even better?"
-                  className="w-full h-20"
-                />
-              </div>
-
-              <div className="flex justify-center">
-                <Button
-                  type="submit"
-                  className="bg-gradient-to-r from-[#6B2EFF] to-[#00D4FF] hover:opacity-90 transition-opacity px-8 py-2"
-                >
-                  Submit Feedback
-                </Button>
-              </div>
-            </form>
-          )}
+              <ExternalLink className="w-4 h-4 mr-2" />
+              Open Feedback Form
+            </Button>
+          </div>
         </CardContent>
       </Card>
     </motion.div>
   );
 };
+
+// Faculty/Student Coordinator Card Component (Red theme)
+const CoordinatorCard = ({ person, type }: { person: any; type: 'faculty' | 'student' }) => {
+  const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
+
+  useEffect(() => {
+    if (person.linkedinUrl && person.linkedinUrl !== '#') {
+      QRCode.toDataURL(person.linkedinUrl, {
+        width: 80,
+        margin: 1,
+        color: {
+          dark: '#DC2626', // Red color for coordinators
+          light: '#FFFFFF'
+        }
+      }).then(setQrCodeUrl);
+    }
+  }, [person.linkedinUrl]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ delay: 0.1 }}
+    >
+      <Card className="backdrop-blur-lg bg-gradient-to-br from-red-50 to-red-100 border border-red-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 rounded-xl overflow-hidden">
+        <CardContent className="p-6">
+          <div className="flex flex-row gap-2 justify-between items-center text-center space-y-4">
+            {/* Profile Image */}
+            <ProfileImage name={person.name} size="large" />
+
+            {/* Details */}
+            <div>
+              <h4 className="text-xl font-bold text-gray-800 mb-1">{person.name}</h4>
+              <p className="text-sm text-red-600 uppercase tracking-wide font-medium mb-2">
+                {person.role}
+              </p>
+              <Badge className="bg-red-500 text-white border-0">
+                {type === 'faculty' ? 'Faculty Coordinator' : 'Student Coordinator'}
+              </Badge>
+            </div>
+
+            {/* LinkedIn Link */}
+            {person.linkedinUrl && person.linkedinUrl !== '#' && (
+              <div className="flex items-center space-x-3">
+                {qrCodeUrl && (
+                  <div className="w-20 h-20 bg-white rounded-lg shadow-sm p-2">
+                    <img
+                      src={qrCodeUrl}
+                      alt={`QR code for ${person.name}'s LinkedIn`}
+                      className="w-full h-full object-contain rounded"
+                    />
+                  </div>
+                )}
+                {/* <Button
+                  onClick={() => window.open(person.linkedinUrl, '_blank')}
+                  className="bg-red-500 hover:bg-red-600 text-white"
+                  size="sm"
+                >
+                  <FaLinkedin className="w-4 h-4 mr-2" />
+                  LinkedIn
+                </Button> */}
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
+  );
+};
+
+// Team Member Card Component (Blue theme)
+const TeamMemberCard = ({ person, index }: { person: any; index: number }) => {
+  const [qrCodeUrl, setQrCodeUrl] = useState<string>(''); 
+
+  useEffect(() => {
+    if (person.linkedinUrl) {
+      QRCode.toDataURL(person.linkedinUrl, {
+        width: 60,
+        margin: 1,
+        color: {
+          dark: '#2563EB', // Blue color for team members
+          light: '#FFFFFF'
+        }
+      }).then(setQrCodeUrl);
+    }
+  }, [person.linkedinUrl]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.1 + index * 0.05 }}
+    >
+      <Card className="backdrop-blur-lg bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1 rounded-lg overflow-hidden h-full">
+        <CardContent className="p-4">
+          <div className="flex flex-row gap-4 justify-between items-center text-center space-y-3">
+            {/* Profile Image */}
+            <ProfileImage name={person.name} size="small" />
+
+            {/* Details */}
+            <div>
+              <h4 className="text-lg font-bold text-gray-800 mb-1">{person.name}</h4>
+              <p className="text-sm text-blue-600 uppercase tracking-wide font-medium mb-2">
+                {person.role}
+              </p>
+              <Badge className="bg-blue-500 text-white border-0 text-xs">
+                Team Member
+              </Badge>
+            </div>
+
+            {/* LinkedIn Link */}
+            <div className="flex items-center space-x-2">
+              {qrCodeUrl && (
+                <div className="w-20 h-20 bg-white rounded-lg shadow-sm p-1">
+                  <img
+                    src={qrCodeUrl}
+                    alt={`QR code for ${person.name}'s LinkedIn`}
+                    className="w-full h-full object-contain rounded"
+                  />
+                </div>
+              )}
+              {/* <Button
+                onClick={() => window.open(person.linkedinUrl, '_blank')}
+                className="bg-blue-500 hover:bg-blue-600 text-white"
+                size="sm"
+              >
+                <FaLinkedin className="w-3 h-3 mr-1" />
+                LinkedIn
+              </Button> */}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
+  );
+};
+
+
 
 // Confetti component
 const Confetti = () => {
@@ -257,129 +330,44 @@ const Confetti = () => {
   );
 };
 
-// QR Code Modal Component
-const QRModal = ({ isOpen, onClose, linkedinUrl, name }: {
-  isOpen: boolean;
-  onClose: () => void;
-  linkedinUrl: string;
-  name: string;
-}) => {
-  const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
 
-  useEffect(() => {
-    if (isOpen && linkedinUrl) {
-      QRCode.toDataURL(linkedinUrl, {
-        width: 300,
-        margin: 2,
-        color: {
-          dark: '#0077B5',  // LinkedIn blue color for QR code
-          light: '#FFFFFF'
-        }
-      }).then(setQrCodeUrl);
-    }
-  }, [isOpen, linkedinUrl]);
-
-  return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md bg-gradient-to-b from-white to-blue-50">
-        <DialogHeader>
-          <DialogTitle className="text-center text-xl text-[#0077B5] flex items-center justify-center gap-2">
-            <FaLinkedin className="w-5 h-5" />
-            Connect with {name}
-          </DialogTitle>
-          <DialogDescription className="text-center">
-            Scan the QR code below to visit {name}&apos;s LinkedIn profile
-          </DialogDescription>
-        </DialogHeader>
-        <div className="flex flex-col items-center space-y-4 p-4">
-          {qrCodeUrl && (
-            <motion.div
-              className="relative p-4 bg-white rounded-xl shadow-lg"
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ type: "spring", stiffness: 300 }}
-            >
-              <img
-                src={qrCodeUrl}
-                alt={`QR code for ${name}'s LinkedIn`}
-                className="w-48 h-48 border-2 border-blue-100 rounded-lg"
-              />
-              <div className="absolute -top-3 -right-3 bg-[#0077B5] p-2 rounded-full shadow-md">
-                <FaLinkedin className="w-5 h-5 text-white" />
-              </div>
-            </motion.div>
-          )}
-          <p className="text-sm text-gray-600 text-center px-4">
-            Connect with {name} to expand your professional network
-          </p>
-          <div className="flex w-full gap-3">
-            <Button
-              variant="outline"
-              onClick={onClose}
-              className="flex-1"
-            >
-              Close
-            </Button>
-            <Button
-              onClick={() => window.open(linkedinUrl, '_blank')}
-              className="flex-1 bg-[#0077B5] hover:bg-[#005885] text-white"
-            >
-              <FaLinkedin className="w-4 h-4 mr-2" />
-              Open Profile
-            </Button>
-          </div>
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
-};
 
 export default function EndPage() {
-  const [selectedQR, setSelectedQR] = useState<{ url: string; name: string } | null>(null);
-  const [qrCodes, setQrCodes] = useState<{ [key: string]: string }>({});
 
-  // Team coordinators with LinkedIn URLs
-  const teamCoordinators = [
+  // Faculty Coordinators
+  const facultyCoordinators = [
     {
-      name: "Dario George",
-      role: "   Technical-Coordinator",
-      avatar: "/api/placeholder/60/60",
-      linkedinUrl: "https://www.linkedin.com/in/dario-george/"
+      name: "Asst Prof Chintu Maria Thomas",
+      role: "Professor",
+      linkedinUrl: "#" // To be provided
     },
     {
-      name: "Tippu Sahib",
-      role: "Non-Technical Coordinator",
-      avatar: "/api/placeholder/60/60",
-      linkedinUrl: "https://www.linkedin.com/in/tippu-sahib/"
+      name: "Asst Prof Renju Renjith",
+      role: "Professor",
+      linkedinUrl: "#" // To be provided
     }
   ];
 
-  // Team members with LinkedIn URLs
+  // Student Coordinators
+  const studentCoordinators = [
+    {
+      name: "Dario George",
+      role: "Senior Developer",
+      linkedinUrl: "https://www.linkedin.com/in/dariogeorge21/"
+    },
+    {
+      name: "Tippu Sahib",
+      role: "Product Manager",
+      linkedinUrl: "https://www.linkedin.com/in/s-tippu-sahib-23404833b/"
+    }
+  ];
+
+  // Team Members
   const teamMembers = [
     {
       name: 'Joshna Jojo',
-      role: 'Developer',
-      linkedinUrl: 'https://www.linkedin.com/in/joshna-jojo/'
-    },
-    {
-      name: 'Angelina Binoy',
       role: 'Designer',
-      linkedinUrl: 'https://www.linkedin.com/in/angelina-binoy/'
-    },
-    {
-      name: 'Annlia Jose',
-      role: 'Designer',
-      linkedinUrl: 'https://www.linkedin.com/in/annlia-jose/'
-    },
-    {
-      name: 'Gokul Shaji',
-      role: 'Developer',
-      linkedinUrl: 'https://www.linkedin.com/in/gokul-shaji/'
-    },
-    {
-      name: 'Selin Emla',
-      role: 'Developer',
-      linkedinUrl: 'https://www.linkedin.com/in/selin-emla/'
+      linkedinUrl: 'https://www.linkedin.com/in/joshna-jojo-9b2806327/'
     },
     {
       name: 'Daiji Kuriakose',
@@ -387,44 +375,43 @@ export default function EndPage() {
       linkedinUrl: 'https://www.linkedin.com/in/daiji-kuriakose/'
     },
     {
-      name: 'Stivance K',
+      name: 'Stivance K Baby',
+      role: 'Q&A',
+      linkedinUrl: 'https://www.linkedin.com/in/stivance-k-baby/'
+    },
+    {
+      name: 'Annlia Jose',
       role: 'Designer',
-      linkedinUrl: 'https://www.linkedin.com/in/stivance-k/'
+      linkedinUrl: 'https://www.linkedin.com/in/annlia-jose-325a8b345/'
+    },
+    {
+      name: 'Gokul Shaji',
+      role: 'Developer',
+      linkedinUrl: 'https://www.linkedin.com/in/gokul-shaji-848334328/'
     },
     {
       name: 'Aibin Babu',
+      role: 'Marketing',
+      linkedinUrl: 'https://www.linkedin.com/in/aibin-babu-8982a3328/'
+    },
+    {
+      name: 'Selin Emla Sunish',
+      role: 'Developer',
+      linkedinUrl: 'https://www.linkedin.com/in/selin-emla-sunish-a55778322/'
+    },
+    {
+      name: 'Angelina Binoy',
       role: 'Designer',
-      linkedinUrl: 'https://www.linkedin.com/in/aibin-babu/'
+      linkedinUrl: 'https://www.linkedin.com/in/angelina-binoy-983b94315/'
+    },
+    {
+      name: 'Dijin Leo',
+      role: 'UI/UX Designer',
+      linkedinUrl: 'https://www.linkedin.com/in/dijin-leo-d-44408431a/'
     }
   ];
 
-  // Generate QR codes for all LinkedIn URLs
-  useEffect(() => {
-    const generateQRCodes = async () => {
-      const allPeople = [...teamCoordinators, ...teamMembers];
-      const qrCodePromises = allPeople.map(async (person) => {
-        const qrCodeUrl = await QRCode.toDataURL(person.linkedinUrl, {
-          width: 80,
-          margin: 1,
-          color: {
-            dark: '#0077B5',
-            light: '#FFFFFF'
-          }
-        });
-        return { [person.linkedinUrl]: qrCodeUrl };
-      });
 
-      const qrCodeResults = await Promise.all(qrCodePromises);
-      const qrCodeMap = qrCodeResults.reduce((acc, curr) => ({ ...acc, ...curr }), {});
-      setQrCodes(qrCodeMap);
-    };
-
-    generateQRCodes();
-  }, []);
-
-  const handleQRClick = (linkedinUrl: string, name: string) => {
-    setSelectedQR({ url: linkedinUrl, name });
-  };
 
   return (
     <>
@@ -478,156 +465,86 @@ export default function EndPage() {
             </motion.div>
           </motion.div>
 
-          {/* Main Content - Two Column Layout */}
-          <div className="grid lg:grid-cols-2 gap-12 mb-16">
-            {/* Left Column - Faculty Coordinators */}
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.7 }}
-            >
-              <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center lg:text-left">
-                TechDOS Team
-              </h2>
+          {/* QR Code Section */}
+          <QRCodeSection />
 
-              {/* Team Coordinators */}
-              <div className="mb-8">
-                <h3 className="text-xl font-semibold text-gray-700 mb-4 flex items-center">
-                  <Trophy className="w-5 h-5 mr-2 text-[#FFD24C]" />
-                  Team Coordinators
+          {/* TechDOS Team Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.0 }}
+            className="mb-16"
+          >
+            <h2 className="text-4xl font-bold text-gray-800 mb-12 text-center">
+              TechDOS Team
+            </h2>
+
+            {/* Coordinators Section - Two Column Layout */}
+            <div className="grid lg:grid-cols-2 gap-8 mb-12">
+              {/* Faculty Coordinators */}
+              <motion.div
+                initial={{ opacity: 0, x: -50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 1.2 }}
+              >
+                <h3 className="text-2xl font-semibold text-gray-700 mb-6 flex items-center justify-center lg:justify-start">
+                  <Trophy className="w-6 h-6 mr-2 text-red-500" />
+                  Faculty Coordinators
                 </h3>
-                <div className="grid gap-6">
-                  {teamCoordinators.map((coordinator, index) => (
-                    <motion.div
+                <div className="space-y-6">
+                  {facultyCoordinators.map((coordinator, index) => (
+                    <CoordinatorCard
                       key={index}
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 1 + index * 0.1 }}
-                    >
-                      <Card className="backdrop-blur-lg bg-white/70 border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 rounded-xl overflow-hidden relative">
-                        <Badge className="absolute top-3 right-3 bg-gradient-to-r from-[#FFD24C] to-[#FF5C7A] text-white border-0 overflow-hidden">
-                          <span className="relative z-10">Coordinator</span>
-                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer"></div>
-                        </Badge>
-                        <CardContent className="p-8">
-                          <div className="flex flex-col md:flex-row items-center gap-8">
-                            {/* Profile Photo */}
-                            <ProfileImage name={coordinator.name} size="large" />
-                            
-                            {/* Details */}
-                            <div className="flex-1 text-center md:text-left">
-                              <h4 className="text-2xl font-bold text-gray-800 mb-2">{coordinator.name}</h4>
-                              <p className="text-md text-gray-600 uppercase tracking-wide font-medium mb-4">
-                                {coordinator.role}
-                              </p>
-                              <p className="text-sm text-gray-500 mb-4 max-w-md">
-                                Thank you for your leadership and guidance throughout the TechDOS project.
-                              </p>
-                            </div>
-
-                            {/* QR Code */}
-                            <div
-                              className="w-24 h-24 bg-white rounded-lg shadow-md cursor-pointer hover:shadow-lg transition-shadow flex items-center justify-center p-2"
-                              onClick={() => handleQRClick(coordinator.linkedinUrl, coordinator.name)}
-                            >
-                              {qrCodes[coordinator.linkedinUrl] ? (
-                                <img
-                                  src={qrCodes[coordinator.linkedinUrl]}
-                                  alt={`QR code for ${coordinator.name}'s LinkedIn`}
-                                  className="w-full h-full object-contain rounded"
-                                />
-                              ) : (
-                                <div className="w-full h-full border border-gray-200 rounded grid place-items-center">
-                                  <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </motion.div>
+                      person={coordinator}
+                      type="faculty"
+                    />
                   ))}
                 </div>
-              </div>
+              </motion.div>
 
-
-            </motion.div>
-
-            {/* Feedback Form Section */}
-            <div className="lg:col-span-2">
-              <FeedbackForm />
+              {/* Student Coordinators */}
+              <motion.div
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 1.4 }}
+              >
+                <h3 className="text-2xl font-semibold text-gray-700 mb-6 flex items-center justify-center lg:justify-start">
+                  <Trophy className="w-6 h-6 mr-2 text-red-500" />
+                  Student Coordinators
+                </h3>
+                <div className="space-y-6">
+                  {studentCoordinators.map((coordinator, index) => (
+                    <CoordinatorCard
+                      key={index}
+                      person={coordinator}
+                      type="student"
+                    />
+                  ))}
+                </div>
+              </motion.div>
             </div>
 
-            {/* Right Column - TechDOS Team */}
+            {/* Team Members Section */}
             <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.9 }}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.6 }}
             >
-              
-              {/* Team Members */}
-              <div>
-                <h3 className="text-xl font-semibold text-gray-700 mb-4 flex items-center">
-                  <Users className="w-5 h-5 mr-2 text-[#00D4FF]" />
-                  Team Members
-                </h3>
-                <div className="grid grid-cols-1 gap-4">
-                  {teamMembers.map((member, index) => (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 1.2 + index * 0.05 }}
-                    >
-                      <Card className="backdrop-blur-lg bg-white/60 border-0 shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1 rounded-lg overflow-hidden relative">
-                        {/* Role Badge */}
-                        <Badge className="absolute top-3 right-3 bg-gradient-to-r from-[#00D4FF] to-[#FF5C7A] text-white border-0 overflow-hidden">
-                          <span className="relative z-10">{member.role}</span>
-                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer"></div>
-                        </Badge>
-                        
-                        <CardContent className="p-6">
-                          <div className="flex flex-col sm:flex-row items-center gap-4">
-                            {/* Profile Photo */}
-                            <ProfileImage name={member.name} size="small" />
-                            
-                            {/* Details */}
-                            <div className="flex-1 text-center sm:text-left">
-                              <h4 className="text-lg font-bold text-gray-800 mb-1">{member.name}</h4>
-                              <p className="text-sm text-gray-600 uppercase tracking-wide font-medium mb-3">
-                                {member.role}
-                              </p>
-                              <p className="text-xs text-gray-500 mb-3 max-w-md">
-                                A dedicated team member who contributed to the success of the TechDOS project with creativity and technical expertise.
-                              </p>
-                            </div>
-
-                            {/* QR Code */}
-                            <div
-                              className="w-20 h-20 bg-white rounded-lg shadow-sm cursor-pointer hover:shadow transition-shadow flex items-center justify-center p-2"
-                              onClick={() => handleQRClick(member.linkedinUrl, member.name)}
-                            >
-                              {qrCodes[member.linkedinUrl] ? (
-                                <img
-                                  src={qrCodes[member.linkedinUrl]}
-                                  alt={`QR code for ${member.name}'s LinkedIn`}
-                                  className="w-full h-full object-contain rounded"
-                                />
-                              ) : (
-                                <div className="w-full h-full border border-gray-200 rounded grid place-items-center">
-                                  <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </motion.div>
-                  ))}
-                </div>
+              <h3 className="text-2xl font-semibold text-gray-700 mb-6 flex items-center justify-center">
+                <Users className="w-6 h-6 mr-2 text-blue-500" />
+                Team Members
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {teamMembers.map((member, index) => (
+                  <TeamMemberCard
+                    key={index}
+                    person={member}
+                    index={index}
+                  />
+                ))}
               </div>
             </motion.div>
-          </div>
+          </motion.div>
 
           {/* Footer */}
           <motion.footer
@@ -665,15 +582,6 @@ export default function EndPage() {
         </div>
       </div>
 
-      {/* QR Code Modal */}
-      {selectedQR && (
-        <QRModal
-          isOpen={!!selectedQR}
-          onClose={() => setSelectedQR(null)}
-          linkedinUrl={selectedQR.url}
-          name={selectedQR.name}
-        />
-      )}
     </>
   );
 }

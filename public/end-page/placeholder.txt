@@ -1,0 +1,28 @@
+This directory contains profile images for the TechDOS team members.
+
+Image naming convention:
+- Use the first name of the person in lowercase
+- File extension should be .jpeg
+- Example: dario.jpeg, tippu.jpeg, joshna.jpeg
+
+Expected images:
+Faculty Coordinators:
+- asst.jpeg (for Asst Prof Chintu Maria Thomas)
+- asst.jpeg (for Asst Prof Renju Renjith) - Note: This will need different naming
+
+Student Coordinators:
+- dario.jpeg
+- tippu.jpeg
+
+Team Members:
+- joshna.jpeg
+- daiji.jpeg
+- stivance.jpeg
+- annlia.jpeg
+- gokul.jpeg
+- aibin.jpeg
+- selin.jpeg
+- angelina.jpeg
+- dijin.jpeg
+
+Note: For faculty members with similar first names, you may need to adjust the naming convention in the getProfileImagePath function.
