@@ -195,7 +195,7 @@ export default function Level35Page() {
 
       return () => clearInterval(timer);
     }
-  }, [team, timerStatus]);
+  }, [team, timerStatus, router]);
 
   // Auto-clear flash state after short animation
   useEffect(() => {
@@ -256,9 +256,9 @@ export default function Level35Page() {
      
       const currentQuestion = questions[currentQuestionIndex];
       const isCorrect = answer === currentQuestion.correct;
-+
-+    // Trigger flash effect for visual feedback
-+    setFlashState(isCorrect ? 'correct' : 'incorrect');
+
+      // Trigger flash effect for visual feedback
+      setFlashState(isCorrect ? 'correct' : 'incorrect');
 
       
       // Update local stats

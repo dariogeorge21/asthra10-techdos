@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { Trophy, Timer, Eye, CheckCircle, Target, Lightbulb, Keyboard as KeyboardIcon, SkipForward, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -328,7 +329,7 @@ export default function Level21Page() {
 
       return () => clearInterval(timer);
     }
-  }, [team, timerStatus]);
+  }, [team, timerStatus, router]);
 
   // Auto-clear flash state after short animation
   useEffect(() => {
@@ -808,9 +809,11 @@ export default function Level21Page() {
                 {/* Logo Display */}
                 <div className="text-center">
                   <div className="bg-white p-8 rounded-lg shadow-inner border-2 border-gray-100 inline-block">
-                    <img
+                    <Image
                       src={currentQuestion.logoImage}
                       alt="Brand Logo"
+                      width={300}
+                      height={192}
                       className="max-w-xs max-h-48 object-contain mx-auto"
                       onError={(e) => {
                         // Fallback for missing images

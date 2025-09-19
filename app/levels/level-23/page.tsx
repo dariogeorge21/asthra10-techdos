@@ -174,7 +174,7 @@ export default function Level23Page() {
   const [timerStatus, setTimerStatus] = useState<'not_started' | 'active' | 'expired'>('not_started');
   const [loading, setLoading] = useState(true);
   const [isCompleted, setIsCompleted] = useState(false);
-  const [completionTimeMinutes, setCompletionTimeMinutes] = useState<number>(0);
+  const [, setCompletionTimeMinutes] = useState<number>(0);
   const [completionScoreData, setCompletionScoreData] = useState<{
     totalScore: number;
     baseScore: number;
@@ -270,7 +270,7 @@ export default function Level23Page() {
 
       return () => clearInterval(timer);
     }
-  }, [team, timerStatus]);
+  }, [team, timerStatus, router]);
 
   // Auto-clear flash state after short animation
   useEffect(() => {

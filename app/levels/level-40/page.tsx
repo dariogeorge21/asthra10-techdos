@@ -102,9 +102,9 @@ export default function Level40Page() {
   const [timeRemaining, setTimeRemaining] = useState<number>(0);
   const [timerStatus, setTimerStatus] = useState<'not_started' | 'active' | 'expired'>('not_started');
   const [isCompleted, setIsCompleted] = useState(false);
-  const [flashState, setFlashState] = useState<'correct' | 'incorrect' | null>(null);
+  const [, setFlashState] = useState<'correct' | 'incorrect' | null>(null);
 
-  const [gameHasBeenPlayed, setGameHasBeenPlayed] = useState(false);
+  const [gameHasBeenPlayed] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const gameTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -183,7 +183,7 @@ export default function Level40Page() {
 
       return () => clearInterval(timer);
     }
-  }, [team, timerStatus]);
+  }, [team, timerStatus, router]);
 
   // Initialize typing content
   const initializeGame = () => {

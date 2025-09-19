@@ -50,7 +50,7 @@ interface GameState {
 
 export default function Level38Page() {
   const [team, setTeam] = useState<Team | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
   const [showRules, setShowRules] = useState(true);
   const [gameState, setGameState] = useState<GameState>({
     grid: INITIAL_PUZZLE.map(row => [...row]),
@@ -65,7 +65,7 @@ export default function Level38Page() {
   const [timeRemaining, setTimeRemaining] = useState<number>(0);
   const [timerStatus, setTimerStatus] = useState<'not_started' | 'active' | 'expired'>('not_started');
   const [isLevelCompleted, setIsLevelCompleted] = useState(false);
-  const [levelStats, setLevelStats] = useState({
+  const [, setLevelStats] = useState({
     correct: 0,
     incorrect: 0,
     skipped: 0,
@@ -81,7 +81,7 @@ export default function Level38Page() {
     accuracy: number;
     performanceRating: string;
   } | null>(null);
-  const [flashState, setFlashState] = useState<'correct' | 'incorrect' | null>(null);
+  const [, setFlashState] = useState<'correct' | 'incorrect' | null>(null);
   const [, setAnswer] = useState("");
 
   const router = useRouter();
@@ -146,7 +146,7 @@ export default function Level38Page() {
 
       return () => clearInterval(timer);
     }
-  }, [team, timerStatus]);
+  }, [team, timerStatus, router]);
 
   // Check if a number placement is valid
   const isValidPlacement = (grid: number[][], row: number, col: number, num: number): boolean => {

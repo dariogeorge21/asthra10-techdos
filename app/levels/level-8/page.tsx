@@ -294,7 +294,7 @@ export default function Level8Page() {
 
       return () => clearInterval(timer);
     }
-  }, [team, timerStatus]);
+  }, [team, timerStatus, router]);
 
   // Add useEffect to reset flash state after animation
   useEffect(() => {

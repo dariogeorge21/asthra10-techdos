@@ -244,7 +244,7 @@ export default function Level31Page() {
 
       return () => clearInterval(timer);
     }
-  }, [team, timerStatus]);
+  }, [team, timerStatus, router]);
 
   // Auto-clear flash state after short animation
   useEffect(() => {
@@ -299,10 +299,10 @@ export default function Level31Page() {
   }
 
   const currentQuestion = questions[currentQuestionIndex];
-    const isCorrect = answer === currentQuestion.correct;
-+
-+    // Trigger flash effect for visual feedback
-+    setFlashState(isCorrect ? 'correct' : 'incorrect');
+  const isCorrect = answer === currentQuestion.correct;
+
+  // Trigger flash effect for visual feedback
+  setFlashState(isCorrect ? 'correct' : 'incorrect');
 
      if(submitLoading){
       return;

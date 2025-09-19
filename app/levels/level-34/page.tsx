@@ -170,7 +170,7 @@ export default function Level34Page() {
 
       return () => clearInterval(timer);
     }
-  }, [team, timerStatus]);
+  }, [team, timerStatus, router]);
 
   // Auto-clear flash state after short animation
   useEffect(() => {

@@ -95,12 +95,12 @@ export default function Level15Page() {
   const [levelStartTime] = useState<Date>(new Date());
   const [timeRemaining, setTimeRemaining] = useState<number>(0);
   const [timerStatus, setTimerStatus] = useState<'not_started' | 'active' | 'expired'>('not_started');
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [skipLoading, setSkipLoading] = useState(false);
   const [flashState, setFlashState] = useState<'correct' | 'incorrect' | null>(null);
   const [isCompleted, setIsCompleted] = useState(false);
-  const [completionTimeMinutes, setCompletionTimeMinutes] = useState<number>(0);
+  const [, setCompletionTimeMinutes] = useState<number>(0);
   const [levelStats, setLevelStats] = useState({
     correct: 0,
     incorrect: 0,
@@ -190,7 +190,7 @@ export default function Level15Page() {
 
       return () => clearInterval(timer);
     }
-  }, [team, timerStatus]);
+  }, [team, timerStatus, router]);
 
   // Auto-clear flash state after short animation
   useEffect(() => {
