@@ -2,13 +2,18 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, Trophy, Users, Heart, MessageSquare, QrCode, ExternalLink } from 'lucide-react';
-import { FaLinkedin } from 'react-icons/fa';
-import { Button } from '@/components/ui/button';
+import { Sparkles, Trophy, Users, Heart, MessageSquare, QrCode } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
 import QRCode from 'qrcode';
+
+// Type definitions for person objects
+interface Person {
+  name: string;
+  role: string;
+  linkedinUrl?: string;
+}
 
 // Helper function to get profile image path
 const getProfileImagePath = (name: string) => {
@@ -66,7 +71,7 @@ const ProfileImage = ({
 // QR Code Section Component
 const QRCodeSection = () => {
   const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
-  const feedbackFormUrl = 'https://forms.google.com/your-feedback-form-url'; // Replace with actual form URL
+  const feedbackFormUrl = 'https://forms.gle/FZ6GDCn6tXChajuAA'; 
 
   useEffect(() => {
     QRCode.toDataURL(feedbackFormUrl, {
@@ -117,7 +122,7 @@ const QRCodeSection = () => {
               </motion.div>
             )}
 
-            <div className="text-sm text-gray-600 max-w-md">
+            {/* <div className="text-sm text-gray-600 max-w-md">
               <p className="mb-2">
                 <strong>How to submit feedback:</strong>
               </p>
@@ -127,15 +132,15 @@ const QRCodeSection = () => {
                 <li>3. Submit your responses</li>
                 <li>4. Help us make TechDOS even better!</li>
               </ol>
-            </div>
+            </div> */}
 
-            <Button
+            {/* <Button
               onClick={() => window.open(feedbackFormUrl, '_blank')}
               className="bg-gradient-to-r from-[#6B2EFF] to-[#00D4FF] hover:opacity-90 transition-opacity px-6 py-2"
             >
               <ExternalLink className="w-4 h-4 mr-2" />
               Open Feedback Form
-            </Button>
+            </Button> */}
           </div>
         </CardContent>
       </Card>
@@ -144,13 +149,14 @@ const QRCodeSection = () => {
 };
 
 // Faculty/Student Coordinator Card Component (Red theme)
-const CoordinatorCard = ({ person, type }: { person: any; type: 'faculty' | 'student' }) => {
+const CoordinatorCard = ({ person, type }: { person: Person; type: 'faculty' | 'student' }) => {
   const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
 
   useEffect(() => {
-    if (person.linkedinUrl && person.linkedinUrl !== '#') {
+    // Generate QR for any non-empty linkedinUrl (match TeamMemberCard behavior)
+    if (person.linkedinUrl) {
       QRCode.toDataURL(person.linkedinUrl, {
-        width: 80,
+        width: 160,
         margin: 1,
         color: {
           dark: '#DC2626', // Red color for coordinators
@@ -183,11 +189,11 @@ const CoordinatorCard = ({ person, type }: { person: any; type: 'faculty' | 'stu
               </Badge>
             </div>
 
-            {/* LinkedIn Link */}
-            {person.linkedinUrl && person.linkedinUrl !== '#' && (
+            {/* LinkedIn Link / QR */}
+            {person.linkedinUrl && (
               <div className="flex items-center space-x-3">
                 {qrCodeUrl && (
-                  <div className="w-20 h-20 bg-white rounded-lg shadow-sm p-2">
+                  <div className="w-40 h-40 bg-white rounded-lg shadow-sm p-2">
                     <img
                       src={qrCodeUrl}
                       alt={`QR code for ${person.name}'s LinkedIn`}
@@ -195,14 +201,6 @@ const CoordinatorCard = ({ person, type }: { person: any; type: 'faculty' | 'stu
                     />
                   </div>
                 )}
-                {/* <Button
-                  onClick={() => window.open(person.linkedinUrl, '_blank')}
-                  className="bg-red-500 hover:bg-red-600 text-white"
-                  size="sm"
-                >
-                  <FaLinkedin className="w-4 h-4 mr-2" />
-                  LinkedIn
-                </Button> */}
               </div>
             )}
           </div>
@@ -213,13 +211,13 @@ const CoordinatorCard = ({ person, type }: { person: any; type: 'faculty' | 'stu
 };
 
 // Team Member Card Component (Blue theme)
-const TeamMemberCard = ({ person, index }: { person: any; index: number }) => {
+const TeamMemberCard = ({ person, index }: { person: Person; index: number }) => {
   const [qrCodeUrl, setQrCodeUrl] = useState<string>(''); 
 
   useEffect(() => {
     if (person.linkedinUrl) {
       QRCode.toDataURL(person.linkedinUrl, {
-        width: 60,
+        width: 120,
         margin: 1,
         color: {
           dark: '#2563EB', // Blue color for team members
@@ -255,7 +253,7 @@ const TeamMemberCard = ({ person, index }: { person: any; index: number }) => {
             {/* LinkedIn Link */}
             <div className="flex items-center space-x-2">
               {qrCodeUrl && (
-                <div className="w-20 h-20 bg-white rounded-lg shadow-sm p-1">
+                <div className="w-32 h-32 bg-white rounded-lg shadow-sm p-1">
                   <img
                     src={qrCodeUrl}
                     alt={`QR code for ${person.name}'s LinkedIn`}
@@ -339,12 +337,12 @@ export default function EndPage() {
     {
       name: "Asst Prof Chintu Maria Thomas",
       role: "Professor",
-      linkedinUrl: "#" // To be provided
+      linkedinUrl: "https://sjcetpalai.ac.in/chintu-cs/" // To be provided
     },
     {
       name: "Asst Prof Renju Renjith",
       role: "Professor",
-      linkedinUrl: "#" // To be provided
+      linkedinUrl: "https://sjcetpalai.ac.in/renju-cs/" // To be provided
     }
   ];
 
