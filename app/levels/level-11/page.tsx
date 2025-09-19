@@ -87,7 +87,7 @@ const puzzles: WordPuzzle[] = [
   },
   {
     id: 7,
-    scrambledWord: "SPWAHATT",
+    scrambledWord: "SPPWAHATT",
     correctWord: "whatsapp",
     category: "Technology"
   },
@@ -219,7 +219,7 @@ export default function Level11Page() {
 
       return () => clearInterval(timer);
     }
-  }, [team, timerStatus]);
+  }, [team, timerStatus, router]);
 
   // Add useEffect to reset flash state after animation
   useEffect(() => {

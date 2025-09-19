@@ -418,7 +418,7 @@ export default function Level12Page() {
 
       return () => clearInterval(timer);
     }
-  }, [team, timerStatus, completeLevel]);
+  }, [team, timerStatus, completeLevel, router]);
 
   // Add useEffect to reset flash state after animation
   useEffect(() => {

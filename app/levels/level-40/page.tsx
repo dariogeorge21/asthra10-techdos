@@ -102,22 +102,15 @@ export default function Level40Page() {
   const [timeRemaining, setTimeRemaining] = useState<number>(0);
   const [timerStatus, setTimerStatus] = useState<'not_started' | 'active' | 'expired'>('not_started');
   const [isCompleted, setIsCompleted] = useState(false);
-  const [flashState, setFlashState] = useState<'correct' | 'incorrect' | null>(null);
+  const [, setFlashState] = useState<'correct' | 'incorrect' | null>(null);
 
-  const [gameHasBeenPlayed, setGameHasBeenPlayed] = useState(false);
+  const [gameHasBeenPlayed] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const gameTimerRef = useRef<NodeJS.Timeout | null>(null);
   const router = useRouter();
 
-  // Check if game has been played before
-  useEffect(() => {
-    const hasPlayed = localStorage.getItem('level40_game_played');
-    if (hasPlayed === 'true') {
-      setGameHasBeenPlayed(true);
-      setGameState(prev => ({ ...prev, isCompleted: true }));
-    }
-  }, []);
+  // (removed persisted 'played' check) -- gameHasBeenPlayed remains in-memory only
 
   const fetchTeamData = useCallback(async (teamCode: string) => {
     try {
@@ -190,7 +183,7 @@ export default function Level40Page() {
 
       return () => clearInterval(timer);
     }
-  }, [team, timerStatus]);
+  }, [team, timerStatus, router]);
 
   // Initialize typing content
   const initializeGame = () => {
@@ -259,8 +252,6 @@ export default function Level40Page() {
               clearInterval(gameTimerRef.current);
               gameTimerRef.current = null;
             }
-            // Mark game as played when timer expires
-            localStorage.setItem('level40_game_played', 'true');
             return {
               ...prev,
               timeRemaining: 0,

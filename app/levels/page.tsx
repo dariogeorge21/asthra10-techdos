@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Clock, Trophy, Lock, CheckCircle, Play, Timer, AlertCircle, Users } from "lucide-react";
+import { Clock, Trophy, Lock, CheckCircle, Play, Timer, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -156,7 +156,7 @@ export default function LevelsPage() {
             </div>
             
             <div className="flex items-center space-x-6">
-              <Button
+              {/* <Button
                 variant="outline"
                 size="sm"
                 onClick={() => router.push('/leaderboard')}
@@ -164,7 +164,7 @@ export default function LevelsPage() {
               >
                 <Users className="mr-2 h-4 w-4" />
                 Leaderboard
-              </Button>
+              </Button> */}
 
               <div className="text-right">
                 <div className="flex items-center space-x-2">
@@ -265,67 +265,71 @@ export default function LevelsPage() {
         </div> */}
       </main>
       
-      {/* End Game Section with enhanced styling */}
-      <div className="container mx-auto px-4 py-8">
-        <div className="bg-gradient-to-r from-red-50 via-pink-50 to-red-50 p-8 rounded-xl shadow-lg border border-red-200 transform hover:scale-[1.01] transition-all duration-300">
-          <div className="flex flex-col items-center justify-center">
-            <div className="w-16 h-16 flex items-center justify-center bg-red-100 rounded-full mb-4">
-              <AlertCircle className="h-8 w-8 text-red-600" />
-            </div>
-            <h3 className="text-2xl font-bold text-red-700 mb-3 text-center">Game Completion</h3>
-            <p className="text-gray-700 mb-6 text-center max-w-lg">
-              Ready to finish your journey? Click the button below to end the game and see your final results.
-            </p>
-            <Button 
-              variant="destructive" 
-              className="w-full max-w-md bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-lg py-6 shadow-lg hover:shadow-xl transition-all duration-300 animate-pulse hover:animate-none"
-              onClick={() => setShowEndGameModal(true)}
-            >
-              End Game Session
-            </Button>
-          </div>
-        </div>
-      </div>
-      
-      {/* End Game Confirmation Modal */}
-      <Dialog open={showEndGameModal} onOpenChange={setShowEndGameModal}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-xl text-red-600 flex items-center gap-2">
-              <AlertCircle className="h-5 w-5" /> Confirm Game Completion
-            </DialogTitle>
-            <DialogDescription>
-              Are you sure you want to end your game session? This action cannot be undone.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-              <p className="text-amber-700 text-sm mb-2">
-                Your current score: <span className="font-bold">{team?.score.toLocaleString()} points</span>
-              </p>
-              <p className="text-amber-700 text-sm">
-                Levels completed: <span className="font-bold">{team ? team.current_level - 1 : 0}/40</span>
-              </p>
+      {/* End Game Section and Confirmation Modal - only visible after all 40 levels cleared */}
+      {team?.current_level > 40 && (
+        <>
+          <div className="container mx-auto px-4 py-8">
+            <div className="bg-gradient-to-r from-red-50 via-pink-50 to-red-50 p-8 rounded-xl shadow-lg border border-red-200 transform hover:scale-[1.01] transition-all duration-300">
+              <div className="flex flex-col items-center justify-center">
+                <div className="w-16 h-16 flex items-center justify-center bg-red-100 rounded-full mb-4">
+                  <AlertCircle className="h-8 w-8 text-red-600" />
+                </div>
+                <h3 className="text-2xl font-bold text-red-700 mb-3 text-center">Game Completion</h3>
+                <p className="text-gray-700 mb-6 text-center max-w-lg">
+                  Ready to finish your journey? Click the button below to end the game and see your final results.
+                </p>
+                <Button 
+                  variant="destructive" 
+                  className="w-full max-w-md bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-lg py-6 shadow-lg hover:shadow-xl transition-all duration-300 animate-pulse hover:animate-none"
+                  onClick={() => setShowEndGameModal(true)}
+                >
+                  End Game Session
+                </Button>
+              </div>
             </div>
           </div>
-          <DialogFooter className="flex space-x-2 sm:space-x-4">
-            <Button
-              variant="outline"
-              onClick={() => setShowEndGameModal(false)}
-              className="flex-1"
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={() => router.push('/end-page')}
-              className="flex-1 bg-gradient-to-r from-red-600 to-pink-600"
-            >
-              Yes, End Game
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          
+          {/* End Game Confirmation Modal */}
+          <Dialog open={showEndGameModal} onOpenChange={setShowEndGameModal}>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle className="text-xl text-red-600 flex items-center gap-2">
+                  <AlertCircle className="h-5 w-5" /> Confirm Game Completion
+                </DialogTitle>
+                <DialogDescription>
+                  Are you sure you want to end your game session? This action cannot be undone.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                  <p className="text-amber-700 text-sm mb-2">
+                    Your current score: <span className="font-bold">{team?.score.toLocaleString()} points</span>
+                  </p>
+                  <p className="text-amber-700 text-sm">
+                    Levels completed: <span className="font-bold">{team ? Math.min(team.current_level - 1, 40) : 0}/40</span>
+                  </p>
+                </div>
+              </div>
+              <DialogFooter className="flex space-x-2 sm:space-x-4">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowEndGameModal(false)}
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="destructive"
+                  onClick={() => router.push('/end-page')}
+                  className="flex-1 bg-gradient-to-r from-red-600 to-pink-600"
+                >
+                  Yes, End Game
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </>
+      )}
     </div>
   );
 }

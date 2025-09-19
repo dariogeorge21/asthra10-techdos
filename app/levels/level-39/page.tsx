@@ -1,86 +1,13 @@
-/**
- * LEVEL-28 QUIZ IMPLEMENTATION - TECHDOS GAME
- *
- * OVERVIEW:
- * Level-28 represents the twenty-eighth stage of the TechDOS quiz game, featuring a comprehensive
- * multiple-choice question (MCQ) format designed to test advanced knowledge across various
- * domains including Indian history, cinema, science, technology, and cultural achievements.
- *
- * QUIZ MECHANICS:
- * - Format: Multiple Choice Questions (MCQ) with 4 options each
- * - Total Questions: 10 diverse questions covering different knowledge areas
- * - Hint System: Each question includes a helpful hint that can be revealed
- * - Timer Integration: Real-time countdown with global game timer
- * - Navigation Protection: Prevents accidental page refresh/navigation during quiz
- *
- * GAME FLOW:
- * 1. Question Selection: Questions are presented sequentially (no random order)
- * 2. Answer Selection: Players choose from 4 multiple-choice options (A, B, C, D)
- * 3. Hint Usage: Optional hints available for each question (affects scoring)
- * 4. Answer Submission: Submit selected answer or skip to next question
- * 5. Progress Tracking: Visual progress bar and question counter
- * 6. Level Completion: Automatic progression after all questions answered/skipped
- *
- * STATISTICS TRACKING:
- * - Correct Answers: Number of questions answered correctly
- * - Incorrect Answers: Number of questions answered incorrectly
- * - Skipped Questions: Number of questions skipped without answering
- * - Hints Used: Total number of hints revealed during the level
- * - Time Taken: Duration from level start to completion
- * - Consecutive Correct: Tracks streaks for bonus calculations
- *
- * SCORING ALGORITHM:
- * Base Points:
- * - Correct Answer (no hint): 1500 points
- * - Correct Answer (with hint): 1000 points
- * - Incorrect Answer: -400 points penalty
- * - Skipped Question: -750 points penalty
- *
- * Bonus Systems:
- * - Consecutive Correct Bonus: +200 points for every 3 consecutive correct answers
- * - Time Bonus (based on completion speed):
- *   * Under 1 min: +250 points
- *   * 1-1.5 min: +225 points
- *   * 1.5-2 min: +200 points
- *   * 2-2.5 min: +175 points
- *   * 2.5-3 min: +150 points
- *   * 3-3.5 min: +125 points
- *   * 3.5-4 min: +100 points
- *   * 4-4.5 min: +75 points
- *   * 4.5-5 min: +50 points
- *   * 5-5.5 min: +25 points
- *   * Over 5.5 min: No time bonus
- *
- * FINAL SCORE CALCULATION:
- * Total Score = (Base Points) + (Consecutive Bonus) + (Time Bonus)
- * Minimum Score: 0 (negative scores are clamped to zero)
- *
- * INTEGRATION FEATURES:
- * - Global Timer: Respects game-wide time limits and displays remaining time
- * - Team Management: Updates team statistics and progression status
- * - API Integration: Real-time updates to database for scores and statistics
- * - Navigation Control: Prevents data loss through page navigation protection
- * - Toast Notifications: User feedback for actions and errors
- *
- * LEVEL COMPLETION SUMMARY:
- * Upon completion, players receive detailed feedback including:
- * - Performance breakdown (correct/incorrect/skipped/hints)
- * - Time taken to complete the level
- * - Detailed scoring breakdown showing base points, bonuses, and penalties
- * - Performance rating based on accuracy and speed
- * - Clear navigation to proceed to the next level
- */
-
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Trophy, Timer, HelpCircle, SkipForward, ArrowRight, CheckCircle, Target } from "lucide-react";
+import { Trophy, Timer, SkipForward, ArrowRight, CheckCircle, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+// import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
 import { Team, getGameTimeRemaining, formatTimeRemaining, getGameTimerStatus } from "@/lib/supabase";
 
@@ -89,21 +16,19 @@ interface Question {
   question: string;
   options: string[];
   correct: string;
-  hint: string;
+//   hint: string;
 }
 
 /**
- * LEVEL-28 QUESTION BANK
+ * LEVEL-1 QUESTION BANK
  *
- * A diverse collection of 10 multiple-choice questions covering:
- * - Indian Freedom Movement & Literature (Gandhi's writings)
- * - Indian Cinema & International Recognition (Malayalam films, Oscars)
- * - Astronomy & Science (universe composition, Nobel Prize achievements)
- * - Technology History (smartphone invention, space missions)
- * - Cinema Technology & Innovation (IMAX filming)
- * - Sports Achievements (Indian athletics, world championships)
- * - Mythology & Cultural Knowledge (Phoenix legend)
- * - Indian Agriculture & Spice Production (Kerala's specialties)
+ * A diverse collection of 20 multiple-choice questions covering:
+ * - Astronomy & Science (planets, natural phenomena)
+ * - Indian History & Politics (leaders, achievements)
+ * - Literature & Arts (authors, awards)
+ * - Sports & Entertainment (records, achievements)
+ * - Geography & Nature (locations, landmarks)
+ * - Pop Culture & Technology (viral content, innovations)
  *
  * Each question includes:
  * - 4 carefully crafted options with plausible distractors
@@ -113,77 +38,68 @@ interface Question {
 const questions: Question[] = [
   {
     id: 1,
-    question: "Which Indian freedom fighter authored the book 'Hind Swaraj' in 1909?",
-    options: ["Mahatma Gandhi", "Jawaharlal Nehru", "Bal Gangadhar Tilak", "Subhas Chandra Bose"],
-    correct: "Mahatma Gandhi",
-    hint: "This influential book on Indian self-rule was written by the leader of India's non-violent independence movement."
+    question: "Which age group is officially considered \"youth\" by the United Nations?",
+    options: ["10–18 years", "15–24 years", "18–30 years", "12–20 years"],
+    correct: "15–24 years"
   },
   {
     id: 2,
-    question: "In 2021, which Malayalam film became India's official entry to the Oscars?",
-    options: ["The Great Indian Kitchen", "Jallikattu", "Minnal Murali", "Drishyam 2"],
-    correct: "Jallikattu",
-    hint: "This film directed by Lijo Jose Pellissery depicts the chaos that ensues when a buffalo escapes from a slaughterhouse."
+    question: "Which social media app was banned in India in 2020 but is still popular among global youth?",
+    options: ["Instagram", "Snapchat", "TikTok", "Facebook"],
+    correct: "TikTok"
   },
   {
     id: 3,
-    question: "In astronomy, which element is most abundant in the observable universe?",
-    options: ["Helium", "Hydrogen", "Oxygen", "Carbon"],
-    correct: "Hydrogen",
-    hint: "This is the lightest and simplest element, making up about 75% of the universe's normal matter."
+    question: "Which organization celebrates International Youth Day every year on August 12?",
+    options: ["WHO", "UN", "UNICEF", "UNESCO"],
+    correct: "UN"
   },
   {
     id: 4,
-    question: "Who became the first woman in the world to win the Nobel Prize twice in two different sciences?",
-    options: ["Rosalind Franklin", "Marie Curie", "Dorothy Hodgkin", "Lise Meitner"],
-    correct: "Marie Curie",
-    hint: "This Polish-French scientist won Nobel Prizes in Physics (1903) and Chemistry (1911) for her work on radioactivity."
+    question: "What is the most common cause of internet addiction among youths?",
+    options: ["Online gaming and social media", "Gardening", "Reading textbooks", "Sleeping"],
+    correct: "Online gaming and social media"
   },
   {
     id: 5,
-    question: "Who invented the world's first smartphone?",
-    options: ["Apple with iPhone", "IBM Simon", "BlackBerry", "Motorola DynaTAC"],
-    correct: "IBM Simon",
-    hint: "Released in 1994, this device combined a mobile phone with PDA features and is considered the first true smartphone."
+    question: "Which country has the world’s largest youth population (as of 2025)?",
+    options: ["China", "USA", "India", "Brazil"],
+    correct: "India"
   },
   {
     id: 6,
-    question: "The Chandrayaan-2 mission aimed to land at which lunar region?",
-    options: ["Mare Tranquillitatis", "The South Polar region", "Mare Imbrium", "The North Polar region"],
-    correct: "The South Polar region",
-    hint: "This region was chosen because it's believed to contain water ice in permanently shadowed craters."
+    question: "What is the leading mental health issue faced by today’s youth?",
+    options: ["Migraine", "Anxiety and depression", "Diabetes", "Heart disease"],
+    correct: "Anxiety and depression"
   },
   {
     id: 7,
-    question: "The first feature film to be entirely shot in IMAX cameras?",
-    options: ["Avatar", "The Dark Knight", "Interstellar", "Dunkirk"],
-    correct: "The Dark Knight",
-    hint: "Christopher Nolan pioneered the use of IMAX cameras for selected sequences in this 2008 Batman film."
+    question: "Which skill is considered the most in-demand among youths in the digital economy?",
+    options: ["Coding and digital literacy", "Dancing", "Wood carving", "Pottery"],
+    correct: "Coding and digital literacy"
   },
   {
     id: 8,
-    question: "Who was the first Indian athlete to win a gold medal in the IAAF World U20 Championships?",
-    options: ["Hima Das", "Neeraj Chopra", "Dutee Chand", "Tejaswin Shankar"],
-    correct: "Neeraj Chopra",
-    hint: "This javelin thrower won gold in 2016 and later became an Olympic champion in Tokyo 2021."
+    question: "Which day is observed as World Mental Health Day, often discussed in youth awareness programs?",
+    options: ["October 10", "January 12", "March 8", "June 5"],
+    correct: "October 10"
   },
   {
     id: 9,
-    question: "In mythology, which bird is reborn from its ashes?",
-    options: ["Eagle", "The Phoenix", "Raven", "Falcon"],
-    correct: "The Phoenix",
-    hint: "This mythical bird from Greek mythology symbolizes renewal, resurrection, and the cycle of life and death."
+    question: "According to WHO, what percentage of mental health disorders begin before the age of 14?",
+    options: ["10%", "25%", "50%", "75%"],
+    correct: "50%"
   },
   {
     id: 10,
-    question: "Kerala is India's leading producer of which spice?",
-    options: ["Cardamom", "Black Pepper", "Turmeric", "Cinnamon"],
-    correct: "Black Pepper",
-    hint: "Known as the 'King of Spices,' this spice has been traded from Kerala's Malabar Coast for thousands of years."
+    question: "What is the literacy rate of youth (15–24 years) globally as per UNESCO 2024 data?",
+    options: ["About 65%", "About 85%", "About 91%", "About 99%"],
+    correct: "About 91%"
   }
-];
+]
 
-export default function Level28Page() {
+
+export default function Level39Page() {
   const [team, setTeam] = useState<Team | null>(null);
   const [initialTeamStats, setInitialTeamStats] = useState<{
     correct_questions: number;
@@ -198,8 +114,8 @@ export default function Level28Page() {
   const [timeRemaining, setTimeRemaining] = useState<number>(0);
   const [timerStatus, setTimerStatus] = useState<'not_started' | 'active' | 'expired'>('not_started');
   const [loading, setLoading] = useState(true);
-  const [skipLoading, setSkipLoading] = useState(false);
-  const [submitLoading, setSubmitLoading] = useState(false);
+  const [skipLoading,setskipLoading]=useState(false);
+  const [submitLoading,setSubmitLoading]=useState(false);
   const [flashState, setFlashState] = useState<'correct' | 'incorrect' | null>(null);
   const [isCompleted, setIsCompleted] = useState(false);
   const [completionTimeMinutes, setCompletionTimeMinutes] = useState<number>(0);
@@ -238,7 +154,7 @@ export default function Level28Page() {
         hint_count: teamData.hint_count
       });
 
-      if (teamData.current_level > 28) {
+      if (teamData.current_level > 39) {
         toast.info("You've already completed this level!");
         router.push('/levels');
         return;
@@ -298,7 +214,7 @@ export default function Level28Page() {
     }
   }, [team, timerStatus, router]);
 
-  // Auto-clear flash state after short animation
+  // Add useEffect to reset flash state after animation
   useEffect(() => {
     if (flashState) {
       const timer = setTimeout(() => {
@@ -307,18 +223,6 @@ export default function Level28Page() {
       return () => clearTimeout(timer);
     }
   }, [flashState]);
-
-  // Flash effect component
-  const FlashEffect = () => {
-    if (!flashState) return null;
-    return (
-      <div
-        className={`fixed inset-0 z-50 pointer-events-none animate-flash ${
-          flashState === 'correct' ? 'bg-green-500/30' : 'bg-red-500/30'
-        }`}
-      />
-    );
-  };
 
   const getTimerDisplay = (): { text: string; className: string } => {
     switch (timerStatus) {
@@ -349,111 +253,112 @@ export default function Level28Page() {
   };
 
   const handleAnswer = async (answer: string) => {
-    if (submitLoading) {
+
+   
+    const currentQuestion = questions[currentQuestionIndex];
+    const isCorrect = answer === currentQuestion.correct;
+
+     if(submitLoading){
       return;
     }
 
     setSubmitLoading(true);
+    
+    // Trigger flash effect for visual feedback
+    setFlashState(isCorrect ? 'correct' : 'incorrect');
+    
+    // Update local stats
 
-    try {
-      // Fallback: if level is completed but score data is not yet available
-      if (isCompleted && !completionScoreData) {
-        return (
-          <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center">
-            <div className="text-center">
-              <p className="text-lg text-gray-600">Calculating final score...</p>
-            </div>
-          </div>
-        );
-      }
-
-      const currentQuestion = questions[currentQuestionIndex];
-      const isCorrect = answer === currentQuestion.correct;
-
-      // Trigger flash effect for visual feedback
-      setFlashState(isCorrect ? 'correct' : 'incorrect');
-
-      // Update local stats
-      const newStats = { ...levelStats };
-      if (isCorrect) {
-        newStats.correct++;
-      } else {
-        newStats.incorrect++;
-      }
-      setLevelStats(newStats);
-
-      // Update team stats in database
-      if (!team) return;
-
-      const updatedStats = {
-        correct_questions: team.correct_questions + (isCorrect ? 1 : 0),
-        incorrect_questions: team.incorrect_questions + (isCorrect ? 0 : 1),
-        hint_count: team.hint_count + (showHint ? 1 : 0)
-      };
-
-      await updateTeamStats(updatedStats);
-
-      // Move to next question or complete level
-      if (currentQuestionIndex < questions.length - 1) {
-        setCurrentQuestionIndex(currentQuestionIndex + 1);
-        setSelectedAnswer("");
-        setShowHint(false);
-      } else {
-        completeLevel();
-      }
-    } catch (err) {
-      console.error("API request for submit answer failed", err);
-    } finally {
-      setSubmitLoading(false);
+    try{
+    const newStats = { ...levelStats };
+    if (isCorrect) {
+      newStats.correct++;
+    } else {
+      newStats.incorrect++;
     }
+    setLevelStats(newStats);
+
+    // Update team stats in database
+    if (!team) return;
+    
+    const updatedStats = {
+      correct_questions: team.correct_questions + (isCorrect ? 1 : 0),
+      incorrect_questions: team.incorrect_questions + (isCorrect ? 0 : 1),
+      hint_count: team.hint_count + (showHint ? 1 : 0)
+    };
+
+    await updateTeamStats(updatedStats);
+
+    // Move to next question or complete level
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+      setSelectedAnswer("");
+
+      setShowHint(false);
+    } else {
+      completeLevel();
+    }
+  }
+
+  catch(err){
+     console.error(" API request for submit answer failed", err);
+  }
+
+  finally{
+    setSubmitLoading(false);
+  }
   };
 
   const handleSkip = async () => {
-    if (skipLoading) {
+    if(skipLoading){
       return;
     }
 
-    setSkipLoading(true);
+    setskipLoading(true)
 
-    try {
-      const newStats = { ...levelStats };
-      newStats.skipped++;
-      setLevelStats(newStats);
-
-      if (!team) return;
-
-      const updatedStats = {
-        skipped_questions: team.skipped_questions + 1,
-        hint_count: team.hint_count + (showHint ? 1 : 0)
-      };
-
-      await updateTeamStats(updatedStats);
-
-      if (currentQuestionIndex < questions.length - 1) {
-        setCurrentQuestionIndex(currentQuestionIndex + 1);
-        setSelectedAnswer("");
-        setShowHint(false);
-      } else {
-        completeLevel();
-      }
-    } catch (err) {
-      console.error("API request for skip question failed", err);
-    } finally {
-      setSkipLoading(false);
-    }
-  };
-
-  const handleHint = () => {
-    setShowHint(true);
+    try{
     const newStats = { ...levelStats };
-    newStats.hintsUsed++;
+    newStats.skipped++;
     setLevelStats(newStats);
+
+    if (!team) return;
+
+    const updatedStats = {
+      skipped_questions: team.skipped_questions + 1,
+      hint_count: team.hint_count + (showHint ? 1 : 0)
+    };
+
+    await updateTeamStats(updatedStats);
+
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+      setSelectedAnswer("");
+      setShowHint(false);
+    } else {
+      completeLevel();
+    }
+  }
+
+    catch (err) {
+      console.error(" API request for skip question failed", err);
+  }
+
+  finally{
+    setskipLoading(false);
+  }
   };
+
+//   const handleHint = () => {
+//     setShowHint(true);
+//     const newStats = { ...levelStats };
+//     newStats.hintsUsed++;
+//     setLevelStats(newStats);
+//   };
 
   /**
    * ENHANCED SCORING ALGORITHM
    *
-   * Calculates the final score for Level-28 based on multiple factors:
+   * Calculates the final score for Level-1 based on multiple factors:
    *
    * BASE SCORING:
    * - Correct answers without hints: 1500 points each
@@ -482,8 +387,8 @@ export default function Level28Page() {
     performanceRating: string;
   } => {
     // Use provided completion time if available, otherwise calculate from current time
-    const timeTaken = completionTime !== undefined ?
-      completionTime :
+    const timeTaken = completionTime !== undefined ? 
+      completionTime : 
       (new Date().getTime() - levelStartTime.getTime()) / 1000 / 60; // minutes
     const totalQuestions = levelStats.correct + levelStats.incorrect + levelStats.skipped;
     const accuracy = totalQuestions > 0 ? (levelStats.correct / totalQuestions) * 100 : 0;
@@ -517,9 +422,16 @@ export default function Level28Page() {
 
     // Performance rating
     let performanceRating = "Needs Improvement";
-    if (accuracy >= 90 && timeTaken < 3) performanceRating = "Excellent";
-    else if (accuracy >= 70 && timeTaken < 4) performanceRating = "Good";
-    else if (accuracy >= 50 && timeTaken < 5) performanceRating = "Average";
+    if (accuracy >= 90) {
+      if (timeTaken < 3) performanceRating = "Excellent";
+      else if (timeTaken < 5) performanceRating = "Good";
+      else performanceRating = "Average";
+    } else if (accuracy >= 70) {
+      if (timeTaken < 4) performanceRating = "Good";
+      else performanceRating = "Average";
+    } else if (accuracy >= 50 && timeTaken < 5) {
+      performanceRating = "Average";
+    }
 
     const totalScore = Math.max(0, baseScore + consecutiveBonus + timeBonus - penalties);
 
@@ -549,7 +461,7 @@ export default function Level28Page() {
     // Store the calculated score data for consistent display
     setCompletionScoreData(scoreData);
     const newTotalScore = team.score + scoreData.totalScore;
-    const newLevel = 29;
+    const newLevel = 40;
 
     try {
       // CRITICAL FIX: Ensure final level statistics are accurately saved to database
@@ -595,6 +507,18 @@ export default function Level28Page() {
         })
       });
 
+      // Save checkpoint if this is a checkpoint level
+      // if (isCheckpointLevel(1)) {
+      //   await fetch(`/api/teams/${teamCode}/checkpoint`, {
+      //     method: 'PUT',
+      //     headers: { 'Content-Type': 'application/json' },
+      //     body: JSON.stringify({
+      //       checkpoint_score: newTotalScore,
+      //       checkpoint_level: 1
+      //     })
+      //   });
+      // }
+
       setIsCompleted(true);
     } catch (error) {
       console.error('Error completing level:', error);
@@ -602,12 +526,27 @@ export default function Level28Page() {
     }
   };
 
+  // Create a Flash Effect Component
+  const FlashEffect = () => {
+    if (!flashState) return null;
+    
+    return (
+      <div 
+        className={`fixed inset-0 z-50 pointer-events-none animate-flash ${
+          flashState === 'correct' 
+            ? 'bg-green-500/30' 
+            : 'bg-red-500/30'
+        }`} 
+      />
+    );
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-600 mx-auto mb-4"></div>
-          <p className="text-lg text-gray-600">Loading Level 28...</p>
+          <p className="text-lg text-gray-600">Loading Level 39...</p>
         </div>
       </div>
     );
@@ -638,7 +577,7 @@ export default function Level28Page() {
             <div className="mx-auto mb-4 w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
               <CheckCircle className="h-8 w-8 text-green-600" />
             </div>
-            <CardTitle className="text-3xl font-bold text-green-700">Level 28 Complete!</CardTitle>
+            <CardTitle className="text-3xl font-bold text-green-700">Level 39 Complete!</CardTitle>
             <div className="mt-2">
               <Badge variant="outline" className={`text-lg px-4 py-2 ${
                 scoreData.performanceRating === 'Excellent' ? 'bg-green-50 text-green-700 border-green-200' :
@@ -748,11 +687,22 @@ export default function Level28Page() {
               onClick={() => router.push('/levels')}
               className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-lg py-3"
             >
-              Continue to Level 29
+              Continue to Level 40
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </CardContent>
         </Card>
+      </div>
+    );
+  }
+
+  // Fallback: if level is completed but score data is not yet available
+  if (isCompleted && !completionScoreData) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-lg text-gray-600">Calculating final score...</p>
+        </div>
       </div>
     );
   }
@@ -762,18 +712,20 @@ export default function Level28Page() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
+      {/* Flash Effect */}
       <FlashEffect />
+      
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-sm border-b border-purple-200">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
-                Level 28
+                Level 39
               </Badge>
               <span className="text-lg font-semibold text-gray-800">{team.team_name}</span>
             </div>
-
+            
             <div className="flex items-center space-x-6">
               <div className="flex items-center space-x-2">
                 <Trophy className="h-5 w-5 text-yellow-600" />
@@ -781,7 +733,7 @@ export default function Level28Page() {
                   {team.score.toLocaleString()} pts
                 </span>
               </div>
-
+              
               <div className="flex items-center space-x-2">
                 <Timer className={`h-5 w-5 ${timerStatus === 'not_started' ? 'text-gray-500' : 'text-red-600'}`} />
                 <span className={`text-lg font-mono font-semibold ${getTimerDisplay().className}`}>
@@ -820,8 +772,8 @@ export default function Level28Page() {
                     key={index}
                     variant={selectedAnswer === option ? "default" : "outline"}
                     className={`p-4 h-auto text-left justify-start ${
-                      selectedAnswer === option
-                        ? "bg-purple-600 hover:bg-purple-700"
+                      selectedAnswer === option 
+                        ? "bg-purple-600 hover:bg-purple-700" 
                         : "hover:bg-purple-50"
                     }`}
                     onClick={() => setSelectedAnswer(option)}
@@ -833,18 +785,18 @@ export default function Level28Page() {
               </div>
 
               {/* Hint */}
-              {showHint && (
+              {/* {showHint && (
                 <Alert className="bg-blue-50 border-blue-200">
                   <HelpCircle className="h-4 w-4 text-blue-600" />
                   <AlertDescription className="text-blue-700">
                     <strong>Hint:</strong> {currentQuestion.hint}
                   </AlertDescription>
                 </Alert>
-              )}
+              )} */}
 
               {/* Action Buttons */}
               <div className="flex gap-3 pt-4">
-                <Button
+                {/* <Button
                   variant="outline"
                   onClick={handleHint}
                   disabled={showHint}
@@ -852,35 +804,25 @@ export default function Level28Page() {
                 >
                   <HelpCircle className="mr-2 h-4 w-4" />
                   {showHint ? "Hint Shown" : "Show Hint"}
-                </Button>
-
+                </Button> */}
+                
                 <Button
                   variant="outline"
                   onClick={handleSkip}
                   disabled={skipLoading}
                   className="flex-1 text-yellow-600 border-yellow-200 hover:bg-yellow-50"
                 >
-                  {skipLoading ? (
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-yellow-600 mr-2"></div>
-                  ) : (
-                    <SkipForward className="mr-2 h-4 w-4" />
-                  )}
+                  <SkipForward className="mr-2 h-4 w-4" />
                   Skip Question
                 </Button>
-
+                
                 <Button
                   onClick={() => handleAnswer(selectedAnswer)}
                   disabled={!selectedAnswer || submitLoading}
                   className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
                 >
-                  {submitLoading ? (
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  ) : (
-                    <>
-                      Submit Answer
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </>
-                  )}
+                  Submit Answer
+                  <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </div>
             </CardContent>

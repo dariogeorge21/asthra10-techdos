@@ -95,17 +95,28 @@ export default function Level15Page() {
   const [levelStartTime] = useState<Date>(new Date());
   const [timeRemaining, setTimeRemaining] = useState<number>(0);
   const [timerStatus, setTimerStatus] = useState<'not_started' | 'active' | 'expired'>('not_started');
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [skipLoading, setSkipLoading] = useState(false);
+  const [flashState, setFlashState] = useState<'correct' | 'incorrect' | null>(null);
   const [isCompleted, setIsCompleted] = useState(false);
-  const [completionTimeMinutes, setCompletionTimeMinutes] = useState<number>(0);
+  const [, setCompletionTimeMinutes] = useState<number>(0);
   const [levelStats, setLevelStats] = useState({
     correct: 0,
     incorrect: 0,
     skipped: 0,
     hintsUsed: 0
   });
+  const [completionScoreData, setCompletionScoreData] = useState<{
+    totalScore: number;
+    baseScore: number;
+    timeBonus: number;
+    consecutiveBonus: number;
+    penalties: number;
+    timeTaken: number;
+    accuracy: number;
+    performanceRating: string;
+  } | null>(null);
   const router = useRouter();
 
   const fetchTeamData = useCallback(async (teamCode: string) => {
@@ -179,7 +190,15 @@ export default function Level15Page() {
 
       return () => clearInterval(timer);
     }
-  }, [team, timerStatus]);
+  }, [team, timerStatus, router]);
+
+  // Auto-clear flash state after short animation
+  useEffect(() => {
+    if (flashState) {
+      const t = setTimeout(() => setFlashState(null), 800);
+      return () => clearTimeout(t);
+    }
+  }, [flashState]);
 
   const getTimerDisplay = (): { text: string; className: string } => {
     switch (timerStatus) {
@@ -253,7 +272,10 @@ export default function Level15Page() {
 
     try {
       const isCorrect = validateAnswer();
-      
+
+      // Trigger flash effect for visual feedback
+      setFlashState(isCorrect ? 'correct' : 'incorrect');
+
       const newStats = { ...levelStats };
       if (isCorrect) {
         newStats.correct++;
@@ -262,24 +284,24 @@ export default function Level15Page() {
       }
       setLevelStats(newStats);
 
-      if (!team) return;
+      // Update team stats only if team is available
+      if (team) {
+        const updatedStats = {
+          correct_questions: team.correct_questions + (isCorrect ? 1 : 0),
+          incorrect_questions: team.incorrect_questions + (isCorrect ? 0 : 1),
+          hint_count: team.hint_count + (showHint ? 1 : 0)
+        };
 
-      const updatedStats = {
-        correct_questions: team.correct_questions + (isCorrect ? 1 : 0),
-        incorrect_questions: team.incorrect_questions + (isCorrect ? 0 : 1),
-        hint_count: team.hint_count + (showHint ? 1 : 0)
-      };
+        await updateTeamStats(updatedStats);
+      }
 
-      await updateTeamStats(updatedStats);
-
-      if (isCorrect) {
-        if (currentQuestionIndex < mathQuestions.length - 1) {
-          setCurrentQuestionIndex(currentQuestionIndex + 1);
-          setUserAnswer("");
-          setShowHint(false);
-        } else {
-          completeLevel();
-        }
+      // Advance to next question regardless of correctness
+      if (currentQuestionIndex < mathQuestions.length - 1) {
+        setCurrentQuestionIndex(prev => prev + 1);
+        setUserAnswer("");
+        setShowHint(false);
+      } else {
+        completeLevel();
       }
     } catch (err) {
       console.error("API request for submit answer failed", err);
@@ -327,6 +349,7 @@ export default function Level15Page() {
     totalScore: number;
     baseScore: number;
     timeBonus: number;
+    consecutiveBonus: number;
     penalties: number;
     timeTaken: number;
     accuracy: number;
@@ -340,6 +363,8 @@ export default function Level15Page() {
 
     const baseScore = levelStats.correct * 2000;
     const penalties = (levelStats.incorrect * 500) + (levelStats.skipped * 750);
+    // No consecutive tracking in this level - set consecutive bonus to 0 for compatibility
+    const consecutiveBonus = 0;
 
     let timeBonus = 0;
     if (timeTaken < 2) timeBonus = 500;
@@ -360,12 +385,13 @@ export default function Level15Page() {
       performanceRating = "Average";
     }
 
-    const totalScore = Math.max(0, baseScore + timeBonus - penalties);
+    const totalScore = Math.max(0, baseScore + timeBonus + consecutiveBonus - penalties);
 
     return {
       totalScore,
       baseScore,
       timeBonus,
+      consecutiveBonus,
       penalties,
       timeTaken,
       accuracy,
@@ -383,6 +409,8 @@ export default function Level15Page() {
     setCompletionTimeMinutes(timeTaken);
 
     const scoreData = calculateScore(timeTaken);
+    // Store the calculated score data for consistent display
+    setCompletionScoreData(scoreData);
     const newTotalScore = team.score + scoreData.totalScore;
     const newLevel = 16;
 
@@ -418,35 +446,36 @@ export default function Level15Page() {
     }
   };
 
-  if (loading) {
+  // Fallback while final score is being prepared
+  if (isCompleted && !completionScoreData) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-600 mx-auto mb-4"></div>
-          <p className="text-lg text-gray-600">Loading Level 15...</p>
+          <p className="text-lg text-gray-600">Calculating final score...</p>
         </div>
       </div>
     );
   }
 
-  if (!team) {
+  // Flash effect component
+  const FlashEffect = () => {
+    if (!flashState) return null;
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-lg text-gray-600">Failed to load team data.</p>
-          <Button onClick={() => router.push('/')} className="mt-4">
-            Return to Home
-          </Button>
-        </div>
-      </div>
+      <div
+        className={`fixed inset-0 z-50 pointer-events-none animate-flash ${
+          flashState === 'correct' ? 'bg-green-500/30' : 'bg-red-500/30'
+        }`} />
     );
-  }
+  };
 
-  if (isCompleted) {
-    const scoreData = calculateScore(completionTimeMinutes);
+  if (isCompleted && completionScoreData) {
+    // Use the stored score data that was calculated during level completion
+    // This ensures the displayed score exactly matches what was sent to the API
+    const scoreData = completionScoreData as NonNullable<typeof completionScoreData>;
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center p-4">
+        <FlashEffect />
         <Card className="max-w-4xl mx-auto">
           <CardHeader className="text-center">
             <div className="mx-auto mb-4 w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
@@ -484,13 +513,65 @@ export default function Level15Page() {
               </div>
             </div>
 
-            <Button
-              onClick={() => router.push('/levels')}
-              className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-lg py-3"
-            >
-              Continue to Level 16
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
+            {/* Score Summary */}
+            {scoreData && (
+              <div className="mt-6">
+                <div className="grid grid-cols-3 gap-4 text-center mb-4">
+                  <div className="bg-green-50 rounded-lg p-4">
+                    <div className="text-sm text-green-600 font-medium mb-1">Final Score</div>
+                    <div className="text-2xl font-bold text-green-600">{scoreData.totalScore.toLocaleString()}</div>
+                  </div>
+                  <div className="bg-blue-50 rounded-lg p-4">
+                    <div className="text-sm text-blue-600 font-medium mb-1">Time</div>
+                    <div className="text-2xl font-bold text-blue-600">{scoreData.timeTaken.toFixed(1)}m</div>
+                  </div>
+                  <div className="bg-purple-50 rounded-lg p-4">
+                    <div className="text-sm text-purple-600 font-medium mb-1">Rating</div>
+                    <div className="text-lg font-bold text-purple-600">{scoreData.performanceRating}</div>
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 rounded-lg p-4 text-sm">
+                  <h4 className="font-semibold text-gray-800 mb-2">Score Breakdown</h4>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span>Base Score</span>
+                      <span className="font-semibold text-green-600">+{scoreData.baseScore}</span>
+                    </div>
+                    {scoreData.timeBonus > 0 && (
+                      <div className="flex justify-between">
+                        <span>Time Bonus</span>
+                        <span className="font-semibold text-blue-600">+{scoreData.timeBonus}</span>
+                      </div>
+                    )}
+                    {scoreData.consecutiveBonus > 0 && (
+                      <div className="flex justify-between">
+                        <span>Consecutive Bonus</span>
+                        <span className="font-semibold text-purple-600">+{scoreData.consecutiveBonus}</span>
+                      </div>
+                    )}
+                    {scoreData.penalties > 0 && (
+                      <div className="flex justify-between">
+                        <span>Penalties</span>
+                        <span className="font-semibold text-red-600">-{scoreData.penalties}</span>
+                      </div>
+                    )}
+                    <div className="border-t pt-2 flex justify-between font-bold">
+                      <span>Total Score</span>
+                      <span className="text-green-600">{scoreData.totalScore.toLocaleString()}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+             <Button
+               onClick={() => router.push('/levels')}
+               className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-lg py-3"
+             >
+               Continue to Level 16
+               <ArrowRight className="ml-2 h-5 w-5" />
+             </Button>
           </CardContent>
         </Card>
       </div>
@@ -513,6 +594,7 @@ export default function Level15Page() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
+      <FlashEffect />
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-sm border-b border-purple-200">
         <div className="container mx-auto px-4 py-4">
@@ -521,14 +603,14 @@ export default function Level15Page() {
               <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
                 Level 15 - Math Puzzle
               </Badge>
-              <span className="text-lg font-semibold text-gray-800">{team.team_name}</span>
+              <span className="text-lg font-semibold text-gray-800">{team?.team_name ?? 'Loading...'}</span>
             </div>
             
             <div className="flex items-center space-x-6">
               <div className="flex items-center space-x-2">
                 <Trophy className="h-5 w-5 text-yellow-600" />
                 <span className="text-lg font-semibold text-gray-800">
-                  {team.score.toLocaleString()} pts
+                  {team?.score != null ? team.score.toLocaleString() : '0'} pts
                 </span>
               </div>
               
