@@ -372,7 +372,7 @@ export default function EndPage() {
       name: "Dario George",
       role: "Senior Developer",
       linkedinUrl: "https://www.linkedin.com/in/dariogeorge21/",
-      image: "/end-page/dario.jpg"
+      image: "/end-page/dario.jpeg"
     },
     {
       name: "Tippu Sahib",
