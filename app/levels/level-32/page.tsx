@@ -92,6 +92,7 @@ export default function Level32Page() {
     skipped: 0,
     hintsUsed: 0
   });
+  const [flashState, setFlashState] = useState<'correct' | 'incorrect' | null>(null);
 
   // Video-specific state
   const [showRulesModal, setShowRulesModal] = useState<boolean>(true);
@@ -185,7 +186,17 @@ export default function Level32Page() {
 
       return () => clearInterval(timer);
     }
-  }, [team, timerStatus]);
+  }, [team, timerStatus, router]);
+
+  // Auto-clear flash state after short animation
+  useEffect(() => {
+    if (flashState) {
+      const timer = setTimeout(() => {
+        setFlashState(null);
+      }, 800);
+      return () => clearTimeout(timer);
+    }
+  }, [flashState]);
 
   const getTimerDisplay = (): { text: string; className: string } => {
     switch (timerStatus) {
@@ -241,11 +252,14 @@ export default function Level32Page() {
   }
 
   const currentQuestion = questions[currentQuestionIndex];
-    const isCorrect = answer === currentQuestion.correct;
+     const isCorrect = answer === currentQuestion.correct;
 
-    if (submitLoading) {
-      return;
-    }
+    // Trigger flash effect for visual feedback
+    setFlashState(isCorrect ? 'correct' : 'incorrect');
+
+     if (submitLoading) {
+       return;
+     }
 
     setSubmitLoading(true);
     
@@ -430,6 +444,18 @@ export default function Level32Page() {
       console.error('Error completing level:', error);
       toast.error("Failed to save progress. Please try again.");
     }
+  };
+
+  // Flash effect component
+  const FlashEffect = () => {
+    if (!flashState) return null;
+    return (
+      <div
+        className={`fixed inset-0 z-50 pointer-events-none animate-flash ${
+          flashState === 'correct' ? 'bg-green-500/30' : 'bg-red-500/30'
+        }`}
+      />
+    );
   };
 
   if (loading) {
@@ -632,6 +658,7 @@ export default function Level32Page() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
+      <FlashEffect />
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-sm border-b border-purple-200">
         <div className="container mx-auto px-4 py-4">
@@ -669,7 +696,7 @@ export default function Level32Page() {
           <div className="mb-8">
             <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
               <span>Question {currentQuestionIndex + 1} of {questions.length}</span>
-              <span>{Math.round(progress)}% Complete</span>
+              {/* <span>{Math.round(progress)}% Complete</span> */}
             </div>
             <Progress value={progress} className="h-2" />
           </div>

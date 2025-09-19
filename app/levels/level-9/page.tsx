@@ -76,9 +76,9 @@ const questions: KeyboardQuestion[] = [
   },
   {
     id: 5,
-    riddle: "You want to look smarter instantly. Shortcut to zoom in? And to zoom out?",
+    riddle: "You want to look smarter instantly. Shortcut to zoom in? ",
     correctAnswer: "Ctrl + +",
-    hint: "This shortcut increases the zoom level in most applications. Use Ctrl + - to zoom out."
+    hint: "This shortcut increases the zoom level in most applications."
   },
   {
     id: 6,
@@ -237,7 +237,7 @@ export default function Level9Page() {
 
       return () => clearInterval(timer);
     }
-  }, [team, timerStatus]);
+  }, [team, timerStatus, router]);
 
   // Add useEffect to reset flash state after animation
   useEffect(() => {

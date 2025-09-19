@@ -128,6 +128,7 @@ export default function Level16Page() {
   const [loading, setLoading] = useState(true);
   const [skipLoading,setskipLoading]=useState(false);
   const [submitLoading,setSubmitLoading]=useState(false);
+  const [flashState, setFlashState] = useState<'correct' | 'incorrect' | null>(null);
   const [isCompleted, setIsCompleted] = useState(false);
   const [completionTimeMinutes, setCompletionTimeMinutes] = useState<number>(0);
   const [completionScoreData, setCompletionScoreData] = useState<{
@@ -231,9 +232,15 @@ export default function Level16Page() {
 
       return () => clearInterval(timer);
     }
-  }, [team, timerStatus]);
+  }, [team, timerStatus, router]);
 
-
+  // Auto-clear flash state after short animation
+  useEffect(() => {
+    if (flashState) {
+      const t = setTimeout(() => setFlashState(null), 800);
+      return () => clearTimeout(t);
+    }
+  }, [flashState]);
 
   const getTimerDisplay = (): { text: string; className: string } => {
     switch (timerStatus) {
@@ -278,11 +285,14 @@ export default function Level16Page() {
   }
 
   const currentQuestion = questions[currentQuestionIndex];
-    const isCorrect = answer === currentQuestion.correct;
+  const isCorrect = answer === currentQuestion.correct;
 
-     if(submitLoading){
-      return;
-    }
+  // Trigger flash effect for visual feedback
+  setFlashState(isCorrect ? 'correct' : 'incorrect');
+
+      if(submitLoading){
+       return;
+     }
 
     setSubmitLoading(true);
     
@@ -569,38 +579,64 @@ const handleKeyPress = (key: KeyboardKey) => {
     }
   };
 
+  // Flash effect component
+  const FlashEffect = () => {
+    if (!flashState) return null;
+    return (
+      <div
+        className={`fixed inset-0 z-50 pointer-events-none animate-flash ${
+          flashState === 'correct' ? 'bg-green-500/30' : 'bg-red-500/30'
+        }`}
+      />
+    );
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-600 mx-auto mb-4"></div>
-          <p className="text-lg text-gray-600">Loading Level 16...</p>
-        </div>
-      </div>
-    );
-  }
++        <FlashEffect />
+         <div className="text-center">
+           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-600 mx-auto mb-4"></div>
+           <p className="text-lg text-gray-600">Loading Level 16...</p>
+         </div>
+       </div>
+     );
+   }
 
-  if (!team) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-lg text-gray-600">Failed to load team data.</p>
-          <Button onClick={() => router.push('/')} className="mt-4">
-            Return to Home
-          </Button>
-        </div>
-      </div>
-    );
-  }
+   if (!team) {
+     return (
+       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center">
++        <FlashEffect />
+         <div className="text-center">
+           <p className="text-lg text-gray-600">Failed to load team data.</p>
+           <Button onClick={() => router.push('/')} className="mt-4">
+             Return to Home
+           </Button>
+         </div>
+       </div>
+     );
+   }
 
-  if (isCompleted && completionScoreData) {
-    // Use the stored score data that was calculated during level completion
-    // This ensures the displayed score exactly matches what was sent to the API
-    const scoreData = completionScoreData;
+   if (isCompleted && !completionScoreData) {
+     return (
+       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center">
++        <FlashEffect />
+         <div className="text-center">
+           <p className="text-lg text-gray-600">Calculating final score...</p>
+         </div>
+       </div>
+     );
+   }
 
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center p-4">
-        <Card className="max-w-4xl mx-auto">
+   if (isCompleted && completionScoreData) {
+     // Use the stored score data that was calculated during level completion
+     // This ensures the displayed score exactly matches what was sent to the API
+     const scoreData = completionScoreData;
+
+     return (
+       <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 flex items-center justify-center p-4">
++        <FlashEffect />
+         <Card className="max-w-4xl mx-auto">
           <CardHeader className="text-center">
             <div className="mx-auto mb-4 w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
               <CheckCircle className="h-8 w-8 text-green-600" />
@@ -729,7 +765,8 @@ const handleKeyPress = (key: KeyboardKey) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
-      {/* Header */}
++      <FlashEffect />
+       {/* Header */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-sm border-b border-purple-200">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
