@@ -13,6 +13,7 @@ interface Person {
   name: string;
   role: string;
   linkedinUrl?: string;
+  image?: string; // optional public path (e.g. "/end-page/dario.jpg") or absolute URL
 }
 
 // Helper function to get profile image path
@@ -33,11 +34,13 @@ const getProfileImagePath = (name: string) => {
 const ProfileImage = ({
   name,
   size = 'large',
-  className = ''
+  className = '',
+  image
 }: {
   name: string;
   size?: 'large' | 'small';
   className?: string;
+  image?: string;
 }) => {
   const [imageError, setImageError] = useState(false);
   const sizeClasses = size === 'large'
@@ -55,15 +58,30 @@ const ProfileImage = ({
     );
   }
 
+  // Prefer explicit image prop; fallback to name-based public path
+  const src = image && image.length > 0 ? image : getProfileImagePath(name);
+  const isAbsolute = /^https?:\/\//i.test(src);
+
   return (
     <div className={`${sizeClasses} rounded-full shadow-lg ring-white/30 overflow-hidden relative ${className}`}>
-      <Image
-        src={getProfileImagePath(name)}
-        alt={`${name} profile`}
-        fill
-        className="object-cover"
-        onError={() => setImageError(true)}
-      />
+      {isAbsolute ? (
+        // external absolute URL - use standard img to avoid next/image domain config
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={src}
+          alt={`${name} profile`}
+          className="w-full h-full object-cover"
+          onError={() => setImageError(true)}
+        />
+      ) : (
+        <Image
+          src={src}
+          alt={`${name} profile`}
+          fill
+          className="object-cover"
+          onError={() => setImageError(true)}
+        />
+      )}
     </div>
   );
 };
@@ -176,7 +194,7 @@ const CoordinatorCard = ({ person, type }: { person: Person; type: 'faculty' | '
         <CardContent className="p-6">
           <div className="flex flex-row gap-2 justify-between items-center text-center space-y-4">
             {/* Profile Image */}
-            <ProfileImage name={person.name} size="large" />
+            <ProfileImage name={person.name} size="large" image={person.image} />
 
             {/* Details */}
             <div>
@@ -237,7 +255,7 @@ const TeamMemberCard = ({ person, index }: { person: Person; index: number }) =>
         <CardContent className="p-4">
           <div className="flex flex-row gap-4 justify-between items-center text-center space-y-3">
             {/* Profile Image */}
-            <ProfileImage name={person.name} size="small" />
+            <ProfileImage name={person.name} size="small" image={person.image} />
 
             {/* Details */}
             <div>
@@ -337,12 +355,14 @@ export default function EndPage() {
     {
       name: "Asst Prof Chintu Maria Thomas",
       role: "Professor",
-      linkedinUrl: "https://sjcetpalai.ac.in/chintu-cs/" // To be provided
+      linkedinUrl: "https://sjcetpalai.ac.in/chintu-cs/",
+      image: "/end-page/chintu.jpeg"
     },
     {
       name: "Asst Prof Renju Renjith",
       role: "Professor",
-      linkedinUrl: "https://sjcetpalai.ac.in/renju-cs/" // To be provided
+      linkedinUrl: "https://sjcetpalai.ac.in/renju-cs/",
+      image: "/end-page/renju.jpeg"
     }
   ];
 
@@ -351,12 +371,14 @@ export default function EndPage() {
     {
       name: "Dario George",
       role: "Senior Developer",
-      linkedinUrl: "https://www.linkedin.com/in/dariogeorge21/"
+      linkedinUrl: "https://www.linkedin.com/in/dariogeorge21/",
+      image: "/end-page/dario.jpg"
     },
     {
       name: "Tippu Sahib",
       role: "Product Manager",
-      linkedinUrl: "https://www.linkedin.com/in/s-tippu-sahib-23404833b/"
+      linkedinUrl: "https://www.linkedin.com/in/s-tippu-sahib-23404833b/",
+      image: "/end-page/tippu.jpeg"
     }
   ];
 
@@ -365,47 +387,56 @@ export default function EndPage() {
     {
       name: 'Joshna Jojo',
       role: 'Designer',
-      linkedinUrl: 'https://www.linkedin.com/in/joshna-jojo-9b2806327/'
+      linkedinUrl: 'https://www.linkedin.com/in/joshna-jojo-9b2806327/',
+      image: '/end-page/joshna.jpeg'
     },
     {
       name: 'Daiji Kuriakose',
       role: 'Developer',
-      linkedinUrl: 'https://www.linkedin.com/in/daiji-kuriakose/'
+      linkedinUrl: 'https://www.linkedin.com/in/daiji-kuriakose/',
+      image: '/end-page/daiji.jpeg'
     },
     {
       name: 'Stivance K Baby',
       role: 'Q&A',
-      linkedinUrl: 'https://www.linkedin.com/in/stivance-k-baby/'
+      linkedinUrl: 'https://www.linkedin.com/in/stivance-k-baby/',
+      image: '/end-page/stivance.jpeg'
     },
     {
       name: 'Annlia Jose',
       role: 'Designer',
-      linkedinUrl: 'https://www.linkedin.com/in/annlia-jose-325a8b345/'
+      linkedinUrl: 'https://www.linkedin.com/in/annlia-jose-325a8b345/',
+      image: '/end-page/annlia.jpg'
     },
     {
       name: 'Gokul Shaji',
       role: 'Developer',
-      linkedinUrl: 'https://www.linkedin.com/in/gokul-shaji-848334328/'
+      linkedinUrl: 'https://www.linkedin.com/in/gokul-shaji-848334328/',
+      image: '/end-page/gokul.jpg'
     },
     {
       name: 'Aibin Babu',
       role: 'Marketing',
-      linkedinUrl: 'https://www.linkedin.com/in/aibin-babu-8982a3328/'
+      linkedinUrl: 'https://www.linkedin.com/in/aibin-babu-8982a3328/',
+      image: '/end-page/aibin.jpeg'
     },
     {
       name: 'Selin Emla Sunish',
       role: 'Developer',
-      linkedinUrl: 'https://www.linkedin.com/in/selin-emla-sunish-a55778322/'
+      linkedinUrl: 'https://www.linkedin.com/in/selin-emla-sunish-a55778322/',
+      image: '/end-page/selin.jpg'
     },
     {
       name: 'Angelina Binoy',
       role: 'Designer',
-      linkedinUrl: 'https://www.linkedin.com/in/angelina-binoy-983b94315/'
+      linkedinUrl: 'https://www.linkedin.com/in/angelina-binoy-983b94315/',
+      image: '/end-page/angelina.jpeg'
     },
     {
       name: 'Dijin Leo',
       role: 'UI/UX Designer',
-      linkedinUrl: 'https://www.linkedin.com/in/dijin-leo-d-44408431a/'
+      linkedinUrl: 'https://www.linkedin.com/in/dijin-leo-d-44408431a/',
+      image: '/end-page/dijin.jpg'
     }
   ];
 
