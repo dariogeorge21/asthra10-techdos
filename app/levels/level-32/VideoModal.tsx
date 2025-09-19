@@ -120,7 +120,7 @@ export default function VideoModal({ open, onVideoComplete }: Props) {
   return (
     <div
       ref={overlayRef}
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 overflow-y-auto"
       aria-hidden={!open}
     >
       <div className="fixed inset-0 bg-black/90 backdrop-blur-sm" />
@@ -128,7 +128,7 @@ export default function VideoModal({ open, onVideoComplete }: Props) {
         role="dialog"
         aria-modal="true"
         aria-labelledby="video-modal-title"
-        className="relative max-w-4xl w-full z-[110] transform rounded-lg shadow-xl"
+        className="relative max-w-4xl w-full z-[110] transform rounded-lg shadow-xl max-h-[95vh] my-8 flex flex-col"
       >
         <CardHeader className="flex items-center justify-between gap-4 px-6 py-5">
           <div className="flex items-center gap-3">
@@ -149,7 +149,7 @@ export default function VideoModal({ open, onVideoComplete }: Props) {
           </Badge>
         </CardHeader>
 
-        <CardContent className="px-6 pb-6 space-y-4">
+        <CardContent className="px-6 pb-6 space-y-4 overflow-y-auto flex-1">
           {/* Video Container */}
           <div className="relative bg-black rounded-lg overflow-hidden">
             {videoError ? (

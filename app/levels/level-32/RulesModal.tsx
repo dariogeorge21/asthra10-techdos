@@ -31,7 +31,7 @@ export default function RulesModal({ open, onClose }: Props) {
   return (
     <div
       ref={overlayRef}
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 overflow-y-auto"
       aria-hidden={!open}
     >
       <div
@@ -42,7 +42,7 @@ export default function RulesModal({ open, onClose }: Props) {
         role="dialog"
         aria-modal="true"
         aria-labelledby="level-rules-title"
-        className="relative max-w-2xl w-full z-[110] transform rounded-lg shadow-xl"
+        className="relative max-w-2xl w-full z-[110] transform rounded-lg shadow-xl max-h-[90vh] my-8 flex flex-col"
       >
         <CardHeader className="flex items-center justify-between gap-4 px-6 py-5">
           <div className="flex items-center gap-3">
@@ -58,7 +58,7 @@ export default function RulesModal({ open, onClose }: Props) {
           </div>
         </CardHeader>
 
-        <CardContent className="px-6 pb-6 space-y-6">
+        <CardContent className="px-6 pb-6 space-y-6 overflow-y-auto flex-1">
           {/* Main Description */}
           <div className="text-gray-600 space-y-4">
             <p className="text-lg font-medium text-purple-700">
