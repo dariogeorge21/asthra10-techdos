@@ -663,14 +663,14 @@ export default function Level38Page() {
                     Submit Solution
                   </Button>
 
-                  <Button
+                  {/* <Button
                     variant="outline"
                     className="w-full border-red-200 text-red-600 hover:bg-red-50"
                     onClick={handleSkip}
                   >
                     <SkipForward className="h-4 w-4 mr-2" />
                     Skip Level (-50% Score)
-                  </Button>
+                  </Button> */}
                 </CardContent>
               </Card>
 
