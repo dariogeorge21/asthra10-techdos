@@ -355,7 +355,7 @@ export default function Level38Page() {
 
     // Calculate score
       const timeElapsedSeconds = (Date.now() - gameState.startTime) / 1000; // seconds
-      const baseScore = 1000;
+      const baseScore = 10000;
       const timeBonus = Math.max(0, 500 - Math.floor(timeElapsedSeconds / 60) * 50);
       const hintPenalty = gameState.hintsUsed * 100;
       const movesPenalty = Math.max(0, (gameState.moves - 50) * 5);
